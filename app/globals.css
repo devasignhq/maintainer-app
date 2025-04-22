@@ -1,15 +1,130 @@
-@import "tailwindcss";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
 
 :root {
+  --font-display: "Satoshi", "sans-serif";
+  --breakpoint-3xl: 120rem;
+
+  /* Primary colors */
+  --color-primary-100: #FE891F;
+  --color-primary-200: #FE891F59;
+  --color-primary-300: #FE891F26;
+  --color-primary-400: #FFC795;
+
+  /* Dark colors */
+  --color-dark-100: #AAAAAA;
+  --color-dark-200: #646464;
+  --color-dark-300: #2A2A2A;
+  --color-dark-400: #131313;
+  --color-dark-500: #000000;
+
+  /* Light colors */
+  --color-light-100: #FFFFFF;
+  --color-light-200: #FEF3C7;
+
+  /* Indicator colors */
+  --color-indicator-100: #31DB06;
+  --color-indicator-200: #1FE8FE;
+  --color-indicator-300: #FBBF24;
+  --color-indicator-400: #E93CA4;
+  --color-indicator-500: #FF614D;
+  
+  /* Font sizes */
+  --font-size-display-large: 32px;
+  --line-height-display-large: 1.5;
+  --font-weight-display-large: 500;
+  --letter-spacing-display-large: -2px;
+
+  --font-size-display-medium: 32px;
+  --line-height-display-medium: 1.5;
+  --font-weight-display-medium: 300;
+  --letter-spacing-display-medium: -2px;
+
+  --font-size-display-small: 24px;
+  --line-height-display-small: 1.5;
+  --font-weight-display-small: 800;
+  --letter-spacing-display-small: -1px;
+
+  --font-size-headline-large: 22px;
+  --line-height-headline-large: 1.5;
+  --font-weight-headline-large: 400;
+  --letter-spacing-headline-large: -1px;
+
+  --font-size-headline-medium: 20px;
+  --line-height-headline-medium: 1.5;
+  --font-weight-headline-medium: 700;
+  --letter-spacing-headline-medium: -1px;
+
+  --font-size-headline-small: 16px;
+  --line-height-headline-small: 1.5;
+  --font-weight-headline-small: 800;
+  --letter-spacing-headline-small: -0.5px;
+
+  --font-size-title-large: 16px;
+  --line-height-title-large: 1.5;
+  --font-weight-title-large: 400;
+  --letter-spacing-title-large: -0.5px;
+
+  --font-size-table-header: 14px;
+  --line-height-table-header: 14px;
+  --font-weight-table-header: 700;
+  --letter-spacing-table-header: -0.5px;
+
+  --font-size-table-content: 14px;
+  --line-height-table-content: 14px;
+  --font-weight-table-content: 500;
+  --letter-spacing-table-content: -0.5px;
+
+  --font-size-body-large: 16px;
+  --line-height-body-large: 24px;
+  --font-weight-body-large: 400;
+  --letter-spacing-body-large: -0.5px;
+
+  --font-size-body-medium: 14px;
+  --line-height-body-medium: 20px;
+  --font-weight-body-medium: 400;
+  --letter-spacing-body-medium: -0.5px;
+
+  --font-size-body-small: 14px;
+  --line-height-body-small: 14px;
+  --font-weight-body-small: 400;
+  --letter-spacing-body-small: -0.5px;
+
+  --font-size-body-tiny: 12px;
+  --line-height-body-tiny: 16px;
+  --font-weight-body-tiny: 400;
+  --letter-spacing-body-tiny: -0.5px;
+
+  --font-size-body-micro: 10px;
+  --line-height-body-micro: 16px;
+  --font-weight-body-micro: 500;
+  --letter-spacing-body-micro: 0px;
+
+  --font-size-button-large: 14px;
+  --line-height-button-large: 14px;
+  --font-weight-button-large: 800;
+  --letter-spacing-button-large: -0.5px;
+
+  /* Screen breakpoints */
+  --screen-sm: 700px;
+  --screen-md: 924px;
+  --screen-lg: 1100px;
+  --screen-xl: 1320px;
+  --screen-2xl: 1536px;
+
+  /* Animations */
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(130.86deg, rgba(19, 19, 19, 0.5) 15.53%, rgba(254, 137, 31, 0.175) 79.38%);
+
+  /* Blur */
+  --blur-60: 60px;
+
+  /* Theme colors */
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +137,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-display);
 }
