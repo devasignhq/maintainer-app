@@ -1,3 +1,4 @@
+import { BalanceLineNative, BalanceLineAsset } from "./crypto.model";
 import { ProjectDto } from "./project.model";
 import { TaskDto } from "./task.model";
 
@@ -5,7 +6,7 @@ export type UserDto = {
     userId: string;
     username: string;
     walletAddress: string;
-    addressBook: AddressBook[];
+    addressBook?: AddressBook[];
     createdAt: string;
     updatedAt: string;
     
@@ -13,6 +14,7 @@ export type UserDto = {
     createdTasks?: TaskDto[];
     contributedTasks?: TaskDto[];
     projects?: ProjectDto[];
+    assets?: (BalanceLineNative | BalanceLineAsset)[];
 }
 
 export type AddressBook = {

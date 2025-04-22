@@ -12,6 +12,15 @@ export type ProjectDto = {
     
     tasks?: TaskDto[];
     users?: UserDto[];
+    stats?: ProjectStats;
+}
+
+export type ProjectStats = {
+    totalBounty: number;
+    openTasks: number;
+    completedTasks: number;
+    totalTasks: number;
+    totalMembers: number;
 }
 
 export type CreateProjectDto = {
@@ -24,6 +33,11 @@ export type UpdateProjectDto = {
 
 export type AddTeamMembersDto = {
     githubUsernames: string[];
+}
+
+export type AddTeamMembersResponseDto = {
+    username: string;
+    status: string;
 }
 
 export type GetProjectIssues = {

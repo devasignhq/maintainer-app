@@ -1,4 +1,4 @@
-import { useLockFn, useAsyncEffect } from 'ahooks';
+import { useLockFn, useAsyncEffect, clearCache } from 'ahooks';
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GithubAuthProvider, User } from 'firebase/auth';
 import { useRouter } from "next/navigation";
@@ -32,15 +32,12 @@ export async function getCurrentUser() {
 
 export function useLogoutUser() {
     const router = useRouter();
-    // const { clearStore } = useActiveStore();
 
     const logoutUser = useLockFn(async () => {
         try {
             await auth.signOut();
 
-            // clearCache("");
-            // clearStore();
-
+            clearCache("");
             router.push("/sign-in");
         } catch(error) {
             console.log(error)
