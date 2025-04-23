@@ -1,9 +1,7 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
-:root {
+@theme {
   --font-display: "Satoshi", "sans-serif";
-  --breakpoint-3xl: 120rem;
 
   /* Primary colors */
   --color-primary-100: #FE891F;
@@ -30,112 +28,99 @@
   --color-indicator-500: #FF614D;
   
   /* Font sizes */
-  --font-size-display-large: 32px;
-  --line-height-display-large: 1.5;
-  --font-weight-display-large: 500;
-  --letter-spacing-display-large: -2px;
+  --text-display-large: 32px;
+  --text-display-large--line-height: 1.5;
+  --text-display-large--font-weight: 500;
+  --text-display-large--letter-spacing: -2px;
 
-  --font-size-display-medium: 32px;
-  --line-height-display-medium: 1.5;
-  --font-weight-display-medium: 300;
-  --letter-spacing-display-medium: -2px;
+  --text-display-medium: 32px;
+  --text-display-medium--line-height: 1.5;
+  --text-display-medium--font-weight: 300;
+  --text-display-medium--letter-spacing: -2px;
 
-  --font-size-display-small: 24px;
-  --line-height-display-small: 1.5;
-  --font-weight-display-small: 800;
-  --letter-spacing-display-small: -1px;
+  --text-display-small: 24px;
+  --text-display-small--line-height: 1.5;
+  --text-display-small--font-weight: 800;
+  --text-display-small--letter-spacing: -1px;
 
-  --font-size-headline-large: 22px;
-  --line-height-headline-large: 1.5;
-  --font-weight-headline-large: 400;
-  --letter-spacing-headline-large: -1px;
+  --text-headline-large: 22px;
+  --text-headline-large--line-height: 1.5;
+  --text-headline-large--font-weight: 400;
+  --text-headline-large--letter-spacing: -1px;
 
-  --font-size-headline-medium: 20px;
-  --line-height-headline-medium: 1.5;
-  --font-weight-headline-medium: 700;
-  --letter-spacing-headline-medium: -1px;
+  --text-headline-medium: 20px;
+  --text-headline-medium--line-height: 1.5;
+  --text-headline-medium--font-weight: 700;
+  --text-headline-medium--letter-spacing: -1px;
 
-  --font-size-headline-small: 16px;
-  --line-height-headline-small: 1.5;
-  --font-weight-headline-small: 800;
-  --letter-spacing-headline-small: -0.5px;
+  --text-headline-small: 16px;
+  --text-headline-small--line-height: 1.5;
+  --text-headline-small--font-weight: 800;
+  --text-headline-small--letter-spacing: -0.5px;
 
-  --font-size-title-large: 16px;
-  --line-height-title-large: 1.5;
-  --font-weight-title-large: 400;
-  --letter-spacing-title-large: -0.5px;
+  --text-title-large: 16px;
+  --text-title-large--line-height: 1.5;
+  --text-title-large--font-weight: 400;
+  --text-title-large--letter-spacing: -0.5px;
 
-  --font-size-table-header: 14px;
-  --line-height-table-header: 14px;
-  --font-weight-table-header: 700;
-  --letter-spacing-table-header: -0.5px;
+  --text-table-header: 14px;
+  --text-table-header--line-height: 14px;
+  --text-table-header--font-weight: 700;
+  --text-table-header--letter-spacing: -0.5px;
 
-  --font-size-table-content: 14px;
-  --line-height-table-content: 14px;
-  --font-weight-table-content: 500;
-  --letter-spacing-table-content: -0.5px;
+  --text-table-content: 14px;
+  --text-table-content--line-height: 14px;
+  --text-table-content--font-weight: 500;
+  --text-table-content--letter-spacing: -0.5px;
 
-  --font-size-body-large: 16px;
-  --line-height-body-large: 24px;
-  --font-weight-body-large: 400;
-  --letter-spacing-body-large: -0.5px;
+  --text-body-large: 16px;
+  --text-body-large--line-height: 24px;
+  --text-body-large--font-weight: 400;
+  --text-body-large--letter-spacing: -0.5px;
 
-  --font-size-body-medium: 14px;
-  --line-height-body-medium: 20px;
-  --font-weight-body-medium: 400;
-  --letter-spacing-body-medium: -0.5px;
+  --text-body-medium: 14px;
+  --text-body-medium--line-height: 20px;
+  --text-body-medium--font-weight: 400;
+  --text-body-medium--letter-spacing: -0.5px;
 
-  --font-size-body-small: 14px;
-  --line-height-body-small: 14px;
-  --font-weight-body-small: 400;
-  --letter-spacing-body-small: -0.5px;
+  --text-body-small: 14px;
+  --text-body-small--line-height: 14px;
+  --text-body-small--font-weight: 400;
+  --text-body-small--letter-spacing: -0.5px;
 
-  --font-size-body-tiny: 12px;
-  --line-height-body-tiny: 16px;
-  --font-weight-body-tiny: 400;
-  --letter-spacing-body-tiny: -0.5px;
+  --text-body-tiny: 12px;
+  --text-body-tiny--line-height: 16px;
+  --text-body-tiny--font-weight: 400;
+  --text-body-tiny--letter-spacing: -0.5px;
 
-  --font-size-body-micro: 10px;
-  --line-height-body-micro: 16px;
-  --font-weight-body-micro: 500;
-  --letter-spacing-body-micro: 0px;
+  --text-body-micro: 10px;
+  --text-body-micro--line-height: 16px;
+  --text-body-micro--font-weight: 500;
+  --text-body-micro--letter-spacing: 0px;
 
-  --font-size-button-large: 14px;
-  --line-height-button-large: 14px;
-  --font-weight-button-large: 800;
-  --letter-spacing-button-large: -0.5px;
+  --text-button-large: 14px;
+  --text-button-large--line-height: 14px;
+  --text-button-large--font-weight: 800;
+  --text-button-large--letter-spacing: -0.5px;
 
   /* Screen breakpoints */
-  --screen-sm: 700px;
-  --screen-md: 924px;
-  --screen-lg: 1100px;
-  --screen-xl: 1320px;
-  --screen-2xl: 1536px;
+  --breakpoint-sm: 43rem;
+  --breakpoint-md: 57rem;
+  --breakpoint-lg: 69rem;
+  --breakpoint-xl: 82.5rem;
+  --breakpoint-2xl: 96rem;
 
   /* Animations */
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
 
   /* Gradients */
-  --gradient-primary: linear-gradient(130.86deg, rgba(19, 19, 19, 0.5) 15.53%, rgba(254, 137, 31, 0.175) 79.38%);
+  --background-gradient-primary: linear-gradient(130.86deg, rgba(19, 19, 19, 0.5) 15.53%, rgba(254, 137, 31, 0.175) 79.38%);
 
   /* Blur */
   --blur-60: 60px;
 
   /* Theme colors */
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-display);
+  /* --background: #ffffff;
+  --foreground: #171717; */
 }
