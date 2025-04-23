@@ -2,7 +2,7 @@ const preset = {
     USER: "/users",
     PROJECT: "/projects",
     TASK: "/tasks",
-    CRYPTO: "/crypto",
+    WALLET: "/wallet",
 };
 
 export const ENDPOINTS = {
@@ -38,9 +38,9 @@ export const ENDPOINTS = {
         ADD_COMMENT: preset.TASK + "/{taskId}/comments",
         UPDATE_COMMENT: preset.TASK + "/{taskId}/comments/{commentId}",
     },
-    CRYPTO: {
-        GET_WALLET: preset.CRYPTO + "/wallet",
-        WITHDRAW: preset.CRYPTO + "/withdraw",
-        SWAP: preset.CRYPTO + "/swap",
+    WALLET: {
+        GET_WALLET: preset.WALLET + "/wallet",
+        WITHDRAW: preset.WALLET + "/withdraw",
+        SWAP: preset.WALLET + "/swap",
     },
 };

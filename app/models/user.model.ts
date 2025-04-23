@@ -1,4 +1,4 @@
-import { BalanceLineNative, BalanceLineAsset } from "./crypto.model";
+import { BalanceLineNative, BalanceLineAsset } from "./wallet.model";
 import { ProjectDto } from "./project.model";
 import { TaskDto } from "./task.model";
 
