@@ -1,8 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Satoshi", "sans-serif";
-
   /* Primary colors */
   --color-primary-100: #FE891F;
   --color-primary-200: #FE891F59;
@@ -114,13 +112,66 @@
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
 
-  /* Gradients */
-  --background-gradient-primary: linear-gradient(130.86deg, rgba(19, 19, 19, 0.5) 15.53%, rgba(254, 137, 31, 0.175) 79.38%);
-
   /* Blur */
   --blur-60: 60px;
+}
 
-  /* Theme colors */
-  /* --background: #ffffff;
-  --foreground: #171717; */
+* {
+  /* margin: 0; */
+  /* padding: 0; */
+  box-sizing: border-box;
+  transition: all 0.2s linear;
+  line-height: normal;
+  scroll-behavior: smooth;
+}
+
+.transition-01 {
+  transition: all 0.1s linear;
+}
+.transition-none {
+  transition: all 0s linear;
+}
+
+body {
+  @apply bg-dark-500 h-[100dvh] w-screen overflow-x-hidden
+}
+
+.app-container {
+  @apply max-sm:px-5 xl:w-[92%] max-xl:w-[90%] max-sm:w-full max-w-[1546px] mx-auto
+}
+.app-container-2 {
+  @apply max-sm:px-5 xl:w-[92%] max-xl:w-[90%] max-sm:w-full max-w-[1300px] mx-auto
+}
+
+button:disabled {
+  @apply opacity-60 cursor-not-allowed
+}
+input:disabled {
+  @apply opacity-80 cursor-not-allowed
+}
+
+.auth-gradient {
+  background: linear-gradient(130.86deg, rgba(19, 19, 19, 0.5) 15.53%, rgba(254, 137, 31, 0.175) 79.38%);
+}
+
+/* form input {
+  @apply h-[52px] w-full px-5 py-[15px] rounded-[40px] border border-primary-200 
+  text-primary-200 placeholder:text-neutral-300 text-b6-small focus:outline-none
+}
+form textarea {
+  @apply sm:h-[152px] h-[200px] w-full px-5 py-[15px] rounded-[20px] border border-primary-200 
+  text-primary-200 placeholder:text-neutral-300 text-b6-small focus:outline-none
+} */
+
+.opacity-animation {
+  animation: opacityAnimation 0.7s ease 0s 1 normal forwards;
+}
+
+@keyframes opacityAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
