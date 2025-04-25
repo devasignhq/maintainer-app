@@ -27,37 +27,37 @@
   
   /* Font sizes */
   --text-display-large: 32px;
-  --text-display-large--line-height: 1.5;
+  --text-display-large--line-height: "100%";
   --text-display-large--font-weight: 500;
   --text-display-large--letter-spacing: -2px;
 
   --text-display-medium: 32px;
-  --text-display-medium--line-height: 1.5;
+  --text-display-medium--line-height: "100%";
   --text-display-medium--font-weight: 300;
   --text-display-medium--letter-spacing: -2px;
 
   --text-display-small: 24px;
-  --text-display-small--line-height: 1.5;
+  --text-display-small--line-height: "100%";
   --text-display-small--font-weight: 800;
   --text-display-small--letter-spacing: -1px;
 
   --text-headline-large: 22px;
-  --text-headline-large--line-height: 1.5;
+  --text-headline-large--line-height: "100%";
   --text-headline-large--font-weight: 400;
   --text-headline-large--letter-spacing: -1px;
 
   --text-headline-medium: 20px;
-  --text-headline-medium--line-height: 1.5;
+  --text-headline-medium--line-height: "100%";
   --text-headline-medium--font-weight: 700;
   --text-headline-medium--letter-spacing: -1px;
 
   --text-headline-small: 16px;
-  --text-headline-small--line-height: 1.5;
+  --text-headline-small--line-height: "100%";
   --text-headline-small--font-weight: 800;
   --text-headline-small--letter-spacing: -0.5px;
 
   --text-title-large: 16px;
-  --text-title-large--line-height: 1.5;
+  --text-title-large--line-height: "100%";
   --text-title-large--font-weight: 400;
   --text-title-large--letter-spacing: -0.5px;
 
