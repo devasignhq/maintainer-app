@@ -6,7 +6,7 @@ const Account = () => {
     return (
         <div className="pt-[105px]">
             <h1 className="text-display-large text-light-100">Get Started</h1>
-            <p className="text-body-medium text-dark-100 py-10">
+            <p className="text-body-medium text-dark-100 pt-[42px] pb-10">
                 Login with your GitHub account to access your public <br />
                 repositories and import your issues/tasks to DevAsign. After <br />
                 importing, you can add bounties and manage contributor <br />

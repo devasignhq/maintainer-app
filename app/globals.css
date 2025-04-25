@@ -153,6 +153,9 @@ input:disabled {
 .auth-gradient {
   background: linear-gradient(130.86deg, rgba(19, 19, 19, 0.5) 15.53%, rgba(254, 137, 31, 0.175) 79.38%);
 }
+.auth-gradient-dev {
+  background: linear-gradient(130.86deg, rgba(19, 19, 19, 0.5) 15.53%, rgba(42, 42, 42, 0.5) 79.38%);
+}
 
 /* form input {
   @apply h-[52px] w-full px-5 py-[15px] rounded-[40px] border border-primary-200 
