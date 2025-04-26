@@ -15,7 +15,7 @@ const SubscriptionPlan = () => {
     return (
         <div className="pt-[105px]">
             <h1 className="text-display-large text-light-100 pb-[42px]">
-                Hello, <span className="text-light-200">{" "}lenny_malcolm</span> 👋
+                Hello, <span className="text-light-200">{" "}lenny_malcolm{" "}</span> 👋
             </h1>
             <h1 className="text-headline-medium text-light-200 pb-[15px]">
                 Manage Contributors
@@ -41,7 +41,6 @@ const SubscriptionPlan = () => {
                 attributes={{
                     onClick: () => {},
                 }}
-                extendedClassName="font-black"
             />
         </div>
     );

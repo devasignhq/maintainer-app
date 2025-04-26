@@ -21,7 +21,7 @@ const ButtonSecondary = ({
             {...attributes}
         >
             <span>{text}</span>
-            <span className="text-base">{sideItem}</span>
+            <span className="text-base leading-[1]">{sideItem}</span>
         </button>
     );
 }

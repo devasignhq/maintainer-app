@@ -19,7 +19,7 @@ const Account = () => {
                 attributes={{
                     onClick: () => {},
                 }}
-                extendedClassName="font-black w-[264px]"
+                extendedClassName="w-[264px]"
             />
         </div>
     );

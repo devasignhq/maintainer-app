@@ -3,6 +3,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 export const ROUTES = {
     ACCOUNT: "/authenticate/account",
     SUBSCRIPTION_PLAN: "/authenticate/subscription-plan",
+    ONBOARDING: "/onboarding",
     OVERVIEW: "/overview",
     TASKS: "/tasks",
     CONTRIBUTORS: "/contributors",
