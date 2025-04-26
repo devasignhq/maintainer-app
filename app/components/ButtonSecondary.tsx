@@ -16,7 +16,7 @@ const ButtonSecondary = ({
 }: ButtonSecondaryProps) => {
     return (
         <button 
-            className={twMerge(`cursor-primary text-body-micro p-2.5 flex items-center justify-center gap-1.5 
+            className={twMerge(`text-body-micro p-2.5 flex items-center justify-center gap-1.5 
                 bg-dark-400 text-light-100 hover:bg-light-100 hover:text-dark-500`, extendedClassName)}
             {...attributes}
         >

@@ -143,6 +143,9 @@ body {
   @apply max-sm:px-5 xl:w-[92%] max-xl:w-[90%] max-sm:w-full max-w-[1300px] mx-auto
 }
 
+button {
+  @apply cursor-pointer
+}
 button:disabled {
   @apply opacity-60 cursor-not-allowed
 }
@@ -177,4 +180,26 @@ form textarea {
   100% {
     opacity: 1;
   }
+}
+
+.draft-box {
+  position: relative;
+  background-color: #131313; /* dark-400 color */
+}
+
+.draft-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1px;
+  background: linear-gradient(127.31deg, rgba(254, 137, 31, 0.15) 11.61%, #000000 86.4%);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }

@@ -28,7 +28,7 @@ export default function MainLayout({
                     </button>
                 </div>
             </section>
-            {currentPath !== ROUTES.ONBOARDING && (
+            {!currentPath.includes(ROUTES.ONBOARDING) && (
                 <nav className="w-full flex items-center gap-[15px] border-b border-dark-200 text-title-large text-dark-200 mt-[15px]">
                     {navItems.map((item) => (
                         <Link

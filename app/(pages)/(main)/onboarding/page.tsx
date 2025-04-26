@@ -15,7 +15,7 @@ const Onboarding = () => {
                 </span> 👋
             </h1>
             <div className="flex gap-[30px] mt-10 mb-[30px]">
-                <div className="p-5 border border-primary-200">
+                <div className="w-full p-5 border border-primary-200">
                     <h6 className="text-headline-small font-black text-light-200 pb-2.5">Connect Project Repository</h6>
                     <p className="text-body-medium text-dark-100 mb-[30px]">
                         Enter your project GitHub public repository URL to import your project tasks (issues).
@@ -40,7 +40,7 @@ const Onboarding = () => {
                         />
                     </div>
                 </div>
-                <div className="p-5 border border-primary-200">
+                <div className="w-full p-5 border border-primary-200">
                     <h6 className="text-headline-small font-black text-light-100 pb-2.5">Fund Wallet</h6>
                     <p className="text-body-medium text-dark-100 mb-[30px]">
                         Top-up wallet to can add bounties and manage contributor payouts seamlessly.
@@ -60,6 +60,19 @@ const Onboarding = () => {
                         />
                     </div>
                 </div>
+            </div>
+            <div className="w-full draft-box py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
+                <p className="flex items-center gap-[5px] text-title-large text-light-100">
+                    <span>Draft - Issues Found</span>
+                    <span className="px-[5px] text-body-medium font-bold text-dark-500 bg-primary-100">14</span>
+                </p>
+                <button 
+                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-black hover:text-light-100"
+                    onClick={() => {}}
+                >
+                    <span>Continue</span>
+                    <FiArrowUpRight className="text-2xl" />
+                </button>
             </div>
             <div className="w-full p-10 border border-primary-200 flex items-center justify-between gap-10 
                 bg-[linear-gradient(130.86deg,_rgba(0,_26,_37,_0.5)_15.53%,_rgba(163,_82,_7,_0.5)_79.38%)]"
@@ -89,7 +102,7 @@ const Onboarding = () => {
                 </div>
                 <p className="text-body-tiny text-light-100">
                     Backed by Stellar Community Fund (SCF). We’re the infrastructure 
-                    owering fair compensation for open-source contribution.
+                    owering fair <br /> compensation for open-source contribution.
                 </p>
             </div>
         </div>
