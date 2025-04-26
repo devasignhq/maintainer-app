@@ -4,6 +4,7 @@ import { FaGithub } from 'react-icons/fa6';
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight } from 'react-icons/fi';
 import { HiPlus } from 'react-icons/hi';
+import PopupModalLayout from '@/app/components/PopupModalLayout';
 
 const Onboarding = () => {
     return (
@@ -61,7 +62,7 @@ const Onboarding = () => {
                     </div>
                 </div>
             </div>
-            <div className="w-full draft-box py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
+            <div className="w-full draft-box relative py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
                 <p className="flex items-center gap-[5px] text-title-large text-light-100">
                     <span>Draft - Issues Found</span>
                     <span className="px-[5px] text-body-medium font-bold text-dark-500 bg-primary-100">14</span>
@@ -105,6 +106,7 @@ const Onboarding = () => {
                     owering fair <br /> compensation for open-source contribution.
                 </p>
             </div>
+            {/* <PopupModalLayout /> */}
         </div>
     );
 }

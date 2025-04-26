@@ -182,20 +182,15 @@ form textarea {
   }
 }
 
-.draft-box {
-  position: relative;
-  background-color: #131313; /* dark-400 color */
-}
-
-.draft-box::before {
+.draft-box::before, 
+.popup-modal::before,
+.popup-modal .close-btn::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 1px;
-  background: linear-gradient(127.31deg, rgba(254, 137, 31, 0.15) 11.61%, #000000 86.4%);
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
     linear-gradient(#fff 0 0);
@@ -203,3 +198,15 @@ form textarea {
   mask-composite: exclude;
   pointer-events: none;
 }
+
+.draft-box::before,
+.popup-modal .close-btn::before {
+  padding: 1px;
+  background: linear-gradient(to right bottom, rgba(254, 137, 31, 0.15) 61.61%, #000000 86.4%);
+}
+
+.popup-modal::before {
+  padding: 5px;
+  background: linear-gradient(to right bottom, rgba(254, 137, 31, 0.175) 65.53%, rgba(254, 137, 31, 0.195) 89.38%);
+}
+
