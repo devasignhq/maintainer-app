@@ -123,6 +123,22 @@
   transition: all 0.2s linear;
   line-height: normal;
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-dark-300) var(--color-dark-400);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FFFFFF1A;
+}
+::-webkit-scrollbar-thumb {
+  background: #414141;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dark-100);
 }
 
 .transition-01 {
@@ -184,7 +200,8 @@ form textarea {
 
 .draft-box::before, 
 .popup-modal::before,
-.popup-modal .close-btn::before {
+.popup-modal .close-btn::before,
+.filter-dropdown-box::before {
   content: "";
   position: absolute;
   top: 0;
@@ -200,7 +217,8 @@ form textarea {
 }
 
 .draft-box::before,
-.popup-modal .close-btn::before {
+.popup-modal .close-btn::before,
+.filter-dropdown-box::before {
   padding: 1px;
   background: linear-gradient(to right bottom, rgba(254, 137, 31, 0.15) 61.61%, #000000 86.4%);
 }
