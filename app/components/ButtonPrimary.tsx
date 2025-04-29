@@ -22,7 +22,7 @@ const ButtonPrimary = ({
                 flex items-center justify-center gap-[5px] whitespace-nowrap
                 ${format === "SOLID"
                     ? "bg-primary-100 text-dark-500"
-                    : "border border-primary-100 text-primary-100 hover:border-none"}
+                    : "border border-primary-100 text-primary-100 hover:border-light-100"}
             `, extendedClassName)}
             {...attributes}
         >

@@ -5,9 +5,13 @@ import PopupModalLayout from "../PopupModalLayout";
 import FilterDropdown from "../Dropdown/Filter";
 import CreateTaskCard from "./CreateTaskCard";
 
-const ImportTaskModal = () => {
+type ImportTaskModalProps = {
+    toggleModal: () => void;
+};
+
+const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
     return (
-        <PopupModalLayout title="Import from GitHub Issues" toggleModal={() => {}}>
+        <PopupModalLayout title="Import from GitHub Issues" toggleModal={toggleModal}>
             <p className="text-body-medium">
                 <span className="text-light-200">Repository URL:{" "}</span>
                 <span className="text-dark-100">https://github.com/browser-use/browser-use/</span>

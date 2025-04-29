@@ -5,8 +5,13 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight } from 'react-icons/fi';
 import { HiPlus } from 'react-icons/hi';
 import ImportTaskModal from '@/app/components/ImportTaskModal';
+import { useToggle } from 'ahooks';
+import FundWallet from '@/app/components/FundWallet';
 
 const Onboarding = () => {
+    const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
+    const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
+
     return (
         <div className="w-[840px] mt-[65px] mx-auto">
             <h1 className="text-display-large text-light-100">
@@ -35,7 +40,7 @@ const Onboarding = () => {
                             text="Import"
                             sideItem={<FiArrowUpRight />}
                             attributes={{
-                                onClick: () => {},
+                                onClick: toggleImportTaskModal,
                             }}
                             extendedClassName="bg-light-200 hover:bg-light-100"
                         />
@@ -56,7 +61,7 @@ const Onboarding = () => {
                             text="Top Up"
                             sideItem={<HiPlus />}
                             attributes={{
-                                onClick: () => {},
+                                onClick: toggleFundWalletModal,
                             }}
                         />
                     </div>
@@ -106,7 +111,9 @@ const Onboarding = () => {
                     owering fair <br /> compensation for open-source contribution.
                 </p>
             </div>
-            <ImportTaskModal />
+
+            {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
+            {openFundWalletModal && <FundWallet toggleModal={toggleFundWalletModal} />}
         </div>
     );
 }
