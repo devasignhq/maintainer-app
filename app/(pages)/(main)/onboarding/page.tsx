@@ -4,7 +4,7 @@ import { FaGithub } from 'react-icons/fa6';
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight } from 'react-icons/fi';
 import { HiPlus } from 'react-icons/hi';
-import PopupModalLayout from '@/app/components/PopupModalLayout';
+import ImportTaskModal from '@/app/components/ImportTaskModal';
 
 const Onboarding = () => {
     return (
@@ -106,7 +106,7 @@ const Onboarding = () => {
                     owering fair <br /> compensation for open-source contribution.
                 </p>
             </div>
-            {/* <PopupModalLayout /> */}
+            <ImportTaskModal />
         </div>
     );
 }

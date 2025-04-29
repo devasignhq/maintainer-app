@@ -162,6 +162,9 @@ body {
 button {
   @apply cursor-pointer
 }
+input {
+  @apply focus:outline-none focus:border-light-200
+}
 button:disabled {
   @apply opacity-60 cursor-not-allowed
 }
@@ -201,7 +204,7 @@ form textarea {
 .draft-box::before, 
 .popup-modal::before,
 .popup-modal .close-btn::before,
-.filter-dropdown-box::before {
+.dropdown-box::before {
   content: "";
   position: absolute;
   top: 0;
@@ -218,7 +221,7 @@ form textarea {
 
 .draft-box::before,
 .popup-modal .close-btn::before,
-.filter-dropdown-box::before {
+.dropdown-box::before {
   padding: 1px;
   background: linear-gradient(to right bottom, rgba(254, 137, 31, 0.15) 61.61%, #000000 86.4%);
 }
