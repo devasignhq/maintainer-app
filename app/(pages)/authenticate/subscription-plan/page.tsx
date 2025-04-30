@@ -2,7 +2,7 @@
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { SubscriptionPlanDto } from "@/app/models/subscription-plan.model";
 import { BsLayers } from "react-icons/bs";
-import { FiArrowUpRight, FiLayers, FiZap } from "react-icons/fi";
+import { FiArrowRight, FiLayers, FiZap } from "react-icons/fi";
 import SubscriptionCard from "./SubscriptionCard";
 
 const SubscriptionPlan = () => {
@@ -37,7 +37,7 @@ const SubscriptionPlan = () => {
             <ButtonPrimary
                 format="SOLID"
                 text="Get Started"
-                sideItem={<FiArrowUpRight />}
+                sideItem={<FiArrowRight />}
                 attributes={{
                     onClick: () => {},
                 }}

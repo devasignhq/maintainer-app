@@ -162,7 +162,7 @@ body {
 button {
   @apply cursor-pointer
 }
-input {
+input, textarea {
   @apply focus:outline-none focus:border-light-200
 }
 button:disabled {
