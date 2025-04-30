@@ -2,8 +2,8 @@
 import { FiArrowUpRight } from "react-icons/fi";
 import ButtonPrimary from "./ButtonPrimary";
 import PopupModalLayout from "./PopupModalLayout";
-import { LuCopy } from "react-icons/lu";
 import { QRCodeCanvas } from "qrcode.react";
+import CopyButton from "./CopyButton";
 
 type FundWalletProps = {
     toggleModal: () => void;
@@ -53,7 +53,7 @@ const FundWallet = ({ toggleModal }: FundWalletProps) => {
                             <span className="font-bold text-light-200">Address:</span>
                             <span className="text-light-100 truncate">{" "}GDMLXK2WH3G456UUXVZPV5Y2KIHN2ZXXIJVKT7ZWPKGVFDQKFFRQL7HK</span>
                         </p>
-                        <LuCopy className="text-2xl text-dark-100 hover:text-light-100" />
+                        <CopyButton text="GDMLXK2WH3G456UUXVZPV5Y2KIHN2ZXXIJVKT7ZWPKGVFDQKFFRQL7HK" />
                     </div>
                 </div>
             </section>
@@ -66,7 +66,7 @@ const FundWallet = ({ toggleModal }: FundWalletProps) => {
                     <p className="text-body-tiny font-bold text-primary-400">Contract Address:</p>
                     <div className="flex items-center gap-[5px]">
                         <p className="max-w-[145px] text-body-tiny text-light-200 truncate">CBJE2GX5BTM4VWE7R2Q7AOCLMMYFPK722QTHWCRFUPSFPC5XGNMHOR6N</p>
-                        <LuCopy className="text-2xl text-dark-100 hover:text-light-100" />
+                        <CopyButton text="GDMLXK2WH3G456UUXVZPV5Y2KIHN2ZXXIJVKT7ZWPKGVFDQKFFRQL7HK" />
                     </div>
                 </div>
             </section>
