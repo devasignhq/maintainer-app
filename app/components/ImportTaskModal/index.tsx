@@ -1,21 +1,75 @@
 "use client";
-import { FiSearch, FiArrowUpRight, FiArrowRight } from "react-icons/fi";
+import { FiSearch, FiArrowRight } from "react-icons/fi";
 import ButtonPrimary from "../ButtonPrimary";
 import PopupModalLayout from "../PopupModalLayout";
 import FilterDropdown from "../Dropdown/Filter";
 import CreateTaskCard from "./CreateTaskCard";
+import { HiPlus } from "react-icons/hi";
+import RepoMenuCard from "./RepoMenuCard";
+import { useState } from "react";
 
 type ImportTaskModalProps = {
     toggleModal: () => void;
 };
 
+type Repository = {
+    id: string;
+    repoName: string;
+    repoUrl: string;
+    issuesCount: number;
+};
+
+const sampleRepositories: Repository[] = [
+    {
+        id: "1",
+        repoName: "DevAsign/app-pm",
+        repoUrl: "https://github.com/DevAsign/app-pm",
+        issuesCount: 14
+    },
+    {
+        id: "2",
+        repoName: "DevAsign/core",
+        repoUrl: "https://github.com/DevAsign/core",
+        issuesCount: 8
+    },
+    {
+        id: "3",
+        repoName: "DevAsign/docs",
+        repoUrl: "https://github.com/DevAsign/docs",
+        issuesCount: 5
+    }
+];
+
 const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
+    const [activeRepoId, setActiveRepoId] = useState(sampleRepositories[0].id);
+    
     return (
         <PopupModalLayout title="Import from GitHub Issues" toggleModal={toggleModal}>
-            <p className="text-body-medium">
-                <span className="text-light-200">Repository URL:{" "}</span>
-                <span className="text-dark-100">https://github.com/browser-use/browser-use/</span>
-            </p>
+            <section className="mt-[15px] space-y-2.5">
+                <p className="text-body-medium text-light-200">Repository URL(s)</p>
+                <div className="flex items-end justify-between gap-2.5">
+                    <div className="w-full border-b border-dark-200 flex gap-[15px] overflow-x-auto">
+                        {sampleRepositories.map((repo) => (
+                            <RepoMenuCard
+                                key={repo.id}
+                                repoName={repo.repoName}
+                                repoUrl={repo.repoUrl}
+                                active={activeRepoId === repo.id}
+                                onClick={() => setActiveRepoId(repo.id)}
+                            />
+                        ))}
+                    </div>
+                    <ButtonPrimary
+                        format="SOLID"
+                        text="Add Repo"
+                        sideItem={<HiPlus />}
+                        attributes={{
+                            onClick: () => {},
+                        }}
+                        extendedClassName="h-full bg-light-200 hover:bg-light-100"
+                    />
+                </div>
+            </section>
             <section className="my-[30px] flex items-center gap-2.5">
                 <div className="h-full w-full relative">
                     <FiSearch className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />
@@ -29,14 +83,9 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                     title="Labels"
                     options={["bug", "feature", "enhancement", "question"]}
                 />
-                <ButtonPrimary
-                    format="SOLID"
-                    text="Update Repo"
-                    sideItem={<FiArrowUpRight />}
-                    attributes={{
-                        onClick: () => {},
-                    }}
-                    extendedClassName="h-full bg-light-200 hover:bg-light-100"
+                <FilterDropdown 
+                    title="Milestones"
+                    options={["Q1", "Launch", "Dragon V2"]}
                 />
             </section>
             <section className="flex items-end justify-between">

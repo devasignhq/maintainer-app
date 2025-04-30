@@ -29,7 +29,7 @@ const FilterDropdown = ({ title, options }: FilterDropdownProps) => {
     useClickAway(() => toggle(), [buttonRef, dropdownRef]);
 
     return (
-        <div className="relative">
+        <div className="relative whitespace-nowrap">
             <button 
                 ref={buttonRef}
                 className="p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]"

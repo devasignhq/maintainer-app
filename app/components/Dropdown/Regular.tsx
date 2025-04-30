@@ -52,7 +52,7 @@ const RegularDropdown = ({ defaultValue, options, onChange }: RegularDropdownPro
                                 ) : (
                                     <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
                                 )}
-                                <span className="text-body-small text-light-100">{option}</span>
+                                <span className="text-body-small text-light-100 whitespace-nowrap">{option}</span>
                             </li>
                         ))}
                     </ul>
