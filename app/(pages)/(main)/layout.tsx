@@ -14,7 +14,7 @@ export default function MainLayout({
     const checkPath = (path: string) => currentPath.includes(path);
 
     return (
-        <main className="h-full w-full px-[6.75%]">
+        <main className="h-full w-full px-[6.75%] flex flex-col">
             <section className="pt-5 flex items-center justify-between">
                 <img src="/davasign-logo.svg" alt="DevAsign" className="h-auto w-auto" />
                 <div className="flex items-center gap-2.5 text-light-100">
@@ -45,9 +45,8 @@ export default function MainLayout({
                     ))}
                 </nav>
             )}
-            <section className="">
-                {children}
-            </section>
+              
+            {children}
         </main>
     );
 }

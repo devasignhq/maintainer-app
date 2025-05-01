@@ -73,7 +73,7 @@ const Onboarding = () => {
                     <span className="px-[5px] text-body-medium font-bold text-dark-500 bg-primary-100">14</span>
                 </p>
                 <button 
-                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-black hover:text-light-100"
+                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
                     onClick={() => {}}
                 >
                     <span>Continue</span>
