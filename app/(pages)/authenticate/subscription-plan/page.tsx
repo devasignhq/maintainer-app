@@ -2,7 +2,7 @@
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { SubscriptionPlanDto } from "@/app/models/subscription-plan.model";
 import { BsLayers } from "react-icons/bs";
-import { FiArrowRight, FiLayers, FiZap } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiLayers, FiZap } from "react-icons/fi";
 import SubscriptionCard from "./SubscriptionCard";
 
 const SubscriptionPlan = () => {
@@ -13,7 +13,13 @@ const SubscriptionPlan = () => {
     ]
 
     return (
-        <div className="pt-[105px]">
+        <>
+            <button 
+                className="gradient-border-btn relative p-2.5 bg-dark-400 text-light-100 text-2xl my-[30px]"
+                onClick={() => {}}
+            >
+                <FiArrowLeft />
+            </button>
             <h1 className="text-display-large text-light-100 pb-[42px]">
                 Hello, <span className="text-light-200">{" "}lenny_malcolm{" "}</span> 👋
             </h1>
@@ -42,7 +48,7 @@ const SubscriptionPlan = () => {
                     onClick: () => {},
                 }}
             />
-        </div>
+        </>
     );
 }
  

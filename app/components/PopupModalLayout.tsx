@@ -18,7 +18,7 @@ const PopupModalLayout = ({
                         {title}
                     </h2>
                     <button 
-                        className="close-btn relative p-2.5 bg-dark-400 text-light-100 text-2xl"
+                        className="gradient-border-btn relative p-2.5 bg-dark-400 text-light-100 text-2xl"
                         onClick={toggleModal}
                     >
                         <IoMdClose />

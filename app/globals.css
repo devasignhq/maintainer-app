@@ -203,7 +203,7 @@ form textarea {
 
 .draft-box::before, 
 .popup-modal::before,
-.popup-modal .close-btn::before,
+.gradient-border-btn::before,
 .dropdown-box::before,
 .wallet-info::before {
   content: "";
@@ -221,7 +221,7 @@ form textarea {
 }
 
 .draft-box::before,
-.popup-modal .close-btn::before,
+.gradient-border-btn::before,
 .dropdown-box::before {
   padding: 1px;
   background: linear-gradient(to right bottom, rgba(254, 137, 31, 0.15) 61.61%, #000000 86.4%);
