@@ -9,6 +9,7 @@ import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "./components/TaskActivityCard";
 import Link from "next/link";
 import InputField from "@/app/components/InputField";
+import SetTaskBountyModal from "./modals/SetTaskBountyModal";
 
 const Tasks = () => {
     const [activeTaskId, setActiveTaskId] = useState("1");
@@ -25,7 +26,7 @@ const Tasks = () => {
                             name: "search",
                         }}
                         extendedContainerClassName="h-full w-full"
-                        extendedInputClassName="h-full"
+                        extendedInputClassName="h-full text-body-tiny text-light-100"
                     />
                     <FilterDropdown 
                         title="Labels"
@@ -154,6 +155,7 @@ const Tasks = () => {
             </section>
 
             {/* <ConnectRepositoryModal toggleModal={() => {}} /> */}
+            <SetTaskBountyModal toggleModal={() => {}} />
         </div>
     );
 }

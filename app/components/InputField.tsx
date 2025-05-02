@@ -1,18 +1,37 @@
 "use client";
 import { IconType } from "react-icons/lib";
 import { twMerge } from "tailwind-merge";
+import Image from 'next/image';
 
 type InputFieldProps = {
-    Icon: IconType;
+    Icon?: IconType;
+    imageSrc?: string;
+    imageAlt?: string;
     attributes?: React.InputHTMLAttributes<HTMLInputElement>;
     extendedInputClassName?: string;
     extendedContainerClassName?: string;
 }
 
-const InputField = ({ Icon, attributes, extendedInputClassName, extendedContainerClassName } : InputFieldProps) => {
+const InputField = ({ 
+    Icon, 
+    imageSrc, 
+    imageAlt,
+    attributes, 
+    extendedInputClassName, 
+    extendedContainerClassName 
+} : InputFieldProps) => {
     return (
         <div className={twMerge("relative w-full", extendedContainerClassName)}>
-            <Icon className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />
+            {Icon && <Icon className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />}
+            {imageSrc && (
+                <Image 
+                    src={imageSrc} 
+                    alt={imageAlt || ""}
+                    width={20}
+                    height={20}
+                    className="absolute top-1/2 -translate-y-1/2 left-2.5" 
+                />
+            )}
             <input
                 type="text"
                 className={twMerge(

@@ -13,7 +13,7 @@ const ConnectRepositoryModal = ({ toggleModal }: ConnectRepositoryModalProps) =>
     
     return (
         <PopupModalLayout title="Connect Project Repository" toggleModal={toggleModal}>
-            <p className="mt-2.5 text-body-medium text-dark-200">
+            <p className="mt-2.5 text-body-medium text-dark-100">
                 Enter your project GitHub public repository URL to import your project tasks (issues). 
                 After importing, you can add bounties and manage contributor payouts seamlessly.
             </p>

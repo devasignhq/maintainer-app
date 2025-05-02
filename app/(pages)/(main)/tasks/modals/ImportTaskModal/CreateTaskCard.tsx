@@ -32,7 +32,7 @@ const CreateTaskCard = ({ active }: CreateTaskCardProps) => {
                 <div className="relative">
                     <Image 
                         src="/usdc.svg" 
-                        alt="DevAsign" 
+                        alt="$" 
                         width={16}
                         height={16}
                         className="absolute top-1/2 -translate-y-1/2 left-2.5" 
