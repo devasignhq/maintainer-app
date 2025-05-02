@@ -3,7 +3,7 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { SubscriptionPlanDto } from "@/app/models/subscription-plan.model";
 import { BsLayers } from "react-icons/bs";
 import { FiArrowLeft, FiArrowRight, FiLayers, FiZap } from "react-icons/fi";
-import SubscriptionCard from "./SubscriptionCard";
+import SubscriptionCard from "./components/SubscriptionCard";
 
 const SubscriptionPlan = () => {
     const cardIcons: React.ReactNode[] = [
