@@ -7,9 +7,11 @@ import { useState } from "react";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "./components/TaskActivityCard";
+import Link from "next/link";
 
 const Tasks = () => {
     const [activeTaskId, setActiveTaskId] = useState("1");
+    const [activeView, setActiveView] = useState(viewOptions[0]);
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">
@@ -56,7 +58,45 @@ const Tasks = () => {
                     ))}
                 </div>
             </section>
-            <section className="grow px-5 pt-5 border-x border-dark-200"></section>
+
+            <section className="grow pt-5 border-x border-dark-200">
+                <div className="px-5 flex gap-[15px] text-title-large text-dark-200">
+                    {viewOptions.map((option) => (
+                        <button 
+                            key={option.name} 
+                            className={`group h-[50px] px-[5px] flex items-center gap-[7px] border-b 
+                                ${activeView.name === option.name 
+                                    ? "border-light-100 text-light-100" 
+                                    : "border-transparent hover:text-primary-400"}
+                            `}
+                            onClick={() => setActiveView(option)}
+                        >
+                            <span>{option.name}</span>
+                            {option.tag && (
+                                <span className={`px-[5px] bg-light-200 text-body-medium font-bold text-dark-500 
+                                    ${activeView.name !== option.name && "group-hover:bg-primary-400"}`}
+                                >
+                                    {option.tag}
+                                </span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+                <h6 className="px-5 my-10 text-headline-small text-light-100">
+                    Remove hardcoded model name check and replace with configurable param
+                </h6>
+                <div className="px-5 text-body-medium space-y-2.5 mb-[30px]">
+                    <p className="font-bold text-dark-100">Issue URL</p>
+                    <Link href={""} className="text-light-100">
+                        https://github.com/browser-use/browser-use/pull/1053
+                    </Link>
+                </div>
+                <div className="text-body-medium space-y-2.5">
+                    <p className="px-5 font-bold text-dark-100">Task Description</p>
+                    <div className="px-5 overflow-y-auto"></div>
+                </div>
+            </section>
+
             <section className="min-w-[360px] w-[12%] h-full pt-[30px] flex flex-col">
                 <div className="pl-5 pb-[30px] space-y-[30px] border-b border-dark-200">
                     <h6 className="text-headline-small text-light-100">Task Overview</h6>
@@ -115,6 +155,11 @@ const Tasks = () => {
 }
  
 export default Tasks;
+
+const viewOptions = [
+    { name: "Description" },
+    { name: "Conversation", tag: 2 }
+]
 
 type Task = {
     id: string;
