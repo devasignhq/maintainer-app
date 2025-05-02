@@ -1,9 +1,9 @@
 "use client";
 import { FiArrowUpRight } from "react-icons/fi";
-import ButtonPrimary from "./ButtonPrimary";
-import PopupModalLayout from "./PopupModalLayout";
+import ButtonPrimary from "../../../../components/ButtonPrimary";
+import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { QRCodeCanvas } from "qrcode.react";
-import CopyButton from "./CopyButton";
+import CopyButton from "../../../../components/CopyButton";
 
 type FundWalletProps = {
     toggleModal: () => void;

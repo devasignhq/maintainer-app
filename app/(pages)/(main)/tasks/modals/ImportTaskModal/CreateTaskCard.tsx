@@ -3,7 +3,7 @@ import { IoIosCheckbox } from "react-icons/io";
 import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import Image from 'next/image';
 import Link from "next/link";
-import RegularDropdown from "../Dropdown/Regular";
+import RegularDropdown from "../../../../../components/Dropdown/Regular";
 
 type CreateTaskCardProps = {
     active?: boolean; 

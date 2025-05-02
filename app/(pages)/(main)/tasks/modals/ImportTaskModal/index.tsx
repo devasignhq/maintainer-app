@@ -1,12 +1,13 @@
 "use client";
 import { FiSearch, FiArrowRight } from "react-icons/fi";
-import ButtonPrimary from "../ButtonPrimary";
-import PopupModalLayout from "../PopupModalLayout";
-import FilterDropdown from "../Dropdown/Filter";
+import ButtonPrimary from "../../../../../components/ButtonPrimary";
+import PopupModalLayout from "../../../../../components/PopupModalLayout";
+import FilterDropdown from "../../../../../components/Dropdown/Filter";
 import CreateTaskCard from "./CreateTaskCard";
 import { HiPlus } from "react-icons/hi";
 import RepoMenuCard from "./RepoMenuCard";
 import { useState } from "react";
+import InputField from "@/app/components/InputField";
 
 type ImportTaskModalProps = {
     toggleModal: () => void;
@@ -71,14 +72,15 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                 </div>
             </section>
             <section className="my-[30px] flex items-center gap-2.5">
-                <div className="h-full w-full relative">
-                    <FiSearch className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />
-                    <input
-                        type="text"
-                        placeholder="Search Issues"
-                        className="w-full h-full p-2.5 pl-[42px] bg-dark-400 border border-dark-100 text-body-small text-light-100"
-                    />
-                </div>
+                <InputField 
+                    Icon={FiSearch}
+                    attributes={{
+                        placeholder: "Search Issues",
+                        name: "search",
+                    }}
+                    extendedContainerClassName="h-full"
+                    extendedInputClassName="h-full"
+                />
                 <FilterDropdown 
                     title="Labels"
                     options={["bug", "feature", "enhancement", "question"]}

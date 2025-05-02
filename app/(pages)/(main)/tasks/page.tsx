@@ -8,6 +8,7 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "./components/TaskActivityCard";
 import Link from "next/link";
+import InputField from "@/app/components/InputField";
 
 const Tasks = () => {
     const [activeTaskId, setActiveTaskId] = useState("1");
@@ -17,14 +18,15 @@ const Tasks = () => {
         <div className="h-[calc(100dvh-123px)] flex">
             <section className="min-w-[360px] w-[12%] h-full pt-[30px] flex flex-col">
                 <div className="pr-5 flex items-center gap-2.5">
-                    <div className="h-full w-full relative">
-                        <FiSearch className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />
-                        <input
-                            type="text"
-                            placeholder="Search Tasks or Issues"
-                            className="w-full h-full p-2.5 pl-10 bg-dark-400 border border-dark-100 text-body-tiny text-light-100"
-                        />
-                    </div>
+                    <InputField 
+                        Icon={FiSearch}
+                        attributes={{
+                            placeholder: "Search Tasks or Issues",
+                            name: "search",
+                        }}
+                        extendedContainerClassName="h-full w-full"
+                        extendedInputClassName="h-full"
+                    />
                     <FilterDropdown 
                         title="Labels"
                         options={["bug", "feature", "enhancement", "question"]}
@@ -150,6 +152,8 @@ const Tasks = () => {
                     ))}
                 </div>
             </section>
+
+            {/* <ConnectRepositoryModal toggleModal={() => {}} /> */}
         </div>
     );
 }
