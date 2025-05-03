@@ -3,14 +3,23 @@ import { useClickAway, useToggle } from "ahooks";
 import { useRef, useState } from "react";
 import { IoIosCheckbox, IoMdArrowDropdown } from "react-icons/io";
 import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
+import { twMerge } from "tailwind-merge";
 
 type RegularDropdownProps = {
     defaultValue: string | number;
     options: (string | number)[];
     onChange?: (value: string | number) => void;
+    extendedButtonClassName?: string;
+    extendedContainerClassName?: string;
 }
 
-const RegularDropdown = ({ defaultValue, options, onChange }: RegularDropdownProps) => {
+const RegularDropdown = ({ 
+    defaultValue,
+    options,
+    onChange,
+    extendedButtonClassName,
+    extendedContainerClassName
+}: RegularDropdownProps) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [open, { toggle }] = useToggle(false);
@@ -25,10 +34,10 @@ const RegularDropdown = ({ defaultValue, options, onChange }: RegularDropdownPro
     useClickAway(() => toggle(), [buttonRef, dropdownRef]);
 
     return (
-        <div className="relative">
+        <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
             <button 
                 ref={buttonRef}
-                className="py-[5px] pl-[15px] pr-2.5 border border-dark-200 text-body-tiny text-light-100 flex items-center gap-[5px]"
+                className={twMerge("py-[5px] pl-[15px] pr-2.5 border border-dark-200 text-body-tiny text-light-100 flex items-center gap-[5px]", extendedButtonClassName)}
                 onClick={toggle}
             >
                 <span>{selectedItem}</span>

@@ -8,6 +8,8 @@ type SetTaskBountyModalProps = {
     toggleModal: () => void;
 };
 
+// TODO: Integrate money input
+
 const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
     
     return (

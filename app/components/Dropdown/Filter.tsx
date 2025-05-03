@@ -3,13 +3,16 @@ import { useClickAway, useToggle } from "ahooks";
 import { useRef, useState } from "react";
 import { IoIosCheckbox, IoMdArrowDropdown } from "react-icons/io";
 import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
+import { twMerge } from "tailwind-merge";
 
 type FilterDropdownProps = {
     title: string;
     options: string[];
+    extendedButtonClassName?: string;
+    extendedContainerClassName?: string;
 }
 
-const FilterDropdown = ({ title, options }: FilterDropdownProps) => {
+const FilterDropdown = ({ title, options, extendedButtonClassName, extendedContainerClassName }: FilterDropdownProps) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [open, { toggle }] = useToggle(false);
@@ -29,10 +32,10 @@ const FilterDropdown = ({ title, options }: FilterDropdownProps) => {
     useClickAway(() => toggle(), [buttonRef, dropdownRef]);
 
     return (
-        <div className="relative whitespace-nowrap">
+        <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
             <button 
                 ref={buttonRef}
-                className="p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]"
+                className={twMerge("p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]", extendedButtonClassName)}
                 onClick={toggle}
             >
                 <span>{title}</span>
