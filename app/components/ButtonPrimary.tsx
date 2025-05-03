@@ -7,6 +7,7 @@ type ButtonPrimaryProps = {
     sideItem?: React.ReactNode;
     attributes?: React.ButtonHTMLAttributes<HTMLButtonElement>;
     extendedClassName?: string;
+    extendedSideItemClassName?: string;
 }
 
 const ButtonPrimary = ({
@@ -15,6 +16,7 @@ const ButtonPrimary = ({
     sideItem,
     attributes = {},
     extendedClassName = "",
+    extendedSideItemClassName = "",
 }: ButtonPrimaryProps) => {
     return (
         <button 
@@ -27,7 +29,7 @@ const ButtonPrimary = ({
             {...attributes}
         >
             <span>{text}</span>
-            {sideItem && <span className="text-2xl leading-[1]">{sideItem}</span>}
+            {sideItem && <span className={twMerge("text-2xl leading-[1]", extendedSideItemClassName)}>{sideItem}</span>}
         </button>
     );
 }

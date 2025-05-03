@@ -9,7 +9,7 @@ import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "./components/TaskActivityCard";
 import Link from "next/link";
 import InputField from "@/app/components/InputField";
-import SetTaskTimelineModal from "./modals/SetTaskTimelineModal";
+import DeleteTaskModal from "./modals/DeleteTaskModal";
 
 const Tasks = () => {
     const [activeTaskId, setActiveTaskId] = useState("1");
@@ -156,7 +156,8 @@ const Tasks = () => {
 
             {/* <ConnectRepositoryModal toggleModal={() => {}} /> */}
             {/* <SetTaskBountyModal toggleModal={() => {}} /> */}
-            <SetTaskTimelineModal toggleModal={() => {}} />
+            {/* <SetTaskTimelineModal toggleModal={() => {}} /> */}
+            <DeleteTaskModal toggleModal={() => {}} />
         </div>
     );
 }

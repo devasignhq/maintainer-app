@@ -20,7 +20,7 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
             </p>
             <div className="w-full p-[15px] border border-primary-200 bg-dark-400 flex items-start gap-2.5 mt-5 mb-2.5">
                 <p className="text-body-tiny tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>#0032</p>
-                <p className="text-body-medium font-bold text-light-100">
+                <p className="text-body-medium font-bold text-light-100 line-clamp-2">
                     Remove hardcoded model name check and replace with configurable param
                 </p>
             </div>
