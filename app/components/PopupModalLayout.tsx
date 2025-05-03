@@ -11,8 +11,8 @@ const PopupModalLayout = ({
     toggleModal: () => void;
 }>) => {
     return (
-        <div className="fixed inset-0 z-[99999] bg-[#0000004D] grid place-content-center backdrop-blur-[14px]">
-            <div className="w-[820px] max-h-[92dvh] p-10 pt-[30px] popup-modal relative bg-dark-500 flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-[100] bg-[#0000004D] grid place-content-center backdrop-blur-[14px] pointer-events-none">
+            <div className="w-[820px] max-h-[92dvh] p-10 pt-[30px] popup-modal relative bg-dark-500 flex flex-col overflow-hidden pointer-events-auto">
                 <div className="flex items-center justify-between">
                     <h2 className="text-display-small text-light-100">
                         {title}

@@ -46,8 +46,12 @@ const RegularDropdown = ({
             {open && (
                 <div
                     ref={dropdownRef}
-                    className="absolute top-0 left-[calc(100%_+_7px)] px-2.5 py-[15px] max-h-[350px] bg-dark-400 
-                    dropdown-box shadow-[-20px_4px_40px_0px_#000000] z-[9999999] overflow-y-auto"
+                    className="fixed top-[var(--dropdown-top)] left-[var(--dropdown-left)] px-2.5 py-[15px] max-h-[350px] 
+                    bg-dark-400 dropdown-box shadow-[-20px_4px_40px_0px_#000000] z-[110] overflow-y-auto"
+                    style={{
+                        '--dropdown-top': `${buttonRef.current?.getBoundingClientRect().top}px`,
+                        '--dropdown-left': `${buttonRef.current?.getBoundingClientRect().right as number + 7}px`
+                    } as React.CSSProperties}
                 >
                     <ul className="flex flex-col gap-3 list-none items-start">
                         {options.map((option, index) => (
