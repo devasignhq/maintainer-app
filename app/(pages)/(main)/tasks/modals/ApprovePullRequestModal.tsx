@@ -3,6 +3,7 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
 import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
+import { toast } from 'react-toastify';
 
 type ApprovePullRequestModalProps = {
     toggleModal: () => void;
@@ -55,7 +56,11 @@ const ApprovePullRequestModal = ({ toggleModal }: ApprovePullRequestModalProps) 
                     text="Pay Contributor"
                     sideItem={<FiArrowUpRight />}
                     attributes={{
-                        onClick: () => {},
+                        onClick: () => {
+                            toast("Wow so easy!");
+                            toast.success("Success!");
+                            toast.error("Error!");
+                        },
                     }}
                 />
             </div>
