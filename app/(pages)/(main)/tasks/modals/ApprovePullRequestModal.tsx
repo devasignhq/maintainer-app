@@ -4,27 +4,15 @@ import PopupModalLayout from "@/app/components/PopupModalLayout";
 import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
 
-type ReviewPullRequestModalProps = {
+type ApprovePullRequestModalProps = {
     toggleModal: () => void;
 };
 
-const ReviewPullRequestModal = ({ toggleModal }: ReviewPullRequestModalProps) => {
+const ApprovePullRequestModal = ({ toggleModal }: ApprovePullRequestModalProps) => {
     
     return (
-        <PopupModalLayout title="Review Contributor Pull Request" toggleModal={toggleModal}>
-            <p className="mt-2.5 text-body-medium text-dark-100">
-                Kindly review this pull request if it solves the problem as described in your GitHub issue. 
-                Once you merge the code successfully in GitHub, the bounty will be paid out to the contributor automatically.
-            </p>
-            <div className="w-full p-[15px] border border-dark-200 flex items-start gap-2.5 my-5">
-                <p className="text-body-tiny tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>#0032</p>
-                <div className="py-0.5 px-[7px] bg-primary-300 text-body-tiny font-bold text-light-200">bug</div>
-                <p className="grow text-body-medium font-bold text-light-100 line-clamp-2">
-                    Remove hardcoded model name check and replace with configurable param
-                </p>
-                <p className="text-body-tiny font-bold tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>$300</p>
-            </div>
-            <div className="space-y-[5px] text-body-tiny">
+        <PopupModalLayout title="Approve Pull Request" toggleModal={toggleModal}>
+            <div className="space-y-[5px] text-body-tiny mt-5">
                 <div className="w-full flex items-center justify-between gap-5">
                     <p className="text-primary-400">Pull Request:</p>
                     <div className="flex items-center gap-1">
@@ -50,17 +38,21 @@ const ReviewPullRequestModal = ({ toggleModal }: ReviewPullRequestModalProps) =>
                     <p className="text-light-100">30 mins ago</p>
                 </div>
             </div>
-            <div className="flex gap-2.5 mt-5">
+            <p className="my-5 text-body-medium text-dark-100">
+                Once you click “<span className="font-bold">Pay Contributor</span>” or merge the code 
+                successfully in GitHub, the bounty will be paid out to the contributor automatically.
+            </p>
+            <div className="flex gap-2.5">
                 <ButtonPrimary
                     format="OUTLINE"
-                    text="Reject PR"
+                    text="Go Back"
                     attributes={{
                         onClick: () => {},
                     }}
                 />
                 <ButtonPrimary
                     format="SOLID"
-                    text="Approve PR"
+                    text="Pay Contributor"
                     sideItem={<FiArrowUpRight />}
                     attributes={{
                         onClick: () => {},
@@ -71,4 +63,4 @@ const ReviewPullRequestModal = ({ toggleModal }: ReviewPullRequestModalProps) =>
     );
 }
  
-export default ReviewPullRequestModal;
+export default ApprovePullRequestModal;
