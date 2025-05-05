@@ -9,7 +9,7 @@ import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "./components/TaskActivityCard";
 import Link from "next/link";
 import InputField from "@/app/components/InputField";
-import ApproveTaskDelegation from "./modals/ApproveTaskDelegation";
+import ReviewTaskApplication from "./modals/ReviewTaskApplication";
 
 const Tasks = () => {
     const [activeTaskId, setActiveTaskId] = useState("1");
@@ -160,7 +160,8 @@ const Tasks = () => {
             {/* <DeleteTaskModal toggleModal={() => {}} /> */}
             {/* <ReviewPullRequestModal toggleModal={() => {}} /> */}
             {/* <ApprovePullRequestModal toggleModal={() => {}} /> */}
-            <ApproveTaskDelegation toggleModal={() => {}} />
+            {/* <ApproveTaskDelegation toggleModal={() => {}} /> */}
+            <ReviewTaskApplication toggleModal={() => {}} />
         </div>
     );
 }
