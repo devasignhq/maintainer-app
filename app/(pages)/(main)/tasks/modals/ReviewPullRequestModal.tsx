@@ -25,7 +25,7 @@ const ReviewPullRequestModal = ({ toggleModal }: ReviewPullRequestModalProps) =>
                 <p className="text-body-tiny font-bold tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>$300</p>
             </div>
             <div className="space-y-[5px] text-body-tiny">
-                <div className="w-full flex items-center justify-between gap-5">
+                <div className="w-full flex items-center justify-between gap-10">
                     <p className="text-primary-400">Pull Request:</p>
                     <div className="flex items-center gap-1">
                         <span className="text-light-100 underline truncate">
@@ -36,7 +36,7 @@ const ReviewPullRequestModal = ({ toggleModal }: ReviewPullRequestModalProps) =>
                         </Link>
                     </div>
                 </div>
-                <div className="w-full flex items-center justify-between gap-5">
+                <div className="w-full flex items-center justify-between gap-10">
                     <p className="text-primary-400">Contributor:</p>
                     <div className="flex items-center gap-1">
                         <span className="text-light-100 underline truncate">@lenny_malcolm</span>
@@ -45,7 +45,7 @@ const ReviewPullRequestModal = ({ toggleModal }: ReviewPullRequestModalProps) =>
                         </Link>
                     </div>
                 </div>
-                <div className="w-full flex items-center justify-between gap-5">
+                <div className="w-full flex items-center justify-between gap-10">
                     <p className="text-primary-400">Time:</p>
                     <p className="text-light-100">30 mins ago</p>
                 </div>
