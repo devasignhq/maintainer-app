@@ -21,7 +21,7 @@ const ReviewTaskApplication = ({ toggleModal }: ReviewTaskApplicationProps) => {
                 <div className="col-span-2 p-[15px] border border-dark-200 space-y-2.5">
                     <p className="text-body-micro">Developer</p>
                     <p className="text-headline-medium font-normal flex items-center gap-1 text-light-200">
-                        <span>@lenny_malcolm</span>
+                        <span className="truncate">@lenny_malcolm</span>
                         <Link href={""}>
                             <FiArrowUpRight className="text-2xl text-primary-100 hover:text-light-100" />
                         </Link>
