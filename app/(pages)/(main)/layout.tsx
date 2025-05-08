@@ -11,7 +11,7 @@ export default function MainLayout({
     children: React.ReactNode;
 }>) {
     const currentPath = usePathname();
-    const checkPath = (path: string) => currentPath.includes(path);
+    const checkPath = (path: string) => currentPath.includes(path) || currentPath === path;
 
     return (
         <main className="h-full w-full px-[6.75%] flex flex-col">
@@ -35,7 +35,7 @@ export default function MainLayout({
                             key={item.name}
                             href={item.path}
                             className={`px-[5px] py-[20px] 
-                                ${checkPath(item.path) 
+                                ${checkPath(item.alias || item.path) 
                                     ? "text-light-100 border-b border-light-100" 
                                     : "hover:text-[#F0C298]"}`
                             }
@@ -52,9 +52,9 @@ export default function MainLayout({
 }
 
 const navItems = [
-    { name: "Overview", path: "/overview" },
-    { name: "Tasks", path: "/tasks" },
-    { name: "Wallet", path: "/wallet" },
-    { name: "Contributors", path: "/contributors" },
-    { name: "Settings", path: "/settings" },
+    { name: "Overview", path: ROUTES.OVERVIEW },
+    { name: "Tasks", path: ROUTES.TASKS },
+    { name: "Wallet", path: ROUTES.WALLET },
+    { name: "Contributors", path: ROUTES.CONTRIBUTORS },
+    { name: "Settings", alias: "/settings", path: ROUTES.SETTINGS.GENERAL },
 ];
