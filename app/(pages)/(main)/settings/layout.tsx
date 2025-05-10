@@ -28,9 +28,7 @@ export default function SettingsLayout({
                     </Link>
                 ))}
             </section>
-            <section className="grow">
-                {children}
-            </section>
+            {children}
         </div>
     );
 }

@@ -1,5 +1,8 @@
 const ManageTeam = () => {
-    return (<></>);
+    return (
+        <section className="grow">
+        </section>
+    );
 }
  
 export default ManageTeam;
