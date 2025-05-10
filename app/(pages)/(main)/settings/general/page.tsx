@@ -1,17 +1,21 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
+import { useToggle } from "ahooks";
 import { FiEdit3 } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
+import EditProjectModal from "./modals/EditProjectModal";
 
 const General = () => {
+    const [openEditProjectModal, { toggle: toggleEditProjectModal }] = useToggle(false);
+    
     return (
         <section className="grow">
-            <div className="w-full p-[30px] space-y-[30px] border-b border-dark-200">
+            <section className="w-full p-[30px] space-y-[30px] border-b border-dark-200">
                 <div className="flex items-center justify-between">
                     <h5 className="text-headline-small text-light-100">Manage Project</h5>
                     <button 
                         className="group flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold"
-                        onClick={() => {}}
+                        onClick={toggleEditProjectModal}
                     >
                         <span className="group-hover:text-light-100">Edit Project</span>
                         <FiEdit3 className="text-2xl" />
@@ -28,8 +32,8 @@ const General = () => {
                         elements, so agents can focus on what makes their beer taste better.
                     </p>
                 </div>
-            </div>
-            <div className="w-full p-[30px] space-y-[30px]">
+            </section>
+            <section className="w-full p-[30px] space-y-[30px]">
                 <div className="space-y-2.5">
                     <h5 className="text-headline-small text-light-100">Delete Project</h5>
                     <p className="text-body-medium text-dark-100">
@@ -47,7 +51,8 @@ const General = () => {
                     }}
                     extendedClassName="border-indicator-500 text-indicator-500"
                 />
-            </div>
+            </section>
+            {openEditProjectModal && <EditProjectModal toggleModal={toggleEditProjectModal} />}
         </section>
     );
 }

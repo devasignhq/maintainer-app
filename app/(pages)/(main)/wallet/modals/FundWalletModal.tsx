@@ -5,11 +5,11 @@ import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { QRCodeCanvas } from "qrcode.react";
 import CopyButton from "../../../../components/CopyButton";
 
-type FundWalletProps = {
+type FundWalletModalProps = {
     toggleModal: () => void;
 };
 
-const FundWallet = ({ toggleModal }: FundWalletProps) => {
+const FundWalletModal = ({ toggleModal }: FundWalletModalProps) => {
     return (
         <PopupModalLayout title="Fund Wallet" toggleModal={toggleModal}>
             <p className="text-body-medium text-dark-100 mt-2.5">
@@ -91,4 +91,4 @@ const FundWallet = ({ toggleModal }: FundWalletProps) => {
     );
 }
  
-export default FundWallet;
+export default FundWalletModal;

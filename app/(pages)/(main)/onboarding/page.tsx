@@ -6,7 +6,7 @@ import { FiArrowUpRight } from 'react-icons/fi';
 import { HiPlus } from 'react-icons/hi';
 import ImportTaskModal from '@/app/(pages)/(main)/tasks/modals/ImportTaskModal';
 import { useToggle } from 'ahooks';
-import FundWallet from '@/app/(pages)/(main)/wallet/modals/FundWallet';
+import FundWalletModal from '@/app/(pages)/(main)/wallet/modals/FundWalletModal';
 
 const Onboarding = () => {
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
@@ -113,7 +113,7 @@ const Onboarding = () => {
             </div>
 
             {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
-            {openFundWalletModal && <FundWallet toggleModal={toggleFundWalletModal} />}
+            {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
         </div>
     );
 }
