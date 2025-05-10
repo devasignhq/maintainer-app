@@ -19,7 +19,7 @@ export default function MainLayout({
                 <img src="/davasign-logo.svg" alt="DevAsign" className="h-auto w-auto" />
                 <div className="flex items-center gap-2.5 text-light-100">
                     <div className="flex items-center gap-[15px] text-headline-small">
-                        <img src="/project-logo.svg" alt="PL" className="h-auto w-auto" />
+                        <img src="/project-logo.png" alt="PL" className="h-auto w-auto" />
                         <span>PostgreSQL</span>
                     </div>
                     <div className="px-2.5 py-[px] bg-dark-300 text-table-header">Free</div>
@@ -55,6 +55,6 @@ const navItems = [
     { name: "Overview", path: ROUTES.OVERVIEW },
     { name: "Tasks", path: ROUTES.TASKS },
     { name: "Wallet", path: ROUTES.WALLET },
-    { name: "Contributors", path: ROUTES.CONTRIBUTORS },
+    // { name: "Contributors", path: ROUTES.CONTRIBUTORS },
     { name: "Settings", alias: "/settings", path: ROUTES.SETTINGS.GENERAL },
 ];

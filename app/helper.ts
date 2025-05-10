@@ -6,7 +6,7 @@ export const ROUTES = {
     ONBOARDING: "/onboarding",
     OVERVIEW: "/overview",
     TASKS: "/tasks",
-    CONTRIBUTORS: "/contributors",
+    // CONTRIBUTORS: "/contributors",
     WALLET: "/wallet",
     SETTINGS: {
         GENERAL: "/settings/general",
