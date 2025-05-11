@@ -4,9 +4,11 @@ import { useToggle } from "ahooks";
 import { FiEdit3, FiSearch } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import EditTeamMemberPermissionsModal from "../modals/EditTeamMemberPermissionsModal";
+import RemoveTeamMemberModal from "../modals/RemoveTeamMemberModal";
 
 const ActiveTeamMembersSection = () => {
     const [openEditTeamMemberPermissionsModal, { toggle: toggleEditTeamMemberPermissionsModal }] = useToggle(false);
+    const [openRemoveTeamMemberModal, { toggle: toggleRemoveTeamMemberModal }] = useToggle(false);
 
     return (
         <>
@@ -50,7 +52,7 @@ const ActiveTeamMembersSection = () => {
                             </button>
                             <button 
                                 className="p-[5px] border border-indicator-500 text-indicator-500 text-2xl hover:border-transparent hover:bg-light-100"
-                                onClick={() => {}}
+                                onClick={toggleRemoveTeamMemberModal}
                             >
                                 <IoMdClose />
                             </button>
@@ -71,7 +73,7 @@ const ActiveTeamMembersSection = () => {
                             </button>
                             <button 
                                 className="p-[5px] border border-indicator-500 text-indicator-500 text-2xl hover:border-transparent hover:bg-light-100"
-                                onClick={() => {}}
+                                onClick={toggleRemoveTeamMemberModal}
                             >
                                 <IoMdClose />
                             </button>
@@ -82,6 +84,7 @@ const ActiveTeamMembersSection = () => {
         </section>
         
         {openEditTeamMemberPermissionsModal && <EditTeamMemberPermissionsModal toggleModal={toggleEditTeamMemberPermissionsModal} />}
+        {openRemoveTeamMemberModal && <RemoveTeamMemberModal toggleModal={toggleRemoveTeamMemberModal} />}
         </>
     );
 }
