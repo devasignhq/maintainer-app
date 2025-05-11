@@ -5,7 +5,7 @@ import NewTeamMemberSection from "./sections/NewTeamMemberSection";
 const ManageTeam = () => {
     
     return (
-        <section className="grow">
+        <section className="grow overflow-y-auto">
             <NewTeamMemberSection />
             <ActiveTeamMembersSection />
         </section>
