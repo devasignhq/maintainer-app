@@ -1,10 +1,15 @@
 "use client";
 import InputField from "@/app/components/InputField";
+import { useToggle } from "ahooks";
 import { FiEdit3, FiSearch } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
+import EditTeamMemberPermissionsModal from "../modals/EditTeamMemberPermissionsModal";
 
 const ActiveTeamMembersSection = () => {
+    const [openEditTeamMemberPermissionsModal, { toggle: toggleEditTeamMemberPermissionsModal }] = useToggle(false);
+
     return (
+        <>
         <section className="max-h-[calc(100dvh-123px)] w-full p-[30px] sticky top-0 overflow-hidden flex flex-col">
             <div className="flex items-center justify-between mb-[30px]">
                 <h4 className="text-headline-small text-light-100">Team Members</h4>
@@ -39,7 +44,7 @@ const ActiveTeamMembersSection = () => {
                         <td className="grow flex items-center gap-2.5 pl-5">
                             <button 
                                 className="p-[5px] border border-primary-100 text-primary-100 text-2xl hover:border-transparent hover:bg-light-100 hover:text-dark-500"
-                                onClick={() => {}}
+                                onClick={toggleEditTeamMemberPermissionsModal}
                             >
                                 <FiEdit3 />
                             </button>
@@ -60,7 +65,7 @@ const ActiveTeamMembersSection = () => {
                         <td className="grow flex items-center gap-2.5 pl-5">
                             <button 
                                 className="p-[5px] border border-primary-100 text-primary-100 text-2xl hover:border-transparent hover:bg-light-100 hover:text-dark-500"
-                                onClick={() => {}}
+                                onClick={toggleEditTeamMemberPermissionsModal}
                             >
                                 <FiEdit3 />
                             </button>
@@ -75,6 +80,9 @@ const ActiveTeamMembersSection = () => {
                 </tbody>
             </>
         </section>
+        
+        {openEditTeamMemberPermissionsModal && <EditTeamMemberPermissionsModal toggleModal={toggleEditTeamMemberPermissionsModal} />}
+        </>
     );
 }
  

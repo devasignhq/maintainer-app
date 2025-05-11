@@ -13,6 +13,7 @@ const Onboarding = () => {
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
 
     return (
+        <>
         <div className="w-[840px] mt-[65px] mx-auto">
             <h1 className="text-display-large text-light-100">
                 Welcome to DevAsign, 
@@ -111,10 +112,11 @@ const Onboarding = () => {
                     owering fair <br /> compensation for open-source contribution.
                 </p>
             </div>
-
-            {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
-            {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
         </div>
+        
+        {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
+        {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
+        </>
     );
 }
  
