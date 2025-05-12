@@ -1,6 +1,6 @@
 import { SubscriptionPlanDto } from "@/app/models/subscription-plan.model";
 import React from "react";
-import { FaRegCircle } from "react-icons/fa";
+import { FiArrowUpRight } from "react-icons/fi";
 import { GoCheckCircleFill, GoDotFill } from "react-icons/go";
 
 type SubscriptionCardProps = {
@@ -8,6 +8,7 @@ type SubscriptionCardProps = {
     active: boolean;
     cardAttributes: React.HTMLAttributes<HTMLDivElement>;
     icon: React.ReactNode;
+    planState?: "DOWNGRADE" | "UPGRADE";
 }
 
 const SubscriptionCard = ({
@@ -15,10 +16,11 @@ const SubscriptionCard = ({
     active,
     cardAttributes,
     icon,
+    planState,
 }: SubscriptionCardProps) => {
     return (
         <div 
-            className={`w-full p-4 border flex justify-between cursor-pointer
+            className={`w-full p-4 border flex justify-between 
                 ${active ? "bg-dark-400 border-primary-200" : "border-dark-200 hover:border-dark-100"}
             `}
             {...cardAttributes}
@@ -32,12 +34,19 @@ const SubscriptionCard = ({
                 <div>
                     <h6 className={`text-body-medium font-bold mb-2.5 flex items-center gap-2.5 ${active ? "text-primary-400" : "text-light-100"} `}>
                         <span>{plan.name}</span>
-                        <GoDotFill className="text-light-100" />
+                        <GoDotFill className="text-[10px] text-light-100" />
                         <span className={`${active && "text-light-200"}`}>{plan.priceString[0]}</span>
-                        {plan.priceString[1] && (
+                        
+                        {(!active && planState) && (
                             <>
-                            <GoDotFill className="text-light-100" />
-                            <span>{plan.priceString[1]}</span>
+                            <GoDotFill className="text-[10px] text-light-100" />
+                            <button 
+                                className="flex items-center gap-[5px] text-primary-400 text-button-large font-extrabold hover:text-light-200"
+                                onClick={() => {}}
+                            >
+                                <span>{planState === "DOWNGRADE" ? "Downgrade" : "Buy Plan"}</span>
+                                <FiArrowUpRight className={`text-2xl ${planState === "DOWNGRADE" && "rotate-180"}`} />
+                            </button>
                             </>
                         )}
                     </h6>
@@ -48,13 +57,9 @@ const SubscriptionCard = ({
                     </ul>
                 </div>
             </div>
-            <div className="text-xl text-dark-100">
-                {active ? (
-                    <GoCheckCircleFill className="text-primary-100" />
-                ):(
-                    <FaRegCircle />
-                )}
-            </div>
+            {active && (
+                <GoCheckCircleFill className="text-xl text-primary-100" />
+            )}
         </div>
     );
 }
