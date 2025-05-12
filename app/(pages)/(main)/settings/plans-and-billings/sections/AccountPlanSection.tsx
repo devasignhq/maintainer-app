@@ -3,8 +3,12 @@ import { SubscriptionPlanDto } from "@/app/models/subscription-plan.model";
 import { BsLayers } from "react-icons/bs";
 import { FiLayers, FiZap } from "react-icons/fi";
 import SubscriptionCard from "../components/SubscriptionCard";
+import { useToggle } from "ahooks";
+import SwitchAccountPlanModal from "../modals/SwitchAccountPlanModal";
 
 const AccountPlanSection = () => {
+    const [openSwitchAccountPlanModal, { toggle: toggleSwitchAccountPlanModal }] = useToggle(true);
+
     const cardIcons: React.ReactNode[] = [
         <BsLayers key="basic" />,
         <FiLayers key="pro" />,
@@ -33,6 +37,7 @@ const AccountPlanSection = () => {
                 ))}
             </div>
         </section>
+        {openSwitchAccountPlanModal && <SwitchAccountPlanModal toggleModal={toggleSwitchAccountPlanModal} />}
         </>
     );
 }
