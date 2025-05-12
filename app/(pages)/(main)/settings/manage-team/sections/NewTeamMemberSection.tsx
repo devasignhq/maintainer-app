@@ -21,6 +21,7 @@ const NewTeamMemberSection = () => {
     };
 
     return (
+        <>
         <section className="w-full p-[30px] space-y-[30px] border-b border-dark-200">
             <div className="space-y-2.5">
                 <h5 className="text-headline-small text-light-100">Add Team Members</h5>
@@ -84,6 +85,18 @@ const NewTeamMemberSection = () => {
                 </div>
             </div>
         </section>
+
+        {/* <RequestResponseModal 
+            Icon={MdGroupAdd}
+            title="Invitation Sent"
+            description={<>
+                Your team member will receive an email to <br /> 
+                collaborate with you on this project shortly.
+            </>}
+            buttonTitle="Go Back"
+            onButtonClick={() => {}}
+        /> */}
+        </>
     );
 }
  
