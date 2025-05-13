@@ -5,11 +5,11 @@ import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { SiStellar } from "react-icons/si";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 
-type FundWalletModalProps = {
+type WithdrawAssetModalProps = {
     toggleModal: () => void;
 };
 
-const WithdrawAssetModal = ({ toggleModal }: FundWalletModalProps) => {
+const WithdrawAssetModal = ({ toggleModal }: WithdrawAssetModalProps) => {
     return (
         <PopupModalLayout title="Withdraw Asset" toggleModal={toggleModal}>
             <section className="my-[30px] space-y-[5px]">

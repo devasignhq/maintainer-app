@@ -96,6 +96,7 @@ const Wallet = () => {
             {activeTab.enum === "WITHDRAWAL" && <WithdrawalTable />}
         </div>
         {/* <WithdrawAssetModal toggleModal={() => {}} /> */}
+        {/* <SwapAssetModal from="XLM" toggleModal={() => {}} /> */}
         </>
     )
 }
