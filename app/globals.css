@@ -172,6 +172,10 @@ input:disabled {
   @apply opacity-80 cursor-not-allowed
 }
 
+tr td {
+  @apply truncate
+}
+
 .auth-gradient {
   background: linear-gradient(130.86deg, rgba(19, 19, 19, 0.5) 15.53%, rgba(254, 137, 31, 0.175) 79.38%);
 }
