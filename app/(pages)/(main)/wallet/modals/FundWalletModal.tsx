@@ -59,6 +59,10 @@ const FundWalletModal = ({ toggleModal }: FundWalletModalProps) => {
             </section>
             <section className="w-full my-5 space-y-[5px]">
                 <div className="flex items-center justify-between">
+                    <p className="text-body-tiny font-bold text-primary-400">Minimum Deposit:</p>
+                    <p className="text-body-tiny text-light-200">1 XLM</p>
+                </div>
+                <div className="flex items-center justify-between">
                     <p className="text-body-tiny font-bold text-primary-400">Deposit Confirmation:</p>
                     <p className="text-body-tiny text-light-200">100 Block(s)</p>
                 </div>

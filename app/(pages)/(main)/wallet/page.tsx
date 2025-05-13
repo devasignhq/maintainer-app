@@ -13,6 +13,7 @@ const Wallet = () => {
     const [activeTab, setActiveTab] = useState(tabs[0]);
 
     return (
+        <>
         <div className="w-[80%] max-h-[calc(100dvh-123px)] mx-auto flex flex-col pb-5">
             <section className="w-full space-y-5 mt-[30px] mb-[50px]">
                 <div className="flex items-start justify-between">
@@ -94,6 +95,8 @@ const Wallet = () => {
             {activeTab.enum === "TOP_UP" && <TopUpTable />}
             {activeTab.enum === "WITHDRAWAL" && <WithdrawalTable />}
         </div>
+        {/* <WithdrawAssetModal toggleModal={() => {}} /> */}
+        </>
     )
 }
  
