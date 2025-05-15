@@ -21,7 +21,7 @@ const TaskOverviewSection = () => {
                 <div className="space-y-2.5">
                     <p className="text-body-tiny text-light-100">Bounty</p>
                     <div className="flex items-center gap-1">
-                        <p className="text-body-large text-light-200">$125</p>
+                        <p className="text-body-large text-light-200">125 USDC</p>
                         <button onClick={() => {}}>
                             <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
                         </button>

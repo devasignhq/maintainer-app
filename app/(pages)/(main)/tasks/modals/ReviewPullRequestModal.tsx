@@ -22,7 +22,7 @@ const ReviewPullRequestModal = ({ toggleModal }: ReviewPullRequestModalProps) =>
                 <p className="grow text-body-medium font-bold text-light-100 line-clamp-2">
                     Remove hardcoded model name check and replace with configurable param
                 </p>
-                <p className="text-body-tiny font-bold tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>$300</p>
+                <p className="text-body-tiny font-bold tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>300 USDC</p>
             </div>
             <div className="space-y-[5px] text-body-tiny">
                 <div className="w-full flex items-center justify-between gap-10">

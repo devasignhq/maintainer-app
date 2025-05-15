@@ -54,8 +54,8 @@ const Onboarding = () => {
                     </p>
                     <div className="flex items-center justify-between gap-2.5">
                         <p className="text-primary-400">
-                            <span className="text-display-large">$0</span>
-                            <span className="text-headline-large">.00</span>
+                            <span className="text-display-large">0</span>
+                            <span className="text-headline-large">.00 USDC</span>
                         </p>
                         <ButtonPrimary
                             format="SOLID"

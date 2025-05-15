@@ -19,8 +19,9 @@ const FundWalletModal = ({ toggleModal }: FundWalletModalProps) => {
                 <div className="w-full py-2.5 px-[15px] border border-dark-200">
                     <p className="text-body-tiny text-light-100 mb-2.5">Total Bounties</p>
                     <p className="text-light-200">
-                        <span className="text-display-small font-normal">$4,510</span>
+                        <span className="text-display-small font-normal">4,510</span>
                         <span className="text-body-medium">.00</span>
+                        <span className="text-display-small font-normal">{" "}USDC</span>
                     </p>
                 </div>
                 <div className="w-full py-2.5 px-[15px] border border-dark-200">

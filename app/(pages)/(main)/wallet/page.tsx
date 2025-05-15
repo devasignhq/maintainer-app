@@ -60,8 +60,8 @@ const Wallet = () => {
                         <div className="space-y-2.5">
                             <p className="text-body-small text-dark-100">USDC Balance</p>
                             <p className="text-light-100">
-                                <span className="text-display-large">$1,598</span>
-                                <span className="text-headline-large">.00</span>
+                                <span className="text-display-large">1,598</span>
+                                <span className="text-body-medium">.00 USDC</span>
                             </p>
                         </div>
                         <button 

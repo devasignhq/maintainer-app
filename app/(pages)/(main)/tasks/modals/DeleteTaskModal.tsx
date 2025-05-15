@@ -20,7 +20,7 @@ const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
                 <p className="grow text-body-medium font-bold text-light-100 line-clamp-2">
                     Remove hardcoded model name check and replace with configurable param
                 </p>
-                <p className="text-body-tiny font-bold tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>$300</p>
+                <p className="text-body-tiny font-bold tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>300 USDC</p>
             </div>
             <div className="flex gap-2.5">
                 <ButtonPrimary
