@@ -172,6 +172,9 @@ input:disabled {
   @apply opacity-80 cursor-not-allowed
 }
 
+tr th, tr td {
+  @apply text-start
+}
 tr td {
   @apply truncate
 }

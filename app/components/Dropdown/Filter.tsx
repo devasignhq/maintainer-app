@@ -75,34 +75,6 @@ const FilterDropdown = ({ title, options, extendedButtonClassName, extendedConta
                                 <span className="text-body-small text-light-100">{option}</span>
                             </li>
                         ))}
-                        {options.map((option, index) => (
-                            <li 
-                                key={index} 
-                                className="flex items-center gap-2.5 cursor-pointer"
-                                onClick={() => toggleItems(`${index}`)}
-                            >
-                                {selectedItems[`${index}`] ? (
-                                    <IoIosCheckbox className="text-[18px] text-primary-100" />
-                                ) : (
-                                    <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
-                                )}
-                                <span className="text-body-small text-light-100">{option}</span>
-                            </li>
-                        ))}
-                        {options.map((option, index) => (
-                            <li 
-                                key={index} 
-                                className="flex items-center gap-2.5 cursor-pointer"
-                                onClick={() => toggleItems(`${index}`)}
-                            >
-                                {selectedItems[`${index}`] ? (
-                                    <IoIosCheckbox className="text-[18px] text-primary-100" />
-                                ) : (
-                                    <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
-                                )}
-                                <span className="text-body-small text-light-100">{option}</span>
-                            </li>
-                        ))}
                     </ul>
                     <div className="w-full pt-3 pb-[15px] bg-dark-400 sticky bottom-0">
                         <button 

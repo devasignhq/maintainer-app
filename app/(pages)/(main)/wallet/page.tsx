@@ -8,6 +8,7 @@ import AllTable from "./tables/AllTable";
 import BountyTable from "./tables/BountyTable";
 import TopUpTable from "./tables/TopUpTable";
 import WithdrawalTable from "./tables/WithdrawalTable";
+import SwapTable from "./tables/SwapTable";
 
 const Wallet = () => {
     const [activeTab, setActiveTab] = useState(tabs[0]);
@@ -93,6 +94,7 @@ const Wallet = () => {
             {activeTab.enum === "ALL" && <AllTable />}
             {activeTab.enum === "BOUNTY" && <BountyTable />}
             {activeTab.enum === "TOP_UP" && <TopUpTable />}
+            {activeTab.enum === "SWAP" && <SwapTable />}
             {activeTab.enum === "WITHDRAWAL" && <WithdrawalTable />}
         </div>
         {/* <WithdrawAssetModal toggleModal={() => {}} /> */}
@@ -107,5 +109,6 @@ const tabs = [
     { title: "All", enum: "ALL" },
     { title: "Bounty", enum: "BOUNTY" },
     { title: "Top Up", enum: "TOP_UP" },
+    { title: "Swap", enum: "SWAP" },
     { title: "Withdrawal", enum: "WITHDRAWAL" },
 ]
