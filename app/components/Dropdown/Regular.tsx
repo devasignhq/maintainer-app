@@ -6,11 +6,12 @@ import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
 type RegularDropdownProps = {
-    defaultValue: string | number;
+    defaultValue?: string | number;
     options: (string | number)[];
     onChange?: (value: string | number) => void;
     extendedButtonClassName?: string;
     extendedContainerClassName?: string;
+    title?: string;
 }
 
 const RegularDropdown = ({ 
@@ -18,7 +19,8 @@ const RegularDropdown = ({
     options,
     onChange,
     extendedButtonClassName,
-    extendedContainerClassName
+    extendedContainerClassName,
+    title
 }: RegularDropdownProps) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -40,7 +42,7 @@ const RegularDropdown = ({
                 className={twMerge("py-[5px] pl-[15px] pr-2.5 border border-dark-200 text-body-tiny text-light-100 flex items-center gap-[5px]", extendedButtonClassName)}
                 onClick={toggle}
             >
-                <span>{selectedItem}</span>
+                <span>{title || selectedItem}</span>
                 <IoMdArrowDropdown className={`text-2xl ${open && "rotate-180"}`} />
             </button>
             {open && (
@@ -57,15 +59,19 @@ const RegularDropdown = ({
                         {options.map((option, index) => (
                             <li 
                                 key={index} 
-                                className="flex items-center gap-2.5 cursor-pointer"
-                                onClick={() => selectItem(option)}
+                                className="flex items-center gap-2.5"
                             >
                                 {selectedItem === option ? (
                                     <IoIosCheckbox className="text-[18px] text-primary-100" />
                                 ) : (
                                     <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
                                 )}
-                                <span className="text-body-small text-light-100 whitespace-nowrap">{option}</span>
+                                <button 
+                                    className="text-body-small text-light-100 whitespace-nowrap"
+                                    onClick={() => selectItem(option)}
+                                >
+                                    {option}
+                                </button>
                             </li>
                         ))}
                     </ul>

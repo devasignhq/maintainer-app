@@ -10,10 +10,19 @@ type FilterDropdownProps = {
     title: string;
     options: string[];
     extendedButtonClassName?: string;
+    buttonAttributes?: React.ButtonHTMLAttributes<HTMLButtonElement>;
     extendedContainerClassName?: string;
+    noMultiSelect?: boolean;
 }
 
-const FilterDropdown = ({ title, options, extendedButtonClassName, extendedContainerClassName }: FilterDropdownProps) => {
+const FilterDropdown = ({ 
+    title,
+    options,
+    extendedButtonClassName,
+    buttonAttributes,
+    extendedContainerClassName,
+    noMultiSelect
+}: FilterDropdownProps) => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const [open, { toggle }] = useToggle(false);
@@ -22,12 +31,21 @@ const FilterDropdown = ({ title, options, extendedButtonClassName, extendedConta
     );
 
     const toggleItems = (field: string) => {
-        setSelectedItems(previousValue => {
-            if (previousValue[field]) {
-                return { ...previousValue, [field]: false };
-            }
-            return { ...previousValue, [field]: true };
-        });
+        if (!noMultiSelect) {
+            setSelectedItems(prev => ({
+                ...prev,
+                [field]: !prev[field]
+            }));
+            return;
+        }
+
+        // Single selection mode
+        setSelectedItems(
+            Object.keys(selectedItems).reduce((acc, key) => ({
+                ...acc,
+                [key]: key === field
+            }), {})
+        );
     };
     
     useClickAway(() => toggle(), [buttonRef, dropdownRef]);
@@ -36,8 +54,12 @@ const FilterDropdown = ({ title, options, extendedButtonClassName, extendedConta
         <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
             <button 
                 ref={buttonRef}
-                className={twMerge("p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]", extendedButtonClassName)}
+                className={twMerge(
+                    "p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]", 
+                    extendedButtonClassName
+                )}
                 onClick={toggle}
+                {...buttonAttributes}
             >
                 <span>{title}</span>
                 <IoMdArrowDropdown className={`text-2xl ${open && "rotate-180"}`} />
@@ -64,15 +86,19 @@ const FilterDropdown = ({ title, options, extendedButtonClassName, extendedConta
                         {options.map((option, index) => (
                             <li 
                                 key={index} 
-                                className="flex items-center gap-2.5 cursor-pointer"
-                                onClick={() => toggleItems(`${index}`)}
+                                className="flex items-center gap-2.5"
                             >
                                 {selectedItems[`${index}`] ? (
                                     <IoIosCheckbox className="text-[18px] text-primary-100" />
                                 ) : (
                                     <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
                                 )}
-                                <span className="text-body-small text-light-100">{option}</span>
+                                <button 
+                                    className="text-body-small text-light-100"
+                                    onClick={() => toggleItems(`${index}`)} 
+                                >
+                                    {option}
+                                </button>
                             </li>
                         ))}
                     </ul>
