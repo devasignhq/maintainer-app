@@ -5,8 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/app/helper";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
+import { useClickAway, useToggle } from "ahooks";
 
 export default function MainLayout({
     children,
@@ -15,7 +16,12 @@ export default function MainLayout({
 }>) {
     const currentPath = usePathname();
     const checkPath = (path: string) => currentPath.includes(path) || currentPath === path;
+    const projectMenuButtonRef = useRef<HTMLButtonElement>(null);
+    const projectMenuRef = useRef<HTMLDivElement>(null);
+    const [openProjectMenu, { toggle: toggleProjectMenu }] = useToggle(false);
     const [activeProject, setActiveProject] = useState(demoProject[0]);
+        
+    useClickAway(() => toggleProjectMenu(), [projectMenuButtonRef, projectMenuRef]);
 
     return (
         <main className="h-full w-full px-[6.75%] flex flex-col">
@@ -27,50 +33,59 @@ export default function MainLayout({
                             <span>PostgreSQL</span>
                         </div>
                         <div className="px-2.5 py-[7px] bg-dark-300 text-table-header">Free</div>
-                        <button className="cursor-pointer">
+                        <button 
+                            ref={projectMenuButtonRef}
+                            className="cursor-pointer"
+                            onClick={toggleProjectMenu}
+                        >
                             <HiOutlineSelector className="text-2xl text-[#BCBCBC]" />
                         </button>
                     </div>
-                    <div className="absolute -left-12 top-[200%] w-[250px] p-[15px] bg-dark-400 border border-dark-200 shadow-[-20px_4px_40px_0px_#000000]">
-                        <div className="w-full flex flex-col gap-2.5">
-                            {demoProject.map((item) => {
-                                return activeProject.name === item.name ? (
-                                    <button
-                                        key={item.name}
-                                        className="pb-2.5 flex items-center justify-between gap-2.5 border-b border-dark-200"
-                                    >
-                                        <div className="flex items-center gap-2.5">
-                                            <p className="text-body-medium text-light-100">{item.name}</p>
+                    {openProjectMenu && (
+                        <div 
+                            ref={projectMenuRef}
+                            className="absolute -left-6 top-[calc(100%+20px)] z-10 w-[250px] p-[15px] bg-dark-400 border border-dark-200 shadow-[-20px_4px_40px_0px_#000000]"
+                        >
+                            <div className="w-full flex flex-col gap-2.5">
+                                {demoProject.map((item) => {
+                                    return activeProject.name === item.name ? (
+                                        <button
+                                            key={item.name}
+                                            className="pb-2.5 flex items-center justify-between gap-2.5 border-b border-dark-200"
+                                        >
+                                            <div className="flex items-center gap-2.5">
+                                                <p className="text-body-medium text-light-100">{item.name}</p>
+                                                <div className={`px-2.5 py-[7px] text-body-small ${item.plan === "Free" ? "text-light-100 bg-dark-300" : "text-dark-500 bg-primary-100"}`}>
+                                                    {item.plan}
+                                                </div>
+                                            </div>
+                                            <FaCheck className="text-xl text-light-100" />
+                                        </button>
+                                    ):(
+                                        <button
+                                            key={item.name}
+                                            className="group flex items-center justify-between gap-2.5"
+                                            onClick={() => setActiveProject(item)}
+                                        >
+                                            <p className="text-body-medium text-dark-100 group-hover:text-light-100">{item.name}</p>
                                             <div className={`px-2.5 py-[7px] text-body-small ${item.plan === "Free" ? "text-light-100 bg-dark-300" : "text-dark-500 bg-primary-100"}`}>
                                                 {item.plan}
                                             </div>
-                                        </div>
-                                        <FaCheck className="text-xl text-light-100" />
-                                    </button>
-                                ):(
-                                    <button
-                                        key={item.name}
-                                        className="group flex items-center justify-between gap-2.5"
-                                        onClick={() => setActiveProject(item)}
-                                    >
-                                        <p className="text-body-medium text-dark-100 group-hover:text-light-100">{item.name}</p>
-                                        <div className={`px-2.5 py-[7px] text-body-small ${item.plan === "Free" ? "text-light-100 bg-dark-300" : "text-dark-500 bg-primary-100"}`}>
-                                            {item.plan}
-                                        </div>
-                                    </button>
-                                )
-                            })}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                            <ButtonPrimary
+                                format="OUTLINE"
+                                text="New Project"
+                                sideItem={<HiPlus />}
+                                attributes={{
+                                    onClick: () => {},
+                                }}
+                                extendedClassName="w-full mt-[30px]"
+                            />
                         </div>
-                        <ButtonPrimary
-                            format="OUTLINE"
-                            text="New Project"
-                            sideItem={<HiPlus />}
-                            attributes={{
-                                onClick: () => {},
-                            }}
-                            extendedClassName="w-full mt-[30px]"
-                        />
-                    </div>
+                    )}
                 </div>
             </section>
             {!currentPath.includes(ROUTES.ONBOARDING) && (
