@@ -10,26 +10,50 @@ const TaskListSection = () => {
     const [activeTaskId, setActiveTaskId] = useState("1");
 
     return (
-        <section className="min-w-[360px] w-[12%] h-full pt-[30px] flex flex-col">
-            <div className="pr-5 flex items-center gap-2.5">
+        <section className="min-w-[366px] w-[12%] h-full pt-[30px] flex flex-col">
+            <div className="space-y-2.5 pr-5">
                 <InputField 
                     Icon={FiSearch}
                     attributes={{
                         placeholder: "Search Tasks or Issues",
                         name: "search",
-                        style: { fontSize: "12px" },
+                        style: { fontSize: "12px", height: "40px" },
                     }}
-                    extendedContainerClassName="h-full w-full"
-                    extendedInputClassName="h-full text-body-tiny text-light-100"
+                    extendedContainerClassName="w-full"
+                    extendedInputClassName="text-body-tiny text-light-100"
                 />
-                <FilterDropdown 
-                    title="Labels"
-                    options={["bug", "feature", "enhancement", "question"]}
-                />
-                {/* <FilterDropdown 
-                    title="Milestones"
-                    options={["Q1", "Launch", "Dragon V2"]}
-                /> */}
+                <div className="flex items-center gap-2.5">
+                    <FilterDropdown
+                        title="Labels"
+                        options={["bug", "feature", "enhancement", "question"]}
+                        extendedContainerClassName="w-full"
+                        extendedButtonClassName="w-full py-[5px]"
+                        buttonAttributes={{ 
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }
+                        }}
+                    />
+                    <FilterDropdown
+                        title="Code Repo"
+                        options={["https://github.com/", "https://github.com/", "https://github.com/"]}
+                        extendedContainerClassName="w-full"
+                        extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
+                        buttonAttributes={{ 
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }
+                        }}
+                        noMultiSelect
+                    />
+                    <FilterDropdown
+                        title="Milestone"
+                        options={["Stage One", "Planning", "Documentation", "Testing"]}
+                        extendedContainerClassName="w-full"
+                        extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
+                        buttonAttributes={{ 
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                            disabled: true
+                        }}
+                        noMultiSelect
+                    />
+                </div>
             </div>
             <div className="pr-5 flex items-center justify-between my-[30px]">
                 <h6 className="text-headline-small text-light-100">Project Tasks</h6>
