@@ -1,9 +1,11 @@
 "use client";
 import { CommentDto, CommentType } from "@/app/models/comment.model";
 import { useRef, useState } from "react";
-import { FiArrowUp } from "react-icons/fi";
+import { FiArrowUp, FiCheckCircle } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
 import Image from "next/image";
+import ButtonPrimary from "@/app/components/ButtonPrimary";
+import { MdOutlineCancel } from "react-icons/md";
 
 const ConversationView = () => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -36,22 +38,62 @@ const ConversationView = () => {
                     </div>
                 ) : (
                     <>
-                    <div className="w-fit px-[15px] py-[3px] my-5 mx-auto border border-primary-200 text-body-medium text-light-200">
-                        Monday - 02/05/2025
-                    </div>
-                    {comments.map((comment) => (
-                        <div 
-                            key={comment.id} 
-                            className={`max-w-[78%] p-[15px] space-y-2.5 mb-[30px]
-                                ${comment.type === CommentType.TIMELINE_MODIFICATION 
-                                    ? "bg-primary-300 float-left" 
-                                    : "bg-dark-300 float-right"}`
-                            }
-                        >
-                            <p className="text-body-medium text-light-100">{comment.message}</p>
-                            <small className="text-body-tiny font-bold text-dark-200">3:45 PM</small>
+                        <div className="w-fit px-[15px] py-[3px] my-5 mx-auto border border-primary-200 text-body-medium text-light-200">
+                            Monday - 02/05/2025
                         </div>
-                    ))}
+                        {comments.map((comment) => {
+                            return comment.attachments.length === 0 ? (
+                                <div 
+                                    key={comment.id} 
+                                    className={`max-w-[78%] p-[15px] space-y-2.5 mb-[30px]
+                                        ${comment.type === CommentType.TIMELINE_MODIFICATION 
+                                            ? "bg-primary-300 float-left" 
+                                            : "bg-dark-300 float-right"}`
+                                    }
+                                >
+                                    <p className="text-body-medium text-light-100">{comment.message}</p>
+                                    <small className="text-body-tiny font-bold text-dark-200">3:45 PM</small>
+                                </div>
+                            ):(
+                                <div className="max-w-[78%] space-y-2.5 mb-[30px]">
+                                    <div 
+                                        key={comment.id} 
+                                        className="max-w-full p-[15px] bg-dark-400 border border-dark-300 float-left space-y-5"
+                                    >
+                                        <p className="text-body-medium text-light-100">{comment.message}</p>
+                                        <div className="flex gap-2.5">
+                                            <ButtonPrimary
+                                                format="OUTLINE"
+                                                text="Reject"
+                                                attributes={{
+                                                    onClick: () => {},
+                                                }}
+                                            />
+                                            <ButtonPrimary
+                                                format="SOLID"
+                                                text="Approve"
+                                                attributes={{
+                                                    onClick: () => {},
+                                                }}
+                                            />
+                                        </div>
+                                        <small className="text-body-tiny font-bold text-dark-200">3:45 PM</small>
+                                    </div>
+                                    <div className="w-full p-2.5 bg-dark-400 border border-indicator-100 flex items-center gap-2.5">
+                                        <FiCheckCircle className="text-2xl text-indicator-100" />
+                                        <p className="text-body-medium text-dark-100">
+                                            You’ve extended the timeline of this task by 2 days.
+                                        </p>
+                                    </div>
+                                    <div className="w-full p-2.5 bg-dark-400 border border-indicator-500 flex items-center gap-2.5">
+                                        <MdOutlineCancel className="text-2xl text-indicator-500" />
+                                        <p className="text-body-medium text-dark-100">
+                                            Timeline extension rejected.
+                                        </p>
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </>
                 )}
             </div>
@@ -127,7 +169,7 @@ export const sampleComments: CommentDto[] = [
         taskId: "task1",
         type: CommentType.GENERAL,
         message: "Sure! Here's a link to my portfolio and some relevant projects I've worked on.",
-        attachments: ["portfolio.pdf"],
+        attachments: [],
         createdAt: "2024-05-07T10:00:00Z",
         updatedAt: "2024-05-07T10:00:00Z"
     },
@@ -141,7 +183,7 @@ export const sampleComments: CommentDto[] = [
             requestedTimeline: 14,
             newTimeline: 28
         },
-        attachments: [],
+        attachments: ["https://example.com/scope.pdf"],
         createdAt: "2024-05-07T10:15:00Z",
         updatedAt: "2024-05-07T10:15:00Z"
     },
