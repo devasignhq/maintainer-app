@@ -1,7 +1,7 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { ROUTES } from "@/app/utils/data";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
 
 const Account = () => {

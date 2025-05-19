@@ -2,10 +2,10 @@
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { SubscriptionPlanDto } from "@/app/models/subscription-plan.model";
 import { BsLayers } from "react-icons/bs";
-import { FiArrowLeft, FiArrowRight, FiLayers, FiZap } from "react-icons/fi";
+import { FiArrowRight, FiLayers, FiZap } from "react-icons/fi";
 import SubscriptionCard from "./components/SubscriptionCard";
 import { ROUTES } from "@/app/utils/data";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const cardIcons: React.ReactNode[] = [
     <BsLayers key="basic" />,
@@ -22,13 +22,13 @@ const SubscriptionPlan = () => {
 
     return (
         <>
-            <button 
+            {/* <button 
                 className="gradient-border-btn relative p-2.5 bg-dark-400 text-light-100 text-2xl my-[30px]"
                 onClick={() => {}}
             >
                 <FiArrowLeft />
-            </button>
-            <h1 className="text-display-large text-light-100 pb-[42px]">
+            </button> */}
+            <h1 className="text-display-large text-light-100 pt-[105px] pb-[42px]">
                 Hello, <span className="text-light-200">{" "}lenny_malcolm{" "}</span> 👋
             </h1>
             <h1 className="text-headline-medium text-light-200 pb-[15px]">

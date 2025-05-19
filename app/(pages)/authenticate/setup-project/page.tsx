@@ -4,7 +4,7 @@ import { FiArrowRight } from "react-icons/fi";
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { ROUTES } from "@/app/utils/data";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const projectSchema = yup.object({
     name: yup.string().required("Project name is required"),
