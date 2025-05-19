@@ -3,6 +3,8 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowRight } from "react-icons/fi";
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { ROUTES } from "@/app/utils/data";
+import { useRouter } from "next/router";
 
 const projectSchema = yup.object({
     name: yup.string().required("Project name is required"),
@@ -10,6 +12,8 @@ const projectSchema = yup.object({
 });
 
 const SubscriptionPlan = () => {
+    const router = useRouter();
+    
     const formik = useFormik({
         initialValues: {
             name: "",
@@ -17,7 +21,8 @@ const SubscriptionPlan = () => {
         },
         validationSchema: projectSchema,
         onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
+            console.log(values);
+            router.push(ROUTES.ONBOARDING);
         },
     });
 
@@ -65,10 +70,7 @@ const SubscriptionPlan = () => {
                     format="SOLID"
                     text="Proceed"
                     sideItem={<FiArrowRight />}
-                    attributes={{
-                        type: "submit",
-                        onClick: () => {},
-                    }}
+                    attributes={{ type: "submit" }}
                 />
             </form>
         </div>

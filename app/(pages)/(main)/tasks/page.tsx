@@ -2,7 +2,6 @@
 import TaskListSection from "./sections/TaskListSection";
 import TaskDetailSection from "./sections/TaskDetailSection";
 import TaskOverviewSection from "./sections/TaskOverviewSection";
-// import ReviewTaskApplication from "./modals/ReviewTaskApplication";
 
 const Tasks = () => {
     return (
@@ -10,15 +9,6 @@ const Tasks = () => {
             <TaskListSection />
             <TaskDetailSection />
             <TaskOverviewSection />
-
-            {/* <ConnectRepositoryModal toggleModal={() => {}} /> */}
-            {/* <SetTaskBountyModal toggleModal={() => {}} /> */}
-            {/* <SetTaskTimelineModal toggleModal={() => {}} /> */}
-            {/* <DeleteTaskModal toggleModal={() => {}} /> */}
-            {/* <ReviewPullRequestModal toggleModal={() => {}} /> */}
-            {/* <ApprovePullRequestModal toggleModal={() => {}} /> */}
-            {/* <ApproveTaskDelegation toggleModal={() => {}} /> */}
-            {/* <ReviewTaskApplication toggleModal={() => {}} /> */}
         </div>
     );
 }

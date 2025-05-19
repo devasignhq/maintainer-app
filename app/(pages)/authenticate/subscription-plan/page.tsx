@@ -4,13 +4,21 @@ import { SubscriptionPlanDto } from "@/app/models/subscription-plan.model";
 import { BsLayers } from "react-icons/bs";
 import { FiArrowLeft, FiArrowRight, FiLayers, FiZap } from "react-icons/fi";
 import SubscriptionCard from "./components/SubscriptionCard";
+import { ROUTES } from "@/app/utils/data";
+import { useRouter } from "next/router";
+
+const cardIcons: React.ReactNode[] = [
+    <BsLayers key="basic" />,
+    <FiLayers key="pro" />,
+    <FiZap key="enterprise" />,
+]
 
 const SubscriptionPlan = () => {
-    const cardIcons: React.ReactNode[] = [
-        <BsLayers key="basic" />,
-        <FiLayers key="pro" />,
-        <FiZap key="enterprise" />,
-    ]
+    const router = useRouter();
+
+    const handleSubscription = async () => {
+        router.push(ROUTES.SETUP_PROJECT);
+    };
 
     return (
         <>
@@ -44,9 +52,7 @@ const SubscriptionPlan = () => {
                 format="SOLID"
                 text="Get Started"
                 sideItem={<FiArrowRight />}
-                attributes={{
-                    onClick: () => {},
-                }}
+                attributes={{ onClick: handleSubscription }}
             />
         </>
     );

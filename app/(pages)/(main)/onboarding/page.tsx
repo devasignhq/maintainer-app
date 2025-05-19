@@ -40,9 +40,7 @@ const Onboarding = () => {
                             format="SOLID"
                             text="Import"
                             sideItem={<FiArrowUpRight />}
-                            attributes={{
-                                onClick: toggleImportTaskModal,
-                            }}
+                            attributes={{ onClick: toggleImportTaskModal }}
                             extendedClassName="bg-light-200 hover:bg-light-100"
                         />
                     </div>
@@ -61,9 +59,7 @@ const Onboarding = () => {
                             format="SOLID"
                             text="Top Up"
                             sideItem={<HiPlus />}
-                            attributes={{
-                                onClick: toggleFundWalletModal,
-                            }}
+                            attributes={{ onClick: toggleFundWalletModal }}
                         />
                     </div>
                 </div>
@@ -75,7 +71,7 @@ const Onboarding = () => {
                 </p>
                 <button 
                     className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                    onClick={() => {}}
+                    onClick={toggleImportTaskModal}
                 >
                     <span>Continue</span>
                     <FiArrowUpRight className="text-2xl" />

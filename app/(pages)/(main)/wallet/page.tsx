@@ -9,9 +9,22 @@ import BountyTable from "./tables/BountyTable";
 import TopUpTable from "./tables/TopUpTable";
 import WithdrawalTable from "./tables/WithdrawalTable";
 import SwapTable from "./tables/SwapTable";
+import { useToggle } from "ahooks";
+import SwapAssetModal from "./modals/SwapAssetModal";
+import WithdrawAssetModal from "./modals/WithdrawAssetModal";
+import FundWalletModal from "./modals/FundWalletModal";
 
 const Wallet = () => {
     const [activeTab, setActiveTab] = useState(tabs[0]);
+    const [openWithdrawAssetModal, { toggle: toggleWithdrawAssetModal }] = useToggle(false);
+    const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
+    const [openSwapAssetModal, { toggle: toggleSwapAssetModal }] = useToggle(false);
+    const [swapAssetFrom, setSwapAssetFrom] = useState<"XLM" | "USDC">("XLM");
+
+    const handleOpenSwapAssetModal = (from: "XLM" | "USDC") => {
+        setSwapAssetFrom(from);
+        toggleSwapAssetModal();
+    };
 
     return (
         <>
@@ -24,18 +37,14 @@ const Wallet = () => {
                             format="SOLID"
                             text="Withdraw"
                             sideItem={<FiArrowDownRight />}
-                            attributes={{
-                                onClick: () => {},
-                            }}
+                            attributes={{ onClick: toggleWithdrawAssetModal }}
                             extendedClassName="bg-primary-400"
                         />
                         <ButtonPrimary
                             format="SOLID"
                             text="Top Up"
                             sideItem={<HiPlus />}
-                            attributes={{
-                                onClick: () => {},
-                            }}
+                            attributes={{ onClick: toggleFundWalletModal }}
                         />
                     </div>
                 </div>
@@ -50,7 +59,7 @@ const Wallet = () => {
                         </div>
                         <button 
                             className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                            onClick={() => {}}
+                            onClick={() => handleOpenSwapAssetModal("XLM")}
                         >
                             <span>Swap to USDC</span>
                             <LiaExchangeAltSolid className="text-[22px]" />
@@ -66,7 +75,7 @@ const Wallet = () => {
                         </div>
                         <button 
                             className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                            onClick={() => {}}
+                            onClick={() => handleOpenSwapAssetModal("USDC")}
                         >
                             <span>Swap to XLM</span>
                             <LiaExchangeAltSolid className="text-[22px]" />
@@ -97,8 +106,15 @@ const Wallet = () => {
             {activeTab.enum === "SWAP" && <SwapTable />}
             {activeTab.enum === "WITHDRAWAL" && <WithdrawalTable />}
         </div>
-        {/* <WithdrawAssetModal toggleModal={() => {}} /> */}
-        {/* <SwapAssetModal from="XLM" toggleModal={() => {}} /> */}
+        
+        {openWithdrawAssetModal && <WithdrawAssetModal toggleModal={toggleWithdrawAssetModal} />}
+        {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
+        {openSwapAssetModal && 
+            <SwapAssetModal 
+                toggleModal={toggleSwapAssetModal} 
+                from={swapAssetFrom}
+            />
+        }
         </>
     )
 }

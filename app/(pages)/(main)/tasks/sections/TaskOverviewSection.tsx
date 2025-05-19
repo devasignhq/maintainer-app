@@ -3,9 +3,19 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight, FiEdit3 } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "../components/TaskActivityCard";
+import Link from "next/link";
+import { useToggle } from "ahooks";
+import SetTaskBountyModal from "../modals/SetTaskBountyModal";
+import SetTaskTimelineModal from "../modals/SetTaskTimelineModal";
+import DeleteTaskModal from "../modals/DeleteTaskModal";
 
 const TaskOverviewSection = () => {
+    const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
+    const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
+    const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
+
     return (
+        <>
         <section className="min-w-[360px] w-[12%] h-full pt-[30px] flex flex-col">
             <div className="pl-5 pb-[30px] space-y-[30px] border-b border-dark-200">
                 <h6 className="text-headline-small text-light-100">Task Overview</h6>
@@ -13,16 +23,16 @@ const TaskOverviewSection = () => {
                     <p className="text-body-tiny text-light-100">Developer</p>
                     <div className="flex items-center gap-1">
                         <p className="text-body-large text-light-200">@lenny_malcolm</p>
-                        <button onClick={() => {}}>
+                        <Link href={""}>
                             <FiArrowUpRight className="text-2xl text-primary-100 hover:text-light-100" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
                 <div className="space-y-2.5">
                     <p className="text-body-tiny text-light-100">Bounty</p>
                     <div className="flex items-center gap-1">
                         <p className="text-body-large text-light-200">125 USDC</p>
-                        <button onClick={() => {}}>
+                        <button onClick={toggleSetTaskBountyModal}>
                             <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
                         </button>
                     </div>
@@ -31,7 +41,7 @@ const TaskOverviewSection = () => {
                     <p className="text-body-tiny text-light-100">Time Left</p>
                     <div className="flex items-center gap-1">
                         <p className="text-body-large text-light-200">1 week 5 days</p>
-                        <button onClick={() => {}}>
+                        <button onClick={toggleSetTaskTimelineModal}>
                             <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
                         </button>
                     </div>
@@ -40,9 +50,7 @@ const TaskOverviewSection = () => {
                     format="OUTLINE"
                     text="Delete Task"
                     sideItem={<MdOutlineCancel />}
-                    attributes={{
-                        onClick: () => {},
-                    }}
+                    attributes={{ onClick: toggleDeleteTaskModal }}
                     extendedClassName="border-indicator-500 text-indicator-500"
                 />
             </div>
@@ -59,6 +67,11 @@ const TaskOverviewSection = () => {
                 ))}
             </div>
         </section>
+        
+        {openSetTaskBountyModal && <SetTaskBountyModal toggleModal={toggleSetTaskBountyModal} />}
+        {openSetTaskTimelineModal && <SetTaskTimelineModal toggleModal={toggleSetTaskTimelineModal} />}
+        {openDeleteTaskModal && <DeleteTaskModal toggleModal={toggleDeleteTaskModal} />}
+        </>
     );
 }
  

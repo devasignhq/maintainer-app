@@ -5,11 +5,15 @@ import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
 import TaskCard from "../components/TaskCard";
+import ImportTaskModal from "../modals/ImportTaskModal";
+import { useToggle } from "ahooks";
 
 const TaskListSection = () => {
     const [activeTaskId, setActiveTaskId] = useState("1");
+    const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
 
     return (
+        <>
         <section className="min-w-[366px] w-[12%] h-full pt-[30px] flex flex-col">
             <div className="space-y-2.5 pr-5">
                 <InputField 
@@ -59,7 +63,7 @@ const TaskListSection = () => {
                 <h6 className="text-headline-small text-light-100">Project Tasks</h6>
                 <button 
                     className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                    onClick={() => {}}
+                    onClick={toggleImportTaskModal}
                 >
                     <span>Import Tasks</span>
                     <HiPlus className="text-2xl" />
@@ -79,6 +83,9 @@ const TaskListSection = () => {
                 ))}
             </div>
         </section>
+        
+        {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
+        </>
     );
 }
  

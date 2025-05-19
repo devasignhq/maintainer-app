@@ -1,8 +1,16 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
+import { ROUTES } from "@/app/utils/data";
+import { useRouter } from "next/router";
 import { FaGithub } from "react-icons/fa";
 
 const Account = () => {
+    const router = useRouter();
+
+    const handleGitHubAuth = async () => {
+        router.push(ROUTES.SUBSCRIPTION_PLAN);
+    };
+
     return (
         <div className="pt-[105px]">
             <h1 className="text-display-large text-light-100">Get Started</h1>
@@ -16,9 +24,7 @@ const Account = () => {
                 format="SOLID"
                 text="Continue with GitHub"
                 sideItem={<FaGithub />}
-                attributes={{
-                    onClick: () => {},
-                }}
+                attributes={{ onClick: handleGitHubAuth }}
                 extendedClassName="w-[264px]"
             />
         </div>
