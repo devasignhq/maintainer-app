@@ -3,12 +3,22 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { ROUTES } from "@/app/utils/data";
 import { useRouter } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
+import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth, githubProvider } from "@/lib/firebase";
 
 const Account = () => {
     const router = useRouter();
 
     const handleGitHubAuth = async () => {
-        router.push(ROUTES.SUBSCRIPTION_PLAN);
+        try {
+            const result = await signInWithPopup(auth, githubProvider);
+            const credential = GithubAuthProvider.credentialFromResult(result);
+            const token = credential!.accessToken;
+            router.push(ROUTES.SUBSCRIPTION_PLAN);
+        } catch (error) {
+            alert("GitHub sign-in failed. Please try again.");
+            console.error(error);
+        }
     };
 
     return (
