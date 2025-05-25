@@ -9,7 +9,7 @@ export const ENDPOINTS = {
     USER: {
         GET: preset.USER + "/",
         CREATE: preset.USER + "/",
-        UPDATE: preset.USER + "/",
+        UPDATE_USERNAME: preset.USER + "/username",
         ADDRESS_BOOK: preset.USER + "/address-book",
     },
     PROJECT: {
@@ -19,9 +19,12 @@ export const ENDPOINTS = {
         UPDATE: preset.PROJECT + "/{projectId}",
         DELETE: preset.PROJECT + "/{projectId}",
         ADD_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team",
+        UPDATE_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team/{userId}",
+        REMOVE_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team/{userId}",
         ISSUES: preset.PROJECT + "/issues",
-        MILESTONES: preset.PROJECT + "/milestones",
         LABELS: preset.PROJECT + "/labels",
+        MILESTONES: preset.PROJECT + "/milestones",
+        CONNECT_REPO: preset.PROJECT + "/connect-repo",
     },
     TASK: {
         GET_ALL: preset.TASK + "/",
@@ -37,10 +40,12 @@ export const ENDPOINTS = {
         REPLY_TIMELINE_MODIFICATION: preset.TASK + "/{taskId}/timeline/reply",
         ADD_COMMENT: preset.TASK + "/{taskId}/comments",
         UPDATE_COMMENT: preset.TASK + "/{taskId}/comments/{commentId}",
+        SUBMIT_APPLICATION: preset.TASK + "/{taskId}/apply",
     },
     WALLET: {
         GET_WALLET: preset.WALLET + "/wallet",
         WITHDRAW: preset.WALLET + "/withdraw",
         SWAP: preset.WALLET + "/swap",
+        TRANSACTIONS: preset.WALLET + "/transactions",
     },
 };
