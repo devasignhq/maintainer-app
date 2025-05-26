@@ -1,47 +1,39 @@
-import { BalanceLineNative, BalanceLineAsset } from "./wallet.model";
-import { ProjectDto } from "./project.model";
-import { TaskDto } from "./task.model";
+import { UserProjectPermissionDto } from "./permission.model"
+import { ProjectDto } from "./project.model"
+import { TaskDto } from "./task.model"
+import { TransactionDto } from "./wallet.model"
 
 export type UserDto = {
-    userId: string;
-    username: string;
-    walletAddress: string;
-    addressBook?: AddressBook[];
-    createdAt: string;
-    updatedAt: string;
-    
-    contributionSummary?: ContributionSummaryDto;
-    createdTasks?: TaskDto[];
-    contributedTasks?: TaskDto[];
-    projects?: ProjectDto[];
-    assets?: (BalanceLineNative | BalanceLineAsset)[];
+    userId: string
+    username: string
+    walletAddress: string
+    addressBook: AddressBook[]
+    createdAt: string
+    updatedAt: string
+
+    contributionSummary?: ContributionSummary | null
+    createdTasks?: TaskDto[]
+    contributedTasks?: TaskDto[]
+    projects?: ProjectDto[]
+    userProjectPermissions?: UserProjectPermissionDto[]
+    transactions?: TransactionDto[]
+    tasksAppliedFor?: TaskDto[]
 }
 
 export type AddressBook = {
-    name: string;
-    address: string;
+    name: string
+    address: string
 }
 
-export type ContributionSummaryDto = {
-    id: string;
-    tasksTaken: number;
-    tasksCompleted: number;
-    averageRating: number;
-    totalEarnings: number;
-    userId: string;
-
-    user?: UserDto;
-}
-
-export type UpdateUserDto = {
-    username: string;
-}
-
-export type UpdateAddressBookDto = {
-    name: string;
-    address: string;
+export type ContributionSummary = {
+    id: string
+    tasksCompleted: number
+    activeTasks: number
+    totalEarnings: number
+    userId: string
+    user?: Pick<UserDto, "username" | "userId" | "walletAddress" | "addressBook" | "createdAt" | "updatedAt">;
 }
 
 export type QueryUserDto = {
-    view?: "basic" | "full" | "profile";
+    view: "basic" | "full" | "profile"
 }
