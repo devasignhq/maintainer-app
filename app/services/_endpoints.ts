@@ -43,9 +43,9 @@ export const ENDPOINTS = {
         SUBMIT_APPLICATION: preset.TASK + "/{taskId}/apply",
     },
     WALLET: {
-        GET_WALLET: preset.WALLET + "/wallet",
+        GET_WALLET: preset.WALLET + "/account",
         WITHDRAW: preset.WALLET + "/withdraw",
         SWAP: preset.WALLET + "/swap",
-        TRANSACTIONS: preset.WALLET + "/transactions",
+        TRANSACTIONS: preset.WALLET + "/transactions/{projectId}",
     },
 };

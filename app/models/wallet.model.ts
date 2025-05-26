@@ -1,80 +1,56 @@
-export type WithdrawCryptoDto = {
-    amount: number;
-    walletAddress: string;
-    assetType?: "USDC" | "XLM";
+import { ProjectDto } from "./project.model"
+import { TaskDto } from "./task.model"
+import { UserDto } from "./user.model"
+
+export type WithdrawAssetDto = {
+    walletAddress: string
+    amount: string
+    assetType: "XLM" | "USDC"
 }
 
-export type SwapCryptoDto = {
-    amount: number;
-    toAssetType?: "USDC" | "XLM";
+export type SwapAssetDto = {
+    amount: string
+    toAssetType: "XLM" | "USDC"
 }
 
-export type AccountRecord = {
-    id: string;
-    paging_token: string;
-    account_id: string;
-    sequence: string;
-    sequence_ledger?: number;
-    sequence_time?: string;
-    subentry_count: number;
-    home_domain?: string;
-    inflation_destination?: string;
-    last_modified_ledger: number;
-    last_modified_time: string;
-    thresholds: AccountThresholds;
-    flags: Flags;
-    balances: (BalanceLineNative | BalanceLineAsset)[];
-    signers: AccountRecordSigners[];
-    data: (options: {
-        value: string;
-    }) => Promise<{
-        value: string;
-    }>;
-    data_attr: {
-        [key: string]: string;
-    };
-    sponsor?: string;
-    num_sponsoring: number;
-    num_sponsored: number;
+export type TransactionDto = {
+    id: string
+    category: TransactionCategory
+    amount: number
+    doneAt: string
+    taskId: string | null
+    sourceAddress: string | null
+    destinationAddress: string | null
+    asset: string | null
+    assetFrom: string | null
+    assetTo: string | null
+    projectId: string
+    userId: string
+    
+    task?: TaskDto | null
+    project?: ProjectDto
+    user?: UserDto
 }
 
-export type BalanceLineNative = {
-    balance: string;
-    asset_type: "native";
-    buying_liabilities: string;
-    selling_liabilities: string;
-}
+export type AllTransationsDto = Pick<TransactionDto, "id" | "category" | "amount" | "doneAt">
+export type BountyTransationsDto = Pick<TransactionDto, "id" | "category" | "amount" | "doneAt" | "task">
+export type TopUpTransationsDto = Pick<TransactionDto, "id" | "category" | "amount" | "doneAt" | "sourceAddress" | "asset">
+export type SwapTransationsDto = Pick<TransactionDto, "id" | "category" | "amount" | "doneAt" | "assetFrom" | "assetTo">
+export type WithdrawalTransationsDto = Pick<TransactionDto, "id" | "category" | "amount" | "doneAt" | "destinationAddress" | "asset">
 
-export type BalanceLineAsset = {
-    balance: string;
-    limit: string;
-    asset_type: string;
-    asset_code: string;
-    asset_issuer: string;
-    buying_liabilities: string;
-    selling_liabilities: string;
-    last_modified_ledger: number;
-    is_authorized: boolean;
-    is_authorized_to_maintain_liabilities: boolean;
-    is_clawback_enabled: boolean;
-    sponsor?: string;
-}
+export const TRANSACTION_CATEGORY = {
+    BOUNTY: 'BOUNTY',
+    SWAP_USDC: 'SWAP_USDC',
+    SWAP_XLM: 'SWAP_XLM',
+    WITHDRAWAL: 'WITHDRAWAL',
+    TOP_UP: 'TOP_UP'
+};
 
-export type AccountThresholds = {
-    low_threshold: number;
-    med_threshold: number;
-    high_threshold: number;
-}
+export type TransactionCategory = keyof typeof TRANSACTION_CATEGORY;
 
-export type Flags = {
-    auth_immutable: boolean;
-    auth_required: boolean;
-    auth_revocable: boolean;
-    auth_clawback_enabled: boolean;
-}
-
-export type AccountRecordSigners = {
-    key: string;
-    weight: number;
-    type: string;
+export type QueryTransactionDto = {
+    categories?: string
+    page?: number
+    limit?: number
+    sort?: "asc" | "desc"
 }
