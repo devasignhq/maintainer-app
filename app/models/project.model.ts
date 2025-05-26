@@ -1,18 +1,25 @@
-import { TaskDto } from "./task.model";
-import { UserDto } from "./user.model";
+import { UserProjectPermissionDto } from "./permission.model"
+import { SubscriptionPlanDto } from "./subscription-plan.model"
+import { TaskDto } from "./task.model"
+import { UserDto } from "./user.model"
+import { TransactionDto } from "./wallet.model"
 
 export type ProjectDto = {
-    id: string;
-    name: string;
-    description: string;
-    repoUrl: string;
-    escrowAddress: string | null;
-    createdAt: string;
-    updatedAt: string;
-    
-    tasks?: TaskDto[];
-    users?: UserDto[];
-    stats?: ProjectStats;
+    id: string
+    name: string
+    description: string
+    repoUrls: string[]
+    walletAddress: string
+    subscriptionPackageId: string | null
+    createdAt: string
+    updatedAt: string
+      
+    subscriptionPackage?: SubscriptionPlanDto | null
+    tasks?: TaskDto[]
+    users?: UserDto[]
+    userProjectPermission?: UserProjectPermissionDto[]
+    transactions?: TransactionDto[]
+    stats?: ProjectStats
 }
 
 export type ProjectStats = {
@@ -24,37 +31,52 @@ export type ProjectStats = {
 }
 
 export type CreateProjectDto = {
-    repoUrl: string;
+    name: string
+    description?: string
 }
 
-export type UpdateProjectDto = {
-    repoUrl: string;
+export type UpdateProjectDto = Partial<CreateProjectDto>
+
+export type ConnectRepositoryDto = {
+    repoUrl: string
 }
 
-export type AddTeamMembersDto = {
-    githubUsernames: string[];
+export type AddTeamMemberDto = {
+    username: string
+    email: string
+    permissionCodes: string[]
 }
 
-export type AddTeamMembersResponseDto = {
-    username: string;
-    status: string;
+export type UpdateTeamMemberDto = {
+    permissionCodes: string[]
 }
 
-export type GetProjectIssues = {
-    repoUrl: string;
-}
-
-export type QueryProjectIssues = {
-    page?: number;
-    limit?: number;
-    labels?: string;
-    milestone?: string;
-    sort?: "created" | "updated" | "comments";
-    direction?: "asc" | "desc";
+export type GetRepoAttachments = {
+    repoUrl: string
 }
 
 export type QueryProjectDto = {
-    searchTerm?: string;
-    page?: number;
-    limit?: number;
+    searchTerm?: string
+    page?: string
+    limit?: string
+}
+
+export type QueryProjectIssues = {
+    page?: number
+    limit?: number
+    labels?: string
+    milestone?: number
+    sort?: number
+    direction?: number
+}
+
+export type ConnectRepositoryResponseDto = {
+    message: string
+    repoUrls: string[]
+}
+
+export type AddTeamMemberResponseDto = {
+    username: string
+    status: "added" | "invited" | "not_found"
+    message?: string
 }
