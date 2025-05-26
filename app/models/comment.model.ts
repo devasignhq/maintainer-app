@@ -1,3 +1,5 @@
+import { TimelineType } from "./task.model";
+
 export type CommentDto = {
     id: string;
     userId: string;
@@ -13,6 +15,7 @@ export type CommentDto = {
 export type CommentMetadata = {
     requestedTimeline?: number;
     newTimeline?: number;
+    timelineType?: TimelineType;
 }
 
 export enum CommentType {
