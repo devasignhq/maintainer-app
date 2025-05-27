@@ -42,7 +42,8 @@ export class TaskAPI {
     }
 
     static async markAsComplete(taskId: string, data: MarkAsCompleteDto) {
-        return HttpClient.post<Partial<TaskDto>>(ENDPOINTS.TASK.MARK_AS_COMPLETE.replace("{taskId}", taskId), data);
+        return HttpClient.post<Pick<TaskDto, "status" | "taskSubmissions" | "updatedAt">>(
+            ENDPOINTS.TASK.MARK_AS_COMPLETE.replace("{taskId}", taskId), data);
     }
 
     static async validateCompletion(taskId: string) {

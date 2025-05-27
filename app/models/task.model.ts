@@ -43,9 +43,25 @@ export type TaskDto = {
     contributor?: UserDto | null
     project?: ProjectDto
     transactions?: UserProjectPermissionDto[]
+    taskSubmissions: TaskSubmission[]
 }
 
 export type TaskIssue = Pick<IssueDto, "id" | "number" | "title" | "body" | "url" | "labels" | "locked" | "state" | "created_at" | "updated_at" | "pull_request">
+
+export type TaskSubmission = {
+    id: string
+    userId: string
+    taskId: string
+    projectId: string
+    pullRequest: string
+    videoUrl?: string
+    createdAt: string
+    updatedAt: string
+    
+    user?: UserDto
+    task?: TaskDto
+    project?: ProjectDto
+}
 
 export type CreateTaskDto = {
     repoUrl: string

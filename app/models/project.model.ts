@@ -1,6 +1,6 @@
 import { UserProjectPermissionDto } from "./permission.model"
 import { SubscriptionPlanDto } from "./subscription-plan.model"
-import { TaskDto } from "./task.model"
+import { TaskDto, TaskSubmission } from "./task.model"
 import { UserDto } from "./user.model"
 import { TransactionDto } from "./wallet.model"
 
@@ -14,12 +14,13 @@ export type ProjectDto = {
     createdAt: string
     updatedAt: string
       
+    stats?: ProjectStats
     subscriptionPackage?: SubscriptionPlanDto | null
     tasks?: TaskDto[]
     users?: UserDto[]
-    userProjectPermission?: UserProjectPermissionDto[]
+    userProjectPermissions?: UserProjectPermissionDto[]
     transactions?: TransactionDto[]
-    stats?: ProjectStats
+    taskSubmissions?: TaskSubmission[]
 }
 
 export type ProjectStats = {
