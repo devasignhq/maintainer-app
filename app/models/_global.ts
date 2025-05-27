@@ -33,3 +33,9 @@ export type PartialSuccessResponse<F extends string | number | symbol, T> = {
 export type MessageResponse = {
     message: string
 }
+
+export type MessageWithDataResponse<F extends string | number | symbol, T> = {
+    message: string
+} & {
+    [K in F]: T
+}

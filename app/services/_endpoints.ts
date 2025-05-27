@@ -17,14 +17,16 @@ export const ENDPOINTS = {
         GET_BY_ID: preset.PROJECT + "/{projectId}",
         CREATE: preset.PROJECT + "/",
         UPDATE: preset.PROJECT + "/{projectId}",
+        CONNECT_REPO: preset.PROJECT + "/{projectId}/connect-repo",
         DELETE: preset.PROJECT + "/{projectId}",
+
         ADD_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team",
         UPDATE_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team/{userId}",
         REMOVE_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team/{userId}",
+        
         ISSUES: preset.PROJECT + "/issues",
         LABELS: preset.PROJECT + "/labels",
         MILESTONES: preset.PROJECT + "/milestones",
-        CONNECT_REPO: preset.PROJECT + "/connect-repo",
     },
     TASK: {
         GET_ALL: preset.TASK + "/",

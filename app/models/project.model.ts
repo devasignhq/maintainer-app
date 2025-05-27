@@ -70,11 +70,6 @@ export type QueryProjectIssues = {
     direction?: number
 }
 
-export type ConnectRepositoryResponseDto = {
-    message: string
-    repoUrls: string[]
-}
-
 export type AddTeamMemberResponseDto = {
     username: string
     status: "added" | "invited" | "not_found"

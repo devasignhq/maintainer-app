@@ -1,6 +1,19 @@
 import { HttpClient } from "@/lib/axiosInstance";
 import { ENDPOINTS } from "./_endpoints";
-import { AddTeamMembersDto, AddTeamMembersResponseDto, CreateProjectDto, GetProjectIssues, ProjectDto, QueryProjectDto, QueryProjectIssues, UpdateProjectDto } from "../models/project.model";
+import { 
+    AddTeamMemberDto,
+    AddTeamMemberResponseDto,
+    ConnectRepositoryDto,
+    CreateProjectDto,
+    GetRepoAttachments,
+    ProjectDto,
+    QueryProjectDto,
+    QueryProjectIssues,
+    UpdateProjectDto,
+    UpdateTeamMemberDto
+} from "../models/project.model";
+import { MessageResponse, MessageWithDataResponse } from "../models/_global";
+import { IssueDto, IssueLabel, IssueMilestone } from "../models/github.model";
 
 export class ProjectAPI {
     static async getProjects(query?: QueryProjectDto) {
@@ -15,36 +28,54 @@ export class ProjectAPI {
         return HttpClient.post<ProjectDto>(ENDPOINTS.PROJECT.CREATE, project);
     }
 
-    static async updateProject(projectId: string, updates: UpdateProjectDto) {
-        return HttpClient.put<ProjectDto>(ENDPOINTS.PROJECT.UPDATE.replace("{projectId}", projectId), updates);
+    static async connectRepository(projectId: string, data: ConnectRepositoryDto) {
+        return HttpClient.post<MessageWithDataResponse<"repoUrls", string[]>>(
+            ENDPOINTS.PROJECT.UPDATE.replace("{projectId}", projectId), data);
     }
 
+    static async updateProject(projectId: string, data: UpdateProjectDto) {
+        return HttpClient.patch<Pick<ProjectDto, "name" | "description" | "updatedAt">>(
+            ENDPOINTS.PROJECT.UPDATE.replace("{projectId}", projectId), data);
+    }
+    
     static async deleteProject(projectId: string) {
-        return HttpClient.delete(ENDPOINTS.PROJECT.DELETE.replace("{projectId}", projectId));
+        return HttpClient.delete<MessageWithDataResponse<"refunded", string>>(
+            ENDPOINTS.PROJECT.DELETE.replace("{projectId}", projectId));
     }
 
-    static async addTeamMembers(projectId: string, members: AddTeamMembersDto) {
-        return HttpClient.post<AddTeamMembersResponseDto[]>(ENDPOINTS.PROJECT.ADD_TEAM_MEMBER.replace("{projectId}", projectId), members);
+    static async addTeamMember(projectId: string, data: AddTeamMemberDto) {
+        return HttpClient.post<AddTeamMemberResponseDto>(
+            ENDPOINTS.PROJECT.ADD_TEAM_MEMBER.replace("{projectId}", projectId),
+            data
+        );
     }
 
-    static async getIssues(repoDetails: GetProjectIssues, query?: QueryProjectIssues) {
-        return HttpClient.get(ENDPOINTS.PROJECT.ISSUES, { 
-            params: { 
-                ...repoDetails,
-                ...query
-            }
-        });
+    static async updateTeamMember(projectId: string, userId: string, data: UpdateTeamMemberDto) {
+        return HttpClient.patch<MessageResponse>(
+            ENDPOINTS.PROJECT.UPDATE_TEAM_MEMBER
+                .replace("{projectId}", projectId)
+                .replace("{userId}", userId),
+            data
+        );
     }
 
-    static async getMilestones(repoUrl: string) {
-        return HttpClient.get(ENDPOINTS.PROJECT.MILESTONES, { 
-            params: { repoUrl } 
-        });
+    static async removeTeamMember(projectId: string, userId: string) {
+        return HttpClient.delete<MessageResponse>(
+            ENDPOINTS.PROJECT.REMOVE_TEAM_MEMBER
+                .replace("{projectId}", projectId)
+                .replace("{userId}", userId)
+        );
     }
 
-    static async getLabels(repoUrl: string) {
-        return HttpClient.get(ENDPOINTS.PROJECT.LABELS, { 
-            params: { repoUrl } 
-        });
+    static async getProjectIssues(data: GetRepoAttachments, query?: QueryProjectIssues) {
+        return HttpClient.get<IssueDto[]>(ENDPOINTS.PROJECT.ISSUES, { data, params: query });
+    }
+
+    static async getProjectLabels(data: GetRepoAttachments) {
+        return HttpClient.get<IssueLabel[]>(ENDPOINTS.PROJECT.LABELS, { data });
+    }
+
+    static async getProjectMilestones(data: GetRepoAttachments) {
+        return HttpClient.get<IssueMilestone[]>(ENDPOINTS.PROJECT.MILESTONES, { data });
     }
 }
