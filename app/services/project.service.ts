@@ -37,11 +37,6 @@ export class ProjectAPI {
         return HttpClient.patch<Pick<ProjectDto, "name" | "description" | "updatedAt">>(
             ENDPOINTS.PROJECT.UPDATE.replace("{projectId}", projectId), data);
     }
-    
-    static async deleteProject(projectId: string) {
-        return HttpClient.delete<MessageWithDataResponse<"refunded", string>>(
-            ENDPOINTS.PROJECT.DELETE.replace("{projectId}", projectId));
-    }
 
     static async addTeamMember(projectId: string, data: AddTeamMemberDto) {
         return HttpClient.post<AddTeamMemberResponseDto>(
@@ -77,5 +72,10 @@ export class ProjectAPI {
 
     static async getProjectMilestones(data: GetRepoAttachments) {
         return HttpClient.get<IssueMilestone[]>(ENDPOINTS.PROJECT.MILESTONES, { data });
+    }
+    
+    static async deleteProject(projectId: string) {
+        return HttpClient.delete<MessageWithDataResponse<"refunded", string>>(
+            ENDPOINTS.PROJECT.DELETE.replace("{projectId}", projectId));
     }
 }

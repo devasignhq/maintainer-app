@@ -14,6 +14,7 @@ const Account = () => {
             const result = await signInWithPopup(auth, githubProvider);
             const credential = GithubAuthProvider.credentialFromResult(result);
             const token = credential!.accessToken;
+            console.log("GitHub Access Token:", token);
             router.push(ROUTES.SUBSCRIPTION_PLAN);
         } catch (error) {
             alert("GitHub sign-in failed. Please try again.");

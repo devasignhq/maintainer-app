@@ -1,7 +1,16 @@
 import { HttpClient } from "@/lib/axiosInstance";
 import { ENDPOINTS } from "./_endpoints";
-import { CreateTaskDto, MarkAsCompleteDto, QueryTaskDto, ReplyTimelineModification, RequestTimelineModification, TaskDto, UpdateTaskBounty } from "../models/task.model";
-import { CommentDto } from "../models/comment.model";
+import { 
+    CreateTaskDto,
+    MarkAsCompleteDto,
+    QueryTaskDto,
+    ReplyTimelineExtensionRequestDto,
+    RequestTimelineExtensionDto,
+    TaskDto,
+    UpdateTaskBountyDto,
+} from "../models/task.model";
+import { AddCommentDto, CommentDto, UpdateCommentDto } from "../models/comment.model";
+import { MessageResponse, MessageWithDataResponse } from "../models/_global";
 
 export class TaskAPI {
     static async getTasks(query?: QueryTaskDto) {
@@ -12,24 +21,23 @@ export class TaskAPI {
         return HttpClient.get<TaskDto>(ENDPOINTS.TASK.GET_BY_ID.replace("{taskId}", taskId));
     }
 
-    static async createTask(task: CreateTaskDto) {
-        return HttpClient.post<TaskDto>(ENDPOINTS.TASK.CREATE, task);
+    static async createTask(data: { payload: CreateTaskDto }) {
+        return HttpClient.post<TaskDto>(ENDPOINTS.TASK.CREATE, data);
     }
 
-    static async createManyTasks(tasks: CreateTaskDto[]) {
-        return HttpClient.post<TaskDto[]>(ENDPOINTS.TASK.CREATE_MANY, tasks);
+    static async updateTaskBounty(taskId: string, data: UpdateTaskBountyDto) {
+        return HttpClient.patch<Pick<TaskDto, "bounty" | "updatedAt">>(
+            ENDPOINTS.TASK.UPDATE_TASK_BOUNTY.replace("{taskId}", taskId), data);
     }
 
-    static async updateTaskBounty(taskId: string, bounty: UpdateTaskBounty) {
-        return HttpClient.patch<Partial<TaskDto>>(ENDPOINTS.TASK.UPDATE_TASK_BOUNTY.replace("{taskId}", taskId), bounty);
+    static async submitTaskApplication(taskId: string) {
+        return HttpClient.post<MessageResponse>(ENDPOINTS.TASK.SUBMIT_APPLICATION.replace("{taskId}", taskId), {});
     }
 
-    static async deleteTask(taskId: string) {
-        return HttpClient.delete(ENDPOINTS.TASK.DELETE.replace("{taskId}", taskId));
-    }
-
-    static async acceptTask(taskId: string) {
-        return HttpClient.post<Partial<TaskDto>>(ENDPOINTS.TASK.ACCEPT.replace("{taskId}", taskId), {});
+    static async acceptTaskApplication(taskId: string, userId: string) {
+        return HttpClient.post<MessageResponse>(ENDPOINTS.TASK.ACCEPT_APPLICATION
+            .replace("{taskId}", taskId)
+            .replace("{userId}", userId), {});
     }
 
     static async markAsComplete(taskId: string, data: MarkAsCompleteDto) {
@@ -37,27 +45,32 @@ export class TaskAPI {
     }
 
     static async validateCompletion(taskId: string) {
-        return HttpClient.post<Partial<TaskDto>>(ENDPOINTS.TASK.VALIDATE_COMPLETION.replace("{taskId}", taskId), {});
+        return HttpClient.post<Pick<TaskDto, "status" | "completedAt" | "settled" | "updatedAt">>(
+            ENDPOINTS.TASK.VALIDATE_COMPLETION.replace("{taskId}", taskId), {});
     }
 
-    static async requestTimelineModification(taskId: string, request: RequestTimelineModification) {
-        return HttpClient.post<CommentDto>(ENDPOINTS.TASK.REQUEST_TIMELINE_MODIFICATION.replace("{taskId}", taskId), request);
+    static async requestTimelineModification(taskId: string, data: RequestTimelineExtensionDto) {
+        return HttpClient.post<CommentDto>(ENDPOINTS.TASK.REQUEST_TIMELINE_MODIFICATION.replace("{taskId}", taskId), data);
     }
 
-    static async replyTimelineModification(taskId: string, reply: ReplyTimelineModification) {
-        return HttpClient.post<CommentDto>(ENDPOINTS.TASK.REPLY_TIMELINE_MODIFICATION.replace("{taskId}", taskId), reply);
+    static async replyTimelineModification(taskId: string, data: ReplyTimelineExtensionRequestDto) {
+        return HttpClient.post<CommentDto>(ENDPOINTS.TASK.REPLY_TIMELINE_MODIFICATION.replace("{taskId}", taskId), data);
     }
 
-    static async addComment(taskId: string, comment: string) {
-        return HttpClient.post<CommentDto>(ENDPOINTS.TASK.ADD_COMMENT.replace("{taskId}", taskId), { comment });
+    static async addTaskComment(taskId: string, data: AddCommentDto) {
+        return HttpClient.post<CommentDto>(ENDPOINTS.TASK.ADD_COMMENT.replace("{taskId}", taskId), data);
     }
 
-    static async updateComment(taskId: string, commentId: string, comment: string) {
-        return HttpClient.patch<CommentDto>(
-            ENDPOINTS.TASK.UPDATE_COMMENT
+    static async updateTaskComment(taskId: string, commentId: string, data: UpdateCommentDto) {
+        return HttpClient.patch<CommentDto>(ENDPOINTS.TASK.UPDATE_COMMENT
                 .replace("{taskId}", taskId)
                 .replace("{commentId}", commentId), 
-            { comment }
+                data
         );
+    }
+
+    static async deleteTask(taskId: string) {
+        return HttpClient.delete<MessageWithDataResponse<"refunded", string>>(
+            ENDPOINTS.TASK.DELETE.replace("{taskId}", taskId));
     }
 }

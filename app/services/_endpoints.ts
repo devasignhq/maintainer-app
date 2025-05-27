@@ -23,7 +23,7 @@ export const ENDPOINTS = {
         ADD_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team",
         UPDATE_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team/{userId}",
         REMOVE_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team/{userId}",
-        
+
         ISSUES: preset.PROJECT + "/issues",
         LABELS: preset.PROJECT + "/labels",
         MILESTONES: preset.PROJECT + "/milestones",
@@ -35,14 +35,17 @@ export const ENDPOINTS = {
         CREATE_MANY: preset.TASK + "/batch",
         UPDATE_TASK_BOUNTY: preset.TASK + "/{taskId}/bounty",
         DELETE: preset.TASK + "/{taskId}",
-        ACCEPT: preset.TASK + "/{taskId}/accept",
+        
+        SUBMIT_APPLICATION: preset.TASK + "/{taskId}/apply",
+        ACCEPT_APPLICATION: preset.TASK + "/{taskId}/accept/{userId}",
         MARK_AS_COMPLETE: preset.TASK + "/{taskId}/complete",
         VALIDATE_COMPLETION: preset.TASK + "/{taskId}/validate",
+
         REQUEST_TIMELINE_MODIFICATION: preset.TASK + "/{taskId}/timeline",
         REPLY_TIMELINE_MODIFICATION: preset.TASK + "/{taskId}/timeline/reply",
+        
         ADD_COMMENT: preset.TASK + "/{taskId}/comments",
         UPDATE_COMMENT: preset.TASK + "/{taskId}/comments/{commentId}",
-        SUBMIT_APPLICATION: preset.TASK + "/{taskId}/apply",
     },
     WALLET: {
         GET_WALLET: preset.WALLET + "/account",
