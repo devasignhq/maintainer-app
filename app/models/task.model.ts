@@ -1,3 +1,4 @@
+import { CommentDto } from "./comment.model"
 import { IssueDto } from "./github.model"
 import { UserProjectPermissionDto } from "./permission.model"
 import { ProjectDto } from "./project.model"
@@ -60,7 +61,7 @@ export type UpdateTaskBountyDto = {
 }
 
 export type RequestTimelineExtensionDto = {
-    newTimeline: number 
+    requestedTimeline: number 
     timelineType: TimelineType
     reason: string 
     attachments?: string[]
@@ -70,8 +71,6 @@ export type ReplyTimelineExtensionRequestDto = {
     accept: boolean
     requestedTimeline: number 
     timelineType: TimelineType
-    reason: string 
-    attachments?: string[]
 }
 
 export type MarkAsCompleteDto = {
@@ -87,4 +86,9 @@ export type QueryTaskDto = {
     page?: number
     limit?: number
     orderBy?: "asc" | "desc"
+}
+
+export type TimelineExtensionesponse = {
+    comment: CommentDto;
+    task?: Pick<TaskDto, "timeline" | "timelineType" | "status" | "updatedAt">;
 }

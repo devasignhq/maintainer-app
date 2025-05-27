@@ -13,9 +13,9 @@ export type CommentDto = {
 }
 
 export type CommentMetadata = {
-    requestedTimeline?: number;
-    newTimeline?: number;
-    timelineType?: TimelineType;
+    requestedTimeline: number;
+    timelineType: TimelineType;
+    reason?: string
 }
 
 export enum CommentType {
