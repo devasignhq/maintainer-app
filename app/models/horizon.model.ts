@@ -1,5 +1,41 @@
-// import { AssetType, MemoType } from "@stellar/stellar-base";
-// export declare namespace HorizonApi {
+export interface AccountRecord extends BaseResponse {
+    id: string;
+    paging_token: string;
+    account_id: string;
+    sequence: string;
+    sequence_ledger?: number;
+    sequence_time?: string;
+    subentry_count: number;
+    home_domain?: string;
+    inflation_destination?: string;
+    last_modified_ledger: number;
+    last_modified_time: string;
+    thresholds: AccountThresholds;
+    flags: Flags;
+    balances: BalanceLine[];
+    signers: AccountRecordSigners[];
+    data: (options: {
+        value: string;
+    }) => Promise<{
+        value: string;
+    }>;
+    data_attr: {
+        [key: string]: string;
+    };
+    sponsor?: string;
+    num_sponsoring: number;
+    num_sponsored: number;
+    // effects: CallCollectionFunction<EffectRecord>;
+    // offers: CallCollectionFunction<OfferRecord>;
+    // operations: CallCollectionFunction<OperationRecord>;
+    // payments: CallCollectionFunction<PaymentOperationRecord>;
+    // trades: CallCollectionFunction<TradeRecord>;
+}
+export interface AccountRecordSigners {
+    key: string;
+    weight: number;
+    type: string;
+}
 export enum AssetType {
     native = 'native',
     credit4 = 'credit_alphanum4',
