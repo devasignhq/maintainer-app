@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosRequestConfig } from 'axios';
 import { getCurrentUser } from './firebase';
 
 const axiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
     timeout: 20000,
     timeoutErrorMessage: "Timeout exceeded! Try again.",
+    validateStatus: (status) => {
+        return status >= 200 && status < 300;
+    }
 });
 
 // Add auth token to requests if user is logged in
@@ -21,60 +25,45 @@ export class HttpClient {
     static async get<T>(url: string, config?: AxiosRequestConfig) {
         try {
             const response = await axiosInstance.get<T>(url, config);
-            return {
-                data: response.data,
-                status: response.status
-            };
-        } catch (error) {
-            return { error }
+            return response.data;
+        } catch (error: any) {
+            throw error.response?.data || error;
         }
     }
 
     static async post<T>(url: string, data: unknown, config?: AxiosRequestConfig) {
         try {
             const response = await axiosInstance.post<T>(url, data, config);
-            return {
-                data: response.data,
-                status: response.status
-            };
-        } catch (error) {
-            return { error }
+            return response.data;
+        } catch (error: any) {
+            throw error.response?.data || error;
         }
     }
 
     static async put<T>(url: string, data: unknown, config?: AxiosRequestConfig) {
         try {
             const response = await axiosInstance.put<T>(url, data, config);
-            return {
-                data: response.data,
-                status: response.status
-            };
-        } catch (error) {
-            return { error }
+            return response.data;
+        } catch (error: any) {
+            throw error.response?.data || error;
         }
     }
 
     static async patch<T>(url: string, data: unknown, config?: AxiosRequestConfig) {
         try {
             const response = await axiosInstance.patch<T>(url, data, config);
-            return {
-                data: response.data,
-                status: response.status
-            };
-        } catch (error) {
-            return { error }
+            return response.data;
+        } catch (error: any) {
+            throw error.response?.data || error;
         }
     }
 
     static async delete<T>(url: string, config?: AxiosRequestConfig) {
         try {
             const response = await axiosInstance.delete<T>(url, config);
-            return {
-                data: response.data,
-                status: response.status
-            };
-        } catch (error) {
-            return { error }
+            return response.data;
+        } catch (error: any) {
+            throw error.response?.data || error;
         }
     }
 }
