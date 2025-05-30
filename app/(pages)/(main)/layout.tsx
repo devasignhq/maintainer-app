@@ -80,9 +80,7 @@ export default function MainLayout({
                                     format="OUTLINE"
                                     text="New Project"
                                     sideItem={<HiPlus />}
-                                    attributes={{
-                                        onClick: () => {},
-                                    }}
+                                    attributes={{ type: "button" }}
                                     extendedClassName="w-full mt-[30px]"
                                 />
                             </Link>
