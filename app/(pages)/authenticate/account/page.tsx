@@ -9,15 +9,21 @@ import { UserAPI } from "@/app/services/user.service";
 import { useLockFn, useRequest } from "ahooks";
 import { toast } from "react-toastify";
 import { ErrorResponse } from "@/app/models/_global";
+import useUserStore from "@/app/state-management/useUserStore";
 
 const Account = () => {
     const router = useRouter();
+    const { setCurrentUser } = useUserStore();
 
     const { loading: creatingUser, run: createUser } = useRequest(
         useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })), 
         {
             manual: true,
-            onSuccess: () => router.push(ROUTES.SETUP_PROJECT),
+            onSuccess: (data) => {
+                toast.success("User created successfully.");
+                setCurrentUser(data!);
+                router.push(ROUTES.SETUP_PROJECT);
+            },
             onError: () => toast.error("Failed to create user.")
         }
     );
@@ -28,7 +34,10 @@ const Account = () => {
         {
             manual: true,
             cacheKey: "user-object",
-            onSuccess: () => router.push(ROUTES.SETUP_PROJECT),
+            onSuccess: (data) => {
+                setCurrentUser(data!);
+                router.push(ROUTES.SETUP_PROJECT);
+            },
             onError: (err, params) => {
                 const error = err as unknown as ErrorResponse;
                 if (error.error.name === "NotFoundError") {
