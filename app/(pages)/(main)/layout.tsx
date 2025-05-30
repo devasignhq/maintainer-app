@@ -5,9 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/app/utils/data";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
-import { useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
-import { useClickAway, useToggle } from "ahooks";
+import { usePopup } from "@/app/utils/hooks";
+import useProjectStore from "@/app/state-management/useProjectStore";
+import { ProjectAPI } from "@/app/services/project.service";
+import { useRequest, useLockFn } from "ahooks";
 
 export default function MainLayout({
     children,
@@ -16,12 +18,28 @@ export default function MainLayout({
 }>) {
     const currentPath = usePathname();
     const checkPath = (path: string) => currentPath.includes(path) || currentPath === path;
-    const projectMenuButtonRef = useRef<HTMLButtonElement>(null);
-    const projectMenuRef = useRef<HTMLDivElement>(null);
-    const [openProjectMenu, { toggle: toggleProjectMenu }] = useToggle(false);
-    const [activeProject, setActiveProject] = useState(demoProject[0]);
-        
-    useClickAway(() => toggleProjectMenu(), [projectMenuButtonRef, projectMenuRef]);
+    const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
+    const { 
+        projectList, 
+        activeProject,
+        setProjectList,
+        setActiveProject
+    } = useProjectStore();
+
+    const { loading: fetchingProjects } = useRequest(
+        useLockFn(() => ProjectAPI.getProjects()), 
+        {
+            retryCount: 2,
+            cacheKey: "project-list",
+            onSuccess: (data) => {
+                if (data) {
+                    setProjectList(data);
+                    if (!activeProject) setActiveProject(data[0]);
+                }
+            },
+            onError: () => {}
+        }
+    );
 
     return (
         <main className="h-full w-full px-[6.75%] flex flex-col">
@@ -29,51 +47,73 @@ export default function MainLayout({
                 <img src="/davasign-logo.svg" alt="DevAsign" className="h-auto w-auto" />
                 <div className="relative">
                     <div className="flex items-center gap-2.5 text-light-100">
-                        <div className="flex items-center gap-[15px] text-headline-small">
-                            <span>PostgreSQL</span>
+                        <span className="flex items-center gap-[15px] text-headline-small">
+                            {activeProject?.name}
+                        </span>
+                        <div className="px-2.5 py-[7px] bg-dark-300 text-table-header">
+                            {activeProject?.subscriptionPackage?.name}
                         </div>
-                        <div className="px-2.5 py-[7px] bg-dark-300 text-table-header">Free</div>
                         <button 
-                            ref={projectMenuButtonRef}
+                            ref={menuButtonRef}
                             className="cursor-pointer"
-                            onClick={toggleProjectMenu}
+                            onClick={toggleMenu}
                         >
                             <HiOutlineSelector className="text-2xl text-[#BCBCBC]" />
                         </button>
                     </div>
-                    {openProjectMenu && (
+                    {openMenu && (
                         <div 
-                            ref={projectMenuRef}
-                            className="absolute -left-6 top-[calc(100%+20px)] z-10 w-[250px] p-[15px] bg-dark-400 border border-dark-200 shadow-[-20px_4px_40px_0px_#000000]"
+                            ref={menuRef}
+                            className="absolute -left-6 top-[calc(100%+20px)] z-10 w-[250px] p-[15px] 
+                                bg-dark-400 border border-dark-200 shadow-[-20px_4px_40px_0px_#000000]"
                         >
                             <div className="w-full flex flex-col gap-2.5">
-                                {demoProject.map((item) => {
-                                    return activeProject.name === item.name ? (
-                                        <button
-                                            key={item.name}
-                                            className="pb-2.5 flex items-center justify-between gap-2.5 border-b border-dark-200"
-                                        >
-                                            <div className="flex items-center gap-2.5">
-                                                <p className="text-body-medium text-light-100">{item.name}</p>
-                                                <div className={`px-2.5 py-[7px] text-body-small ${item.plan === "Free" ? "text-light-100 bg-dark-300" : "text-dark-500 bg-primary-100"}`}>
-                                                    {item.plan}
+                                {fetchingProjects ? (
+                                    <>
+                                        {[...Array(3)].map((_, i) => (
+                                            <div
+                                                key={i}
+                                                className="h-8 w-full bg-dark-300 rounded animate-pulse"
+                                            />
+                                        ))}
+                                    </>
+                                ) : (
+                                    projectList.map((project) => {
+                                        return activeProject?.id === project.id ? (
+                                            <button
+                                                key={project.id}
+                                                className="pb-2.5 flex items-center justify-between gap-2.5 border-b border-dark-200"
+                                            >
+                                                <div className="flex items-center gap-2.5">
+                                                    <p className="text-body-medium text-light-100">{project.name}</p>
+                                                    <div className={`px-2.5 py-[7px] text-body-small 
+                                                        ${project.subscriptionPackage?.price === 0 
+                                                            ? "text-light-100 bg-dark-300" 
+                                                            : "text-dark-500 bg-primary-100"}` 
+                                                    }>
+                                                        {project.subscriptionPackage?.name}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <FaCheck className="text-xl text-light-100" />
-                                        </button>
-                                    ):(
-                                        <button
-                                            key={item.name}
-                                            className="group flex items-center justify-between gap-2.5"
-                                            onClick={() => setActiveProject(item)}
-                                        >
-                                            <p className="text-body-medium text-dark-100 group-hover:text-light-100">{item.name}</p>
-                                            <div className={`px-2.5 py-[7px] text-body-small ${item.plan === "Free" ? "text-light-100 bg-dark-300" : "text-dark-500 bg-primary-100"}`}>
-                                                {item.plan}
-                                            </div>
-                                        </button>
-                                    )
-                                })}
+                                                <FaCheck className="text-xl text-light-100" />
+                                            </button>
+                                        ) : (
+                                            <button
+                                                key={project.name}
+                                                className="group flex items-center justify-between gap-2.5"
+                                                onClick={() => setActiveProject(project)}
+                                            >
+                                                <p className="text-body-medium text-dark-100 group-hover:text-light-100">{project.name}</p>
+                                                <div className={`px-2.5 py-[7px] text-body-small 
+                                                    ${project.subscriptionPackage?.price === 0 
+                                                    ? "text-light-100 bg-dark-300" 
+                                                    : "text-dark-500 bg-primary-100"}` 
+                                                }>
+                                                    {project.subscriptionPackage?.name}
+                                                </div>
+                                            </button>
+                                        )
+                                    })
+                                )}
                             </div>
                             <Link href={ROUTES.SETUP_PROJECT}>
                                 <ButtonPrimary
@@ -112,15 +152,9 @@ export default function MainLayout({
 }
 
 const navItems = [
-    { name: "Overview", path: ROUTES.OVERVIEW },
+    // { name: "Overview", path: ROUTES.OVERVIEW },
     { name: "Tasks", path: ROUTES.TASKS },
     { name: "Wallet", path: ROUTES.WALLET },
     // { name: "Contributors", path: ROUTES.CONTRIBUTORS },
     { name: "Settings", alias: "/settings", path: ROUTES.SETTINGS.GENERAL },
-];
-
-const demoProject = [
-    { name: "PostgreSQL", plan: "Free" },
-    { name: "DevAsign", plan: "Pro" },
-    { name: "Antiwork", plan: "Free" },
 ];
