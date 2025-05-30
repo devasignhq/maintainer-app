@@ -19,7 +19,7 @@ const useProjectStore = create(
                 set({ activeProject: data })
             },
             setProjectList: (data: ProjectDto[]) => {
-                set({ projectList: data })
+                set((state) => ({ projectList: [...state.projectList, ...data] }))
             },
             clearProjectStore: () => {
                 set({ activeProject: null, projectList: [] })
