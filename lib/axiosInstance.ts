@@ -4,7 +4,7 @@ import { getCurrentUser } from './firebase';
 
 const axiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
-    timeout: 20000,
+    timeout: 200000, // 200 seconds
     timeoutErrorMessage: "Timeout exceeded! Try again.",
     validateStatus: (status) => {
         return status >= 200 && status < 300;

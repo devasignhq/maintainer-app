@@ -5,6 +5,12 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { ROUTES } from "@/app/utils/data";
 import { useRouter } from "next/navigation";
+import useProjectStore from "@/app/state-management/useProjectStore";
+import { ProjectAPI } from "@/app/services/project.service";
+import { useLockFn, useRequest } from "ahooks";
+import { toast } from "react-toastify";
+import { CreateProjectDto } from "@/app/models/project.model";
+import useUserStore from "@/app/state-management/useUserStore";
 
 const projectSchema = yup.object({
     name: yup.string().required("Project name is required"),
@@ -13,6 +19,36 @@ const projectSchema = yup.object({
 
 const SubscriptionPlan = () => {
     const router = useRouter();
+    const { currentUser } = useUserStore();
+    const { 
+        projectList, 
+        setProjectList, 
+        setActiveProject 
+    } = useProjectStore();
+
+    const { loading: creatingProject, run: createProject } = useRequest(
+        useLockFn((data: CreateProjectDto) => ProjectAPI.createProject(data)), 
+        {
+            manual: true,
+            onSuccess: (data) => {
+                toast.success("Project created successfully.");
+
+                const hasProjects = projectList.length > 0;
+
+                if (data) {
+                    setActiveProject(data);
+                    setProjectList([data]);
+                }
+
+                if (hasProjects) {
+                    router.push(ROUTES.TASKS);
+                } else {
+                    router.push(ROUTES.ONBOARDING);
+                }
+            },
+            onError: () => toast.error("Failed to create project. Please try again.")
+        }
+    );
     
     const formik = useFormik({
         initialValues: {
@@ -20,16 +56,13 @@ const SubscriptionPlan = () => {
             description: "",
         },
         validationSchema: projectSchema,
-        onSubmit: values => {
-            console.log(values);
-            router.push(ROUTES.ONBOARDING);
-        },
+        onSubmit: values => createProject(values),
     });
 
     return (
         <div className="pt-[105px]">
             <h1 className="text-display-large text-light-100 pb-[42px]">
-                Hello, <span className="text-light-200">{" "}lenny_malcolm{" "}</span> 👋
+                Hello, <span className="text-light-200">{` ${currentUser?.username} `}</span> 👋
             </h1>
             <h1 className="text-headline-medium text-light-200 mb-10">
                 Let’s setup your open source project
@@ -68,9 +101,16 @@ const SubscriptionPlan = () => {
                 </div>
                 <ButtonPrimary
                     format="SOLID"
-                    text="Proceed"
+                    text={
+                        creatingProject
+                            ? "Creating Project..."
+                            : "Proceed"
+                    }
                     sideItem={<FiArrowRight />}
-                    attributes={{ type: "submit" }}
+                    attributes={{ 
+                        type: "submit",
+                        disabled: creatingProject || !formik.isValid || !formik.dirty, 
+                    }}
                 />
             </form>
         </div>

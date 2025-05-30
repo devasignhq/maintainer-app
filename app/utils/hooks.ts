@@ -1,4 +1,6 @@
+import { useToggle, useClickAway } from "ahooks";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useRef } from "react";
 
 export function useCustomSearchParams() {
     const router = useRouter();
@@ -31,4 +33,19 @@ export function useCustomSearchParams() {
     };
 
     return { searchParams, updateSearchParams };
+}
+
+export function usePopup() {
+    const menuButtonRef = useRef<HTMLButtonElement>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
+    const [openMenu, { toggle: toggleMenu }] = useToggle(false);
+        
+    useClickAway(() => toggleMenu(), [menuButtonRef, menuRef]);
+
+    return {
+        menuButtonRef,
+        menuRef,
+        openMenu,
+        toggleMenu
+    }
 }

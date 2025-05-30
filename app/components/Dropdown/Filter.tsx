@@ -1,6 +1,6 @@
 "use client";
-import { useClickAway, useToggle } from "ahooks";
-import { useRef, useState } from "react";
+import { usePopup } from "@/app/utils/hooks";
+import { useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoIosCheckbox, IoMdArrowDropdown } from "react-icons/io";
 import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
@@ -23,9 +23,7 @@ const FilterDropdown = ({
     extendedContainerClassName,
     noMultiSelect
 }: FilterDropdownProps) => {
-    const buttonRef = useRef<HTMLButtonElement>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const [open, { toggle }] = useToggle(false);
+    const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
     const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
         options.reduce((acc, _, index) => ({ ...acc, [`${index}`]: false }), {})
     );
@@ -47,31 +45,29 @@ const FilterDropdown = ({
             }), {})
         );
     };
-    
-    useClickAway(() => toggle(), [buttonRef, dropdownRef]);
 
     return (
         <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
             <button 
-                ref={buttonRef}
+                ref={menuButtonRef}
                 className={twMerge(
                     "p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]", 
                     extendedButtonClassName
                 )}
-                onClick={toggle}
+                onClick={toggleMenu}
                 {...buttonAttributes}
             >
                 <span>{title}</span>
-                <IoMdArrowDropdown className={`text-2xl ${open && "rotate-180"}`} />
+                <IoMdArrowDropdown className={`text-2xl ${openMenu && "rotate-180"}`} />
             </button>
-            {open && (
+            {openMenu && (
                 <div 
-                    ref={dropdownRef}
+                    ref={menuRef}
                     className="fixed top-[var(--dropdown-top)] left-[var(--dropdown-left)] px-2.5 max-h-[350px] 
                     bg-dark-400 dropdown-box shadow-[-20px_4px_40px_0px_#000000] z-[110] overflow-y-auto"
                     style={{
-                        '--dropdown-top': `${buttonRef.current?.getBoundingClientRect().top}px`,
-                        '--dropdown-left': `${buttonRef.current?.getBoundingClientRect().right as number + 7}px`
+                        '--dropdown-top': `${menuButtonRef.current?.getBoundingClientRect().top}px`,
+                        '--dropdown-left': `${menuButtonRef.current?.getBoundingClientRect().right as number + 7}px`
                     } as React.CSSProperties}
                 >
                     <div className="w-full pb-3 pt-[15px] bg-dark-400 sticky top-0">
@@ -105,7 +101,7 @@ const FilterDropdown = ({
                     <div className="w-full pt-3 pb-[15px] bg-dark-400 sticky bottom-0">
                         <button 
                             className="group w-fit flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold"
-                            onClick={toggle}
+                            onClick={toggleMenu}
                         >
                             <span className="group-hover:text-light-100">Apply</span>
                             <FiArrowUpRight className="text-2xl" />
