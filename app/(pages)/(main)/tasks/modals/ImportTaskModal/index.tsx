@@ -8,6 +8,8 @@ import { HiPlus } from "react-icons/hi";
 import RepoMenuCard from "./RepoMenuCard";
 import { useState } from "react";
 import InputField from "@/app/components/InputField";
+import ConnectRepositoryModal from "../ConnectRepositoryModal";
+import { useToggle } from "ahooks";
 
 type ImportTaskModalProps = {
     toggleModal: () => void;
@@ -43,8 +45,10 @@ const sampleRepositories: Repository[] = [
 
 const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
     const [activeRepoId, setActiveRepoId] = useState(sampleRepositories[0].id);
+    const [openConnectRepositoryModal, { toggle: toggleConnectRepositoryModal }] = useToggle(false);
     
     return (
+        <>
         <PopupModalLayout title="Import from GitHub Issues" toggleModal={toggleModal}>
             <section className="mt-[15px] space-y-2.5">
                 <p className="text-body-medium text-light-200">Repository URL(s)</p>
@@ -65,7 +69,7 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                         text="Add Repo"
                         sideItem={<HiPlus />}
                         attributes={{
-                            onClick: () => {},
+                            onClick: toggleConnectRepositoryModal,
                         }}
                         extendedClassName="h-full bg-light-200 hover:bg-light-100"
                     />
@@ -133,7 +137,10 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                     }}
                 />
             </section>
+        
+            {openConnectRepositoryModal && <ConnectRepositoryModal toggleModal={toggleConnectRepositoryModal} />}
         </PopupModalLayout>
+        </>
     );
 }
  

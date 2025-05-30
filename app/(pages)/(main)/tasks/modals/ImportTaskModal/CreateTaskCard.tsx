@@ -54,6 +54,9 @@ const CreateTaskCard = ({ active }: CreateTaskCardProps) => {
                     <RegularDropdown
                         defaultValue="Weeks"
                         options={["Weeks", "Days"]}
+                        buttonAttributes={{ 
+                            style: { fontSize: "12px", lineHeight: "16px" }
+                        }}
                     />
                 </div>
             </div>

@@ -75,15 +75,17 @@ export default function MainLayout({
                                     )
                                 })}
                             </div>
-                            <ButtonPrimary
-                                format="OUTLINE"
-                                text="New Project"
-                                sideItem={<HiPlus />}
-                                attributes={{
-                                    onClick: () => {},
-                                }}
-                                extendedClassName="w-full mt-[30px]"
-                            />
+                            <Link href={ROUTES.SETUP_PROJECT}>
+                                <ButtonPrimary
+                                    format="OUTLINE"
+                                    text="New Project"
+                                    sideItem={<HiPlus />}
+                                    attributes={{
+                                        onClick: () => {},
+                                    }}
+                                    extendedClassName="w-full mt-[30px]"
+                                />
+                            </Link>
                         </div>
                     )}
                 </div>

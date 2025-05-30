@@ -3,7 +3,7 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { ROUTES } from "@/app/utils/data";
 import { useRouter } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
-import { GithubAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAdditionalUserInfo, GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth, githubProvider } from "@/lib/firebase";
 import { UserAPI } from "@/app/services/user.service";
 import { useLockFn, useRequest } from "ahooks";
@@ -24,7 +24,7 @@ const Account = () => {
     );
 
     const { loading: fetchingUser, run: getUser } = useRequest(
-        useLockFn(() => UserAPI.getUser({ view: "profile" })), 
+        useLockFn(() => UserAPI.getUser({ view: "basic" })), 
         {
             manual: true,
             cacheKey: "user-object",
@@ -43,7 +43,10 @@ const Account = () => {
             const result = await signInWithPopup(auth, githubProvider);
 
             const credential = GithubAuthProvider.credentialFromResult(result);
+            const additionalInfo = getAdditionalUserInfo(result);
             console.log(credential, "credential")
+            console.log(additionalInfo, "additionalInfo")
+
             getUser();
         } catch (error) {
             alert("GitHub sign-in failed. Please try again.");

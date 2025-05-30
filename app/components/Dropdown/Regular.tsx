@@ -10,6 +10,7 @@ type RegularDropdownProps = {
     options: (string | number)[];
     onChange?: (value: string | number) => void;
     extendedButtonClassName?: string;
+    buttonAttributes?: React.ButtonHTMLAttributes<HTMLButtonElement>;
     extendedContainerClassName?: string;
     title?: string;
 }
@@ -19,6 +20,7 @@ const RegularDropdown = ({
     options,
     onChange,
     extendedButtonClassName,
+    buttonAttributes,
     extendedContainerClassName,
     title
 }: RegularDropdownProps) => {
@@ -41,6 +43,7 @@ const RegularDropdown = ({
                 ref={buttonRef}
                 className={twMerge("py-[5px] pl-[15px] pr-2.5 border border-dark-200 text-body-tiny text-light-100 flex items-center gap-[5px]", extendedButtonClassName)}
                 onClick={toggle}
+                {...buttonAttributes}
             >
                 <span>{title || selectedItem}</span>
                 <IoMdArrowDropdown className={`text-2xl ${open && "rotate-180"}`} />

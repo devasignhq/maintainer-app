@@ -28,23 +28,24 @@ const TaskListSection = () => {
                 />
                 <div className="flex items-center gap-2.5">
                     <FilterDropdown
-                        title="Labels"
-                        options={["bug", "feature", "enhancement", "question"]}
+                        title="Code Repo"
+                        options={["https://github.com/", "https://github.com/", "https://github.com/"]}
                         extendedContainerClassName="w-full"
                         extendedButtonClassName="w-full py-[5px]"
                         buttonAttributes={{ 
                             style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }
                         }}
+                        noMultiSelect
                     />
                     <FilterDropdown
-                        title="Code Repo"
-                        options={["https://github.com/", "https://github.com/", "https://github.com/"]}
+                        title="Labels"
+                        options={["bug", "feature", "enhancement", "question"]}
                         extendedContainerClassName="w-full"
                         extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
                         buttonAttributes={{ 
-                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                            disabled: true
                         }}
-                        noMultiSelect
                     />
                     <FilterDropdown
                         title="Milestone"

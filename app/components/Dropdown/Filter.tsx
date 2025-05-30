@@ -105,7 +105,7 @@ const FilterDropdown = ({
                     <div className="w-full pt-3 pb-[15px] bg-dark-400 sticky bottom-0">
                         <button 
                             className="group w-fit flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold"
-                            onClick={() => {}}
+                            onClick={toggle}
                         >
                             <span className="group-hover:text-light-100">Apply</span>
                             <FiArrowUpRight className="text-2xl" />
