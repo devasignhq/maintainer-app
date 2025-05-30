@@ -14,25 +14,25 @@ const Account = () => {
     const router = useRouter();
 
     const { loading: creatingUser, run: createUser } = useRequest(
-        useLockFn(() => UserAPI.createUser()), 
+        useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })), 
         {
             manual: true,
-            // cacheKey: "user-object",
             onSuccess: () => router.push(ROUTES.SETUP_PROJECT),
             onError: () => toast.error("Failed to create user.")
         }
     );
 
     const { loading: fetchingUser, run: getUser } = useRequest(
-        useLockFn(() => UserAPI.getUser({ view: "basic" })), 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        useLockFn((gitHubUsername: string) => UserAPI.getUser({ view: "basic" })), 
         {
             manual: true,
             cacheKey: "user-object",
             onSuccess: () => router.push(ROUTES.SETUP_PROJECT),
-            onError: (err) => {
+            onError: (err, params) => {
                 const error = err as unknown as ErrorResponse;
                 if (error.error.name === "NotFoundError") {
-                    createUser();
+                    createUser(params[0]);
                 }
             }
         }
@@ -45,9 +45,8 @@ const Account = () => {
             const credential = GithubAuthProvider.credentialFromResult(result);
             const additionalInfo = getAdditionalUserInfo(result);
             console.log(credential, "credential")
-            console.log(additionalInfo, "additionalInfo")
 
-            getUser();
+            getUser(additionalInfo!.username!);
         } catch (error) {
             alert("GitHub sign-in failed. Please try again.");
             console.error(error);

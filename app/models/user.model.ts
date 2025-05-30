@@ -40,6 +40,10 @@ export type ContributionSummary = {
     user?: Pick<UserDto, "username" | "userId" | "walletAddress" | "addressBook" | "createdAt" | "updatedAt">;
 }
 
+export type UserPayloadDto = {
+    gitHubUsername: string
+}
+
 export type QueryUserDto = {
     view: "basic" | "full" | "profile"
 }
