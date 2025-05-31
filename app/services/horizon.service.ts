@@ -12,6 +12,10 @@ interface StreamState {
     lastUpdated: Date | null;
 }
 
+interface PriceData {
+    xlmToUsdc: number;
+    lastUpdated: Date;
+}
 export class HorizonAPI {
     static streamAccount(walletAddress: string, isTestnet: boolean = false) {
         const baseUrl = isTestnet 
@@ -235,5 +239,69 @@ export function useAccountBalancePolling(
         ...state,
         isLoading,
         refresh: fetchBalance
+    };
+}
+
+export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000) {
+    const [priceData, setPriceData] = useState<PriceData>({
+        xlmToUsdc: 0,
+        lastUpdated: new Date()
+    });
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    const fetchStellarDEXPrice = async () => {
+        try {
+            // Query Stellar DEX for XLM/USDC orderbook
+            const response = await fetch(
+                'https://horizon.stellar.org/order_book?' + 
+                'selling_asset_type=native&' +
+                'buying_asset_type=credit_alphanum4&' +
+                'buying_asset_code=USDC&' +
+                'buying_asset_issuer=GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN'
+            );
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Get the best bid (highest price someone will pay for XLM in USDC)
+            const bestBid = data.bids[0];
+            if (bestBid) {
+                const price = parseFloat(bestBid.price);
+                setPriceData({
+                    xlmToUsdc: price,
+                    lastUpdated: new Date()
+                });
+            }
+            
+            setError(null);
+            setIsLoading(false);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to fetch Stellar DEX price');
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchStellarDEXPrice();
+        intervalRef.current = setInterval(fetchStellarDEXPrice, intervalMs);
+        
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [intervalMs]);
+
+    return {
+        xlmPrice: priceData.xlmToUsdc.toFixed(7),
+        lastUpdated: priceData.lastUpdated,
+        isLoading,
+        error,
+        refresh: fetchStellarDEXPrice
     };
 }
