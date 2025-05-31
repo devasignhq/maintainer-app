@@ -27,11 +27,12 @@ const Onboarding = () => {
     const { currentUser } = useUserStore();
     const { activeProject, setActiveProject } = useProjectStore();
     const { draftTasks } = useTaskStore();
-    const { usdcBalance } = useStreamAccountBalance(activeProject?.walletAddress);
+    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeProject?.walletAddress, true);
     const [repoUrl, setRepoUrl] = useState("");
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
 
+    // TODO: Verify if user has admin access on repo here
     const connectRepository = async () => {
         if (!activeProject?.id) return;
 
@@ -160,7 +161,14 @@ const Onboarding = () => {
         </div>
         
         {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
-        {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
+        {openFundWalletModal && (
+            <FundWalletModal 
+                toggleModal={toggleFundWalletModal} 
+                userBalanceSum={
+                    Number((parseFloat(xlmBalance || "0") + parseFloat(usdcBalance || "0")).toFixed(2))
+                }
+            />
+        )}
         </>
     );
 }
