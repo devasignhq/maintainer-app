@@ -30,7 +30,7 @@ export class ProjectAPI {
 
     static async connectRepository(projectId: string, data: ConnectRepositoryDto) {
         return HttpClient.post<MessageWithDataResponse<"repoUrls", string[]>>(
-            ENDPOINTS.PROJECT.UPDATE.replace("{projectId}", projectId), data);
+            ENDPOINTS.PROJECT.CONNECT_REPO.replace("{projectId}", projectId), data);
     }
 
     static async updateProject(projectId: string, data: UpdateProjectDto) {

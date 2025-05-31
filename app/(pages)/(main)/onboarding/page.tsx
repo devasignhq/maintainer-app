@@ -7,18 +7,58 @@ import { HiPlus } from 'react-icons/hi';
 import ImportTaskModal from '@/app/(pages)/(main)/tasks/modals/ImportTaskModal';
 import { useToggle } from 'ahooks';
 import FundWalletModal from '@/app/(pages)/(main)/wallet/modals/FundWalletModal';
+import useUserStore from '@/app/state-management/useUserStore';
+import { useStreamAccountBalance } from '@/app/services/horizon.service';
+import useProjectStore from '@/app/state-management/useProjectStore';
+import useTaskStore from '@/app/state-management/useTaskStore';
+import { useState } from 'react';
+import { ProjectAPI } from '@/app/services/project.service';
+import * as yup from "yup";
+import { toast } from "react-toastify";
+
+const repoUrlSchema = yup.string()
+    .matches(
+        /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/,
+        "Please enter a valid GitHub repository URL (e.g. https://github.com/user/repo)"
+    )
+    .required("Repository URL is required");
 
 const Onboarding = () => {
+    const { currentUser } = useUserStore();
+    const { activeProject, setActiveProject } = useProjectStore();
+    const { draftTasks } = useTaskStore();
+    const { usdcBalance } = useStreamAccountBalance(activeProject?.walletAddress);
+    const [repoUrl, setRepoUrl] = useState("");
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
 
+    const connectRepository = async () => {
+        if (!activeProject?.id) return;
+
+        try {
+            await repoUrlSchema.validate(repoUrl.trim());
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            toast.error(err.message || "Invalid repository URL");
+            return;
+        }
+
+        const { repoUrls } = await ProjectAPI.connectRepository(
+            activeProject.id,
+            { repoUrl: repoUrl.trim() }
+        );
+
+        setActiveProject({ ...activeProject, repoUrls })
+        toggleImportTaskModal();
+    };
+
     return (
         <>
-        <div className="w-[840px] mt-[65px] mx-auto">
+        <div className="w-[850px] mt-[65px] mx-auto">
             <h1 className="text-display-large text-light-100">
                 Welcome to DevAsign, 
                 <span className="text-display-medium text-light-200 font-extralight">
-                    {" "}lenny_malcolm{" "}
+                    {` ${currentUser?.username} `}
                 </span> 👋
             </h1>
             <div className="flex gap-[30px] mt-10 mb-[30px]">
@@ -34,13 +74,18 @@ const Onboarding = () => {
                                 type="text"
                                 placeholder="Project GitHub repository URL"
                                 className="w-full h-full p-2.5 pl-[42px] bg-dark-400 border border-dark-100 text-body-tiny text-light-100"
+                                value={repoUrl}
+                                onChange={(e) => setRepoUrl(e.target.value)}
                             />
                         </div>
                         <ButtonPrimary
                             format="SOLID"
                             text="Import"
                             sideItem={<FiArrowUpRight />}
-                            attributes={{ onClick: toggleImportTaskModal }}
+                            attributes={{ 
+                                onClick: connectRepository,
+                                disabled: !repoUrl.trim()
+                            }}
                             extendedClassName="bg-light-200 hover:bg-light-100"
                         />
                     </div>
@@ -52,8 +97,8 @@ const Onboarding = () => {
                     </p>
                     <div className="flex items-center justify-between gap-2.5">
                         <p className="text-primary-400">
-                            <span className="text-display-large">0</span>
-                            <span className="text-headline-large">.00 USDC</span>
+                            <span className="text-display-large">{usdcBalance.split(".")[0]}</span>
+                            <span className="text-headline-large">.{usdcBalance.split(".")[1]} USDC</span>
                         </p>
                         <ButtonPrimary
                             format="SOLID"
@@ -64,19 +109,23 @@ const Onboarding = () => {
                     </div>
                 </div>
             </div>
-            <div className="w-full draft-box relative py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
-                <p className="flex items-center gap-[5px] text-title-large text-light-100">
-                    <span>Draft - Issues Found</span>
-                    <span className="px-[5px] text-body-medium font-bold text-dark-500 bg-primary-100">14</span>
-                </p>
-                <button 
-                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                    onClick={toggleImportTaskModal}
-                >
-                    <span>Continue</span>
-                    <FiArrowUpRight className="text-2xl" />
-                </button>
-            </div>
+            {(draftTasks.length > 0) ? (
+                <div className="w-full draft-box relative py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
+                    <p className="flex items-center gap-[5px] text-title-large text-light-100">
+                        <span>Draft - Issues Found</span>
+                        <span className="px-[5px] text-body-medium font-bold text-dark-500 bg-primary-100">
+                            {draftTasks.length}
+                        </span>
+                    </p>
+                    <button 
+                        className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                        onClick={toggleImportTaskModal}
+                    >
+                        <span>Continue</span>
+                        <FiArrowUpRight className="text-2xl" />
+                    </button>
+                </div>
+            ): null}
             <div className="w-full p-10 border border-primary-200 flex items-center justify-between gap-10 
                 bg-[linear-gradient(130.86deg,_rgba(0,_26,_37,_0.5)_15.53%,_rgba(163,_82,_7,_0.5)_79.38%)]"
             >
