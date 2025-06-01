@@ -92,3 +92,10 @@ export type GitHubUser = {
     site_admin: boolean;
     starred_at?: string | undefined;
 }
+
+export class IssueFilters {
+    labels?: string[];
+    milestone?: string | "none" | "*";
+    sort?: "created" | "updated" | "comments" = "created";
+    direction?: "asc" | "desc" = "desc";
+}

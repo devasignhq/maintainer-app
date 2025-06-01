@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@firebase/auth": "^1.10.0",
+    "@octokit/rest": "^22.0.0",
     "@tailwindcss/postcss": "^4.1.4",
     "ahooks": "^3.8.4",
     "axios": "^1.8.4",
