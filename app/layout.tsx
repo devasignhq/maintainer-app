@@ -25,6 +25,7 @@ type GitHubTokenContextType = {
         result: UserCredential;
         additionalInfo: AdditionalUserInfo | null;
     } | undefined>;
+    reAuthenticate: () => Promise<void>;
 };
 
 const GitHubTokenContext = createContext<GitHubTokenContextType | null>(null);
@@ -63,6 +64,12 @@ export default function RootLayout({
         }
     };
 
+    const reAuthenticate = async () => {
+        if (!githubToken) {
+            await handleGitHubAuth();
+        }
+    };
+
     return (
         <html lang="en">
             <head>
@@ -75,6 +82,7 @@ export default function RootLayout({
                         githubToken,
                         githubUser,
                         handleGitHubAuth,
+                        reAuthenticate
                     }}>
                         {children}
                     </GitHubTokenContext.Provider>
