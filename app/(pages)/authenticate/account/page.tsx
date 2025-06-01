@@ -3,17 +3,17 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { ROUTES } from "@/app/utils/data";
 import { useRouter } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
-import { getAdditionalUserInfo, GithubAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth, githubProvider } from "@/lib/firebase";
 import { UserAPI } from "@/app/services/user.service";
 import { useLockFn, useRequest } from "ahooks";
 import { toast } from "react-toastify";
 import { ErrorResponse } from "@/app/models/_global";
 import useUserStore from "@/app/state-management/useUserStore";
+import { useGitHubContext } from "@/app/layout";
 
 const Account = () => {
     const router = useRouter();
     const { setCurrentUser } = useUserStore();
+    const { handleGitHubAuth } = useGitHubContext();
 
     const { loading: creatingUser, run: createUser } = useRequest(
         useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })), 
@@ -47,18 +47,11 @@ const Account = () => {
         }
     );
 
-    const handleGitHubAuth = async () => {
-        try {
-            const result = await signInWithPopup(auth, githubProvider);
+    const authenticateUser = async () => {
+        const data = await handleGitHubAuth();
 
-            const credential = GithubAuthProvider.credentialFromResult(result);
-            const additionalInfo = getAdditionalUserInfo(result);
-            console.log(credential, "credential")
-
-            getUser(additionalInfo!.username!);
-        } catch (error) {
-            alert("GitHub sign-in failed. Please try again.");
-            console.error(error);
+        if (data?.additionalInfo) {
+            getUser(data.additionalInfo.username!);
         }
     };
 
@@ -82,7 +75,7 @@ const Account = () => {
                 }
                 sideItem={<FaGithub />}
                 attributes={{ 
-                    onClick: handleGitHubAuth,
+                    onClick: authenticateUser,
                     disabled: creatingUser || fetchingUser, 
                 }}
                 extendedClassName="w-[264px]"
