@@ -4,6 +4,11 @@ import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { FiArrowUpRight } from "react-icons/fi";
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { UpdateProjectDto } from "@/app/models/project.model";
+import { ProjectAPI } from "@/app/services/project.service";
+import useProjectStore from "@/app/state-management/useProjectStore";
+import { useRequest, useLockFn } from "ahooks";
+import { toast } from "react-toastify";
 
 const projectSchema = yup.object({
     name: yup.string().required("Project name is required"),
@@ -15,15 +20,35 @@ type EditProjectModalProps = {
 };
 
 const EditProjectModal = ({ toggleModal }: EditProjectModalProps) => {
+    const { projectList, activeProject, setActiveProject, setProjectList } = useProjectStore();
+
+    const { loading: updatingProject, run: updateProject } = useRequest(
+        useLockFn((data: UpdateProjectDto) => ProjectAPI.updateProject(activeProject!.id, data)), 
+        {
+            manual: true,
+            onSuccess: (data) => {
+                toast.success("Project updated successfully.");
+
+                if (data) {
+                    setActiveProject({ ...activeProject!, ...data });
+                    setProjectList(
+                        projectList.map(project => 
+                            project.id === activeProject!.id ? { ...project, ...data } : project
+                        )
+                    );
+                }
+            },
+            onError: () => toast.error("Failed to update project. Please try again.")
+        }
+    );
+
     const formik = useFormik({
         initialValues: {
-            name: "Browser Use",
-            description: "We make websites accessible for AI agents by extracting all interactive elements, so agents can focus on what makes their beer taste better.",
+            name: activeProject?.name || "",
+            description: activeProject?.description || "",
         },
         validationSchema: projectSchema,
-        onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
-        },
+        onSubmit: values => updateProject(values),
     });
     
     return (
@@ -68,8 +93,9 @@ const EditProjectModal = ({ toggleModal }: EditProjectModalProps) => {
                         format="OUTLINE"
                         text="Cancel"
                         attributes={{
-                            onClick: () => {},
+                            onClick: toggleModal,
                             type: "button",
+                            disabled: updatingProject,
                         }}
                     />
                     <ButtonPrimary
@@ -78,6 +104,7 @@ const EditProjectModal = ({ toggleModal }: EditProjectModalProps) => {
                         sideItem={<FiArrowUpRight />}
                         attributes={{
                             type: "submit",
+                            disabled: updatingProject,
                         }}
                     />
                 </div>
