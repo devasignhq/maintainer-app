@@ -2,7 +2,7 @@
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ToastProvider from "./components/ToastProvider";
-import { auth, githubProvider } from "@/lib/firebase";
+import { auth, configureGithubProvider } from "@/lib/firebase";
 import { 
     signInWithPopup, 
     GithubAuthProvider, 
@@ -48,6 +48,7 @@ export default function RootLayout({
     
     const handleGitHubAuth = async () => {
         try {
+            const githubProvider = configureGithubProvider();
             const result = await signInWithPopup(auth, githubProvider);
             const credential = GithubAuthProvider.credentialFromResult(result);
             const additionalInfo = getAdditionalUserInfo(result);
@@ -64,6 +65,7 @@ export default function RootLayout({
         }
     };
 
+    // TODO: Ask Claude for a better way
     const reAuthenticate = async () => {
         if (!githubToken) {
             await handleGitHubAuth();

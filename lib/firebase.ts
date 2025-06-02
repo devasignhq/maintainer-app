@@ -1,3 +1,5 @@
+import { ROUTES } from '@/app/utils/data';
+import { useClearStores } from '@/app/utils/hooks';
 import { useLockFn, useAsyncEffect, clearCache } from 'ahooks';
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GithubAuthProvider, User } from 'firebase/auth';
@@ -16,7 +18,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
-export const githubProvider = new GithubAuthProvider();
+export const configureGithubProvider = () => {
+    const provider = new GithubAuthProvider();
+    provider.addScope('public_repo'); 
+    return provider;
+};
 
 export async function getCurrentUser() {
     const userPromise = new Promise<User | null>((resolve) => {
@@ -33,13 +39,15 @@ export async function getCurrentUser() {
 
 export function useLogoutUser() {
     const router = useRouter();
+    const clearStores = useClearStores();
 
     const logoutUser = useLockFn(async () => {
         try {
             await auth.signOut();
 
             clearCache("");
-            router.push("/sign-in");
+            clearStores();
+            router.push(ROUTES.ACCOUNT);
         } catch(error) {
             console.log(error)
             alert("Something went wrong. Please try again.");
@@ -57,7 +65,7 @@ export const useUnauthenticatedUserCheck = () => {
         const user = await getCurrentUser();
 
         if (!user) {
-            router.push("/sign-in")
+            router.push(ROUTES.ACCOUNT)
         }
     }, [router]);
 }
@@ -70,7 +78,7 @@ export const useAuthenticatedUserCheck = () => {
         const user = await getCurrentUser();
 
         if (user) {
-            router.push("/")
+            router.push(ROUTES.TASKS)
         }
     }, [router]);
     
