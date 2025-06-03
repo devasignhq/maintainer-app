@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { usePopup } from "@/app/utils/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoIosCheckbox, IoMdArrowDropdown } from "react-icons/io";
 import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
@@ -8,24 +9,32 @@ import { twMerge } from "tailwind-merge";
 
 type FilterDropdownProps = {
     title: string;
-    options: string[];
+    setField: (value: string | number | (string | number)[]) => void;
     extendedButtonClassName?: string;
     buttonAttributes?: React.ButtonHTMLAttributes<HTMLButtonElement>;
     extendedContainerClassName?: string;
     noMultiSelect?: boolean;
-}
+} & ({
+    options: (string | number)[];
+} | {
+    options: Record<string, any>[];
+    fieldName: string;
+    fieldValue: string;
+})
 
-const FilterDropdown = ({ 
+const FilterDropdown = ({
     title,
     options,
+    setField,
     extendedButtonClassName,
     buttonAttributes,
     extendedContainerClassName,
-    noMultiSelect
+    noMultiSelect,
+    ...otherProps
 }: FilterDropdownProps) => {
     const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
     const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
-        options.reduce((acc, _, index) => ({ ...acc, [`${index}`]: false }), {})
+        options.reduce<Record<string, boolean>>((acc, _, index) => ({ ...acc, [`${index}`]: false }), {})
     );
 
     const toggleItems = (field: string) => {
@@ -45,6 +54,44 @@ const FilterDropdown = ({
             }), {})
         );
     };
+
+    const clearSelection = () => {
+        setSelectedItems(
+            Object.keys(selectedItems).reduce((acc, key) => ({
+                ...acc,
+                [key]: false
+            }), {})
+        );
+    };
+
+    const applySelection = () => {
+        const selectedValues = Object.keys(selectedItems)
+            .filter(key => selectedItems[key])
+            .map(key => {
+                const index = parseInt(key);
+                if (typeof options[0] === "object") {
+                    const option = options[index] as Record<string, any>;
+                    return option[(otherProps as any).fieldName];
+                } else {
+                    return options[index];
+                }
+            });
+
+        if (noMultiSelect) {
+            setField(selectedValues[0] || "");
+        } else {
+            setField(selectedValues);
+        }
+
+        toggleMenu();
+    };
+
+    // Update selected items when options change
+    useEffect(() => {
+        setSelectedItems(
+            options.reduce<Record<string, boolean>>((acc, _, index) => ({ ...acc, [`${index}`]: false }), {})
+        );
+    }, [options]);
 
     return (
         <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
@@ -73,7 +120,7 @@ const FilterDropdown = ({
                     <div className="w-full pb-3 pt-[15px] bg-dark-400 sticky top-0">
                         <button 
                             className="w-fit text-body-tiny text-light-200 font-bold hover:text-primary-100"
-                            onClick={() => {}}
+                            onClick={clearSelection}
                         >
                             Clear Selection
                         </button>
@@ -93,7 +140,7 @@ const FilterDropdown = ({
                                     className="text-body-small text-light-100"
                                     onClick={() => toggleItems(`${index}`)} 
                                 >
-                                    {option}
+                                    {typeof option === "object" ? option[(otherProps as any).fieldName] : option}
                                 </button>
                             </li>
                         ))}
@@ -101,7 +148,7 @@ const FilterDropdown = ({
                     <div className="w-full pt-3 pb-[15px] bg-dark-400 sticky bottom-0">
                         <button 
                             className="group w-fit flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold"
-                            onClick={toggleMenu}
+                            onClick={applySelection}
                         >
                             <span className="group-hover:text-light-100">Apply</span>
                             <FiArrowUpRight className="text-2xl" />
