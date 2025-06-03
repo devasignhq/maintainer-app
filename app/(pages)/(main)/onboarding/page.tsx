@@ -13,10 +13,14 @@ import useProjectStore from '@/app/state-management/useProjectStore';
 import useTaskStore from '@/app/state-management/useTaskStore';
 import { useState } from 'react';
 import { ProjectAPI } from '@/app/services/project.service';
-import * as yup from "yup";
+import { string } from "yup";
 import { toast } from "react-toastify";
+import { useGitHubContext } from '@/app/layout';
+import { createBountyLabel, getRepoDetails } from '@/app/services/github.service';
+import { moneyFormat } from '@/app/utils/helper';
+// import { useLogoutUser } from '@/lib/firebase';
 
-const repoUrlSchema = yup.string()
+const repoUrlSchema = string()
     .matches(
         /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/,
         "Please enter a valid GitHub repository URL (e.g. https://github.com/user/repo)"
@@ -24,23 +28,47 @@ const repoUrlSchema = yup.string()
     .required("Repository URL is required");
 
 const Onboarding = () => {
+    const { githubToken, reAuthenticate } = useGitHubContext();
+    // const logoutUser = useLogoutUser();
     const { currentUser } = useUserStore();
     const { activeProject, setActiveProject } = useProjectStore();
     const { draftTasks } = useTaskStore();
     const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeProject?.walletAddress, true);
     const [repoUrl, setRepoUrl] = useState("");
+    const [importingRepo, setImportingRepo] = useState(false);
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
 
-    // TODO: Verify if user has admin access on repo here
     const connectRepository = async () => {
         if (!activeProject?.id) return;
+        if (!githubToken) {
+            await reAuthenticate();
+            toast.info("Try importing repository again.");
+            return;
+        }
+
+        setImportingRepo(true);
 
         try {
             await repoUrlSchema.validate(repoUrl.trim());
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             toast.error(err.message || "Invalid repository URL");
+            setImportingRepo(false);
+            return;
+        }
+
+        if (activeProject.repoUrls.includes(repoUrl.trim())) {
+            toast.error("Repository already connected.");
+            setImportingRepo(false);
+            return;
+        }
+
+        // Validate if user is an admin on the repository
+        const repoDetails = await getRepoDetails(repoUrl, githubToken);
+        if (!repoDetails.permissions || !repoDetails.permissions.admin) {
+            toast.error("You must be an admin on the repository.");
+            setImportingRepo(false);
             return;
         }
 
@@ -49,8 +77,20 @@ const Onboarding = () => {
             { repoUrl: repoUrl.trim() }
         );
 
-        setActiveProject({ ...activeProject, repoUrls })
-        toggleImportTaskModal();
+        const completion = () => {
+            setActiveProject({ ...activeProject, repoUrls });
+            setImportingRepo(false);
+            toast.success("Repository connected successfully!");
+            toggleImportTaskModal();
+        };
+
+        // TODO: Reviw to handle errors properly
+        try {
+            await createBountyLabel(repoUrl, githubToken);
+            completion();
+        } catch {
+            completion();
+        }
     };
 
     return (
@@ -84,8 +124,9 @@ const Onboarding = () => {
                             text="Import"
                             sideItem={<FiArrowUpRight />}
                             attributes={{ 
+                                // onClick: logoutUser,
                                 onClick: connectRepository,
-                                disabled: !repoUrl.trim()
+                                disabled: !repoUrl.trim() || importingRepo
                             }}
                             extendedClassName="bg-light-200 hover:bg-light-100"
                         />
@@ -98,7 +139,7 @@ const Onboarding = () => {
                     </p>
                     <div className="flex items-center justify-between gap-2.5">
                         <p className="text-primary-400">
-                            <span className="text-display-large">{usdcBalance.split(".")[0]}</span>
+                            <span className="text-display-large">{moneyFormat(usdcBalance).split(".")[0]}</span>
                             <span className="text-headline-large">.{usdcBalance.split(".")[1]} USDC</span>
                         </p>
                         <ButtonPrimary
