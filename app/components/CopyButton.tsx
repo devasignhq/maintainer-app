@@ -16,8 +16,7 @@ const CopyButton = ({ text, extendedClassName }: CopyButtonProps) => {
             await navigator.clipboard.writeText(text);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Failed to copy text:', err);
+        } catch {
             alert('Failed to copy text. Please try again.');
         }
     };
