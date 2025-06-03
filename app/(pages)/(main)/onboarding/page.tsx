@@ -18,7 +18,6 @@ import { toast } from "react-toastify";
 import { useGitHubContext } from '@/app/layout';
 import { createBountyLabel, getRepoDetails } from '@/app/services/github.service';
 import { moneyFormat } from '@/app/utils/helper';
-// import { useLogoutUser } from '@/lib/firebase';
 
 const repoUrlSchema = string()
     .matches(
@@ -29,7 +28,6 @@ const repoUrlSchema = string()
 
 const Onboarding = () => {
     const { githubToken, reAuthenticate } = useGitHubContext();
-    // const logoutUser = useLogoutUser();
     const { currentUser } = useUserStore();
     const { activeProject, setActiveProject } = useProjectStore();
     const { draftTasks } = useTaskStore();
@@ -97,51 +95,59 @@ const Onboarding = () => {
         <>
         <div className="w-[850px] mt-[65px] mx-auto">
             <h1 className="text-display-large text-light-100">
-                Welcome to DevAsign, 
+                Welcome to DevAsign,
                 <span className="text-display-medium text-light-200 font-extralight">
                     {` ${currentUser?.username} `}
-                </span> 👋
+                </span>👋
             </h1>
             <div className="flex gap-[30px] mt-10 mb-[30px]">
-                <div className="w-full p-5 border border-primary-200">
-                    <h6 className="text-headline-small font-black text-light-200 pb-2.5">Connect Project Repository</h6>
-                    <p className="text-body-medium text-dark-100 mb-[30px]">
-                        Enter your project GitHub public repository URL to import your project tasks (issues).
-                    </p>
-                    <div className="w-full flex gap-2.5">
-                        <div className="w-full relative">
-                            <FaGithub className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />
-                            <input
-                                type="text"
-                                placeholder="Project GitHub repository URL"
-                                className="w-full h-full p-2.5 pl-[42px] bg-dark-400 border border-dark-100 text-body-tiny text-light-100"
-                                value={repoUrl}
-                                onChange={(e) => setRepoUrl(e.target.value)}
+                {(activeProject && activeProject.repoUrls.length < 1) ? (
+                    <div className="w-full p-5 border border-primary-200">
+                        <h6 className="text-headline-small font-black text-light-200 pb-2.5">Connect Project Repository</h6>
+                        <p className="text-body-medium text-dark-100 mb-[30px]">
+                            Enter your project GitHub public repository URL to import your project tasks (issues).
+                        </p>
+                        <div className="w-full flex gap-2.5">
+                            <div className="w-full relative">
+                                <FaGithub className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />
+                                <input
+                                    type="text"
+                                    placeholder="Project GitHub repository URL"
+                                    className="w-full h-full p-2.5 pl-[42px] bg-dark-400 border border-dark-100 text-body-tiny text-light-100"
+                                    value={repoUrl}
+                                    onChange={(e) => setRepoUrl(e.target.value)}
+                                />
+                            </div>
+                            <ButtonPrimary
+                                format="SOLID"
+                                text="Import"
+                                sideItem={<FiArrowUpRight />}
+                                attributes={{ 
+                                    onClick: connectRepository,
+                                    disabled: !repoUrl.trim() || importingRepo
+                                }}
+                                extendedClassName="bg-light-200 hover:bg-light-100"
                             />
                         </div>
-                        <ButtonPrimary
-                            format="SOLID"
-                            text="Import"
-                            sideItem={<FiArrowUpRight />}
-                            attributes={{ 
-                                // onClick: logoutUser,
-                                onClick: connectRepository,
-                                disabled: !repoUrl.trim() || importingRepo
-                            }}
-                            extendedClassName="bg-light-200 hover:bg-light-100"
-                        />
                     </div>
-                </div>
+                ): null}
                 <div className="w-full p-5 border border-primary-200">
                     <h6 className="text-headline-small font-black text-light-100 pb-2.5">Fund Wallet</h6>
                     <p className="text-body-medium text-dark-100 mb-[30px]">
                         Top-up wallet to can add bounties and manage contributor payouts seamlessly.
                     </p>
                     <div className="flex items-center justify-between gap-2.5">
-                        <p className="text-primary-400">
-                            <span className="text-display-large">{moneyFormat(usdcBalance).split(".")[0]}</span>
-                            <span className="text-headline-large">.{usdcBalance.split(".")[1]} USDC</span>
-                        </p>
+                        <div className="flex items-center gap-[15px]">
+                            <p className="text-light-200">
+                                <span className="text-headline-large">{moneyFormat(usdcBalance).split(".")[0]}</span>
+                                <span className="text-headline-small font-normal">.{usdcBalance.split(".")[1] || "00"} USDC</span>
+                            </p>
+                            <div className="h-10 w-0.5 bg-primary-200" />
+                            <p className="text-primary-400">
+                                <span className="text-headline-large">{moneyFormat(xlmBalance).split(".")[0]}</span>
+                                <span className="text-headline-small font-normal">.{xlmBalance.split(".")[1] || "00"} XLM</span>
+                            </p>
+                        </div>
                         <ButtonPrimary
                             format="SOLID"
                             text="Top Up"
@@ -151,10 +157,10 @@ const Onboarding = () => {
                     </div>
                 </div>
             </div>
-            {(draftTasks.length > 0) ? (
+            {(activeProject!.repoUrls.length > 0) ? (
                 <div className="w-full draft-box relative py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
                     <p className="flex items-center gap-[5px] text-title-large text-light-100">
-                        <span>Draft - Issues Found</span>
+                        <span>Draft: Issues Selected</span>
                         <span className="px-[5px] text-body-medium font-bold text-dark-500 bg-primary-100">
                             {draftTasks.length}
                         </span>
@@ -202,14 +208,7 @@ const Onboarding = () => {
         </div>
         
         {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
-        {openFundWalletModal && (
-            <FundWalletModal 
-                toggleModal={toggleFundWalletModal} 
-                userBalanceSum={
-                    Number((parseFloat(xlmBalance || "0") + parseFloat(usdcBalance || "0")).toFixed(2))
-                }
-            />
-        )}
+        {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal}/>}
         </>
     );
 }
