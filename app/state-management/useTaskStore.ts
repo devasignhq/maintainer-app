@@ -22,10 +22,10 @@ const useTaskStore = create(
                 set({ activeTask: data })
             },
             setTaskList: (data: TaskDto[]) => {
-                set((state) => ({ taskList: [...state.taskList, ...data] }))
+                set({ taskList: data })
             },
             setDraftTasks: (data: TaskDto[]) => {
-                set((state) => ({ draftTasks: [...state.draftTasks, ...data] }))
+                set({ draftTasks: data })
             },
             clearTaskStore: () => {
                 set({ 
