@@ -121,11 +121,16 @@ const FilterDropdown = ({
                         <button 
                             className="w-fit text-body-tiny text-light-200 font-bold hover:text-primary-100"
                             onClick={clearSelection}
+                            disabled={options.length === 0}
                         >
                             Clear Selection
                         </button>
                     </div>
                     <ul className="flex flex-col gap-3 list-none items-start">
+                        {options.length === 0 ? 
+                            <li className="text-light-100">No options available</li> 
+                        : null}
+                        
                         {options.map((option, index) => (
                             <li 
                                 key={index} 
@@ -149,6 +154,7 @@ const FilterDropdown = ({
                         <button 
                             className="group w-fit flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold"
                             onClick={applySelection}
+                            disabled={options.length === 0}
                         >
                             <span className="group-hover:text-light-100">Apply</span>
                             <FiArrowUpRight className="text-2xl" />

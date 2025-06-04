@@ -2,7 +2,7 @@
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowRight } from "react-icons/fi";
 import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { object, string } from 'yup';
 import { ROUTES } from "@/app/utils/data";
 import { useRouter } from "next/navigation";
 import useProjectStore from "@/app/state-management/useProjectStore";
@@ -12,9 +12,9 @@ import { toast } from "react-toastify";
 import { CreateProjectDto } from "@/app/models/project.model";
 import useUserStore from "@/app/state-management/useUserStore";
 
-const projectSchema = yup.object({
-    name: yup.string().required("Project name is required"),
-    description: yup.string().optional(),
+const projectSchema = object({
+    name: string().required("Project name is required"),
+    description: string().optional(),
 });
 
 const SubscriptionPlan = () => {

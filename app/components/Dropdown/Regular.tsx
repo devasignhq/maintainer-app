@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { usePopup } from "@/app/utils/hooks";
 import { useState } from "react";
@@ -6,30 +7,40 @@ import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
 type RegularDropdownProps = {
-    defaultValue?: string | number;
-    options: (string | number)[];
-    onChange?: (value: string | number) => void;
+    defaultName?: string | number;
+    onChange: (value: string | number | (string | number)[]) => void;
     extendedButtonClassName?: string;
     buttonAttributes?: React.ButtonHTMLAttributes<HTMLButtonElement>;
     extendedContainerClassName?: string;
     title?: string;
-}
+} & ({
+    options: (string | number)[];
+} | {
+    options: Record<string, any>[];
+    fieldName: string;
+    fieldValue: string;
+})
 
 const RegularDropdown = ({ 
-    defaultValue,
+    defaultName,
     options,
     onChange,
     extendedButtonClassName,
     buttonAttributes,
     extendedContainerClassName,
-    title
+    title,
+    ...otherProps
 }: RegularDropdownProps) => {
     const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
-    const [selectedItem, setSelectedItem] = useState<string | number>(defaultValue || "");
+    const [selectedItem, setSelectedItem] = useState<string | number>(defaultName || "");
 
-    const selectItem = (field: string | number) => {
-        setSelectedItem(field);
-        if (onChange) onChange(field);
+    const getContent = (option: string | number | Record<string, any>, field: string) => {
+        return typeof option === "object" ? option[(otherProps as any)[field]] : option;
+    };
+
+    const selectItem = (option: string | number | Record<string, any>) => {
+        setSelectedItem(getContent(option, "fieldName"));
+        if (onChange) onChange(getContent(option, "fieldValue"));
         toggleMenu();
     };
 
@@ -60,7 +71,7 @@ const RegularDropdown = ({
                                 key={index} 
                                 className="flex items-center gap-2.5"
                             >
-                                {selectedItem === option ? (
+                                {selectedItem === getContent(option, "fieldName") ? (
                                     <IoIosCheckbox className="text-[18px] text-primary-100" />
                                 ) : (
                                     <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
@@ -69,7 +80,7 @@ const RegularDropdown = ({
                                     className="text-body-small text-light-100 whitespace-nowrap"
                                     onClick={() => selectItem(option)}
                                 >
-                                    {option}
+                                    {getContent(option, "fieldName")}
                                 </button>
                             </li>
                         ))}
