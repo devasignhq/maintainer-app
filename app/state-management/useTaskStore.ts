@@ -1,14 +1,14 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { TaskDto } from "../models/task.model";
+import { CreateTaskDto, TaskDto } from "../models/task.model";
 
 type TaskStore = {
     activeTask: TaskDto | null,
     taskList: TaskDto[],
-    draftTasks: TaskDto[],
+    draftTasks: CreateTaskDto[],
     setActiveTask: (data: TaskDto) => void,
     setTaskList: (data: TaskDto[]) => void,
-    setDraftTasks: (data: TaskDto[]) => void,
+    setDraftTasks: (data: CreateTaskDto[]) => void,
     clearTaskStore: () => void,
 }
 
@@ -24,7 +24,7 @@ const useTaskStore = create(
             setTaskList: (data: TaskDto[]) => {
                 set({ taskList: data })
             },
-            setDraftTasks: (data: TaskDto[]) => {
+            setDraftTasks: (data: CreateTaskDto[]) => {
                 set({ draftTasks: data })
             },
             clearTaskStore: () => {
