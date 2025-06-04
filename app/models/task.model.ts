@@ -46,7 +46,7 @@ export type TaskDto = {
     taskSubmissions: TaskSubmission[]
 }
 
-export type TaskIssue = Pick<IssueDto, "id" | "number" | "title" | "body" | "url" | "labels" | "locked" | "state" | "created_at" | "updated_at" | "pull_request">
+export type TaskIssue = Pick<IssueDto, "id" | "number" | "title" | "url" | "labels" | "locked" | "state" | "repository_url" | "created_at" | "updated_at">
 
 export type TaskSubmission = {
     id: string

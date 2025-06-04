@@ -37,9 +37,9 @@ export async function getRepoDetails(repoUrl: string, githubToken: string) {
 export async function getRepoIssues(
     repoUrl: string,
     githubToken: string,
+    filters?: IssueFilters,
     page: number = 1,
-    perPage: number = 10,
-    filters?: IssueFilters
+    perPage: number = 30,
 ) {
     const octokit = new Octokit({ auth: githubToken });
     const [owner, repo] = getOwnerAndRepo(repoUrl);
@@ -55,7 +55,7 @@ export async function getRepoIssues(
         milestone: filters?.milestone
     });
 
-    const issues = response.data.filter(issue => issue.pull_request === null);
+    const issues = response.data.filter(issue => !issue.pull_request);
 
     return issues;
 };

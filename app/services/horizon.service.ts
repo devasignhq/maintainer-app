@@ -242,7 +242,7 @@ export function useAccountBalancePolling(
     };
 }
 
-export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000) {
+export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000, pause: boolean = false) {
     const [priceData, setPriceData] = useState<PriceData>({
         xlmToUsdc: 0,
         lastUpdated: new Date()
@@ -287,6 +287,13 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000) {
     };
 
     useEffect(() => {
+        if (pause) {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+            return;
+        }
+        
         fetchStellarDEXPrice();
         intervalRef.current = setInterval(fetchStellarDEXPrice, intervalMs);
         
@@ -295,7 +302,7 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000) {
                 clearInterval(intervalRef.current);
             }
         };
-    }, [intervalMs]);
+    }, [intervalMs, pause]);
 
     return {
         xlmPrice: priceData.xlmToUsdc.toFixed(7),

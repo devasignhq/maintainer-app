@@ -13,9 +13,10 @@ export type IssueDto = {
     id: number;
     node_id: string;
     url: string;
+    repository_url: string;
     number: number;
-    state: "open" | "closed";
-    state_reason?: string | null;
+    state: string;
+    state_reason?: "completed" | "reopened" | "not_planned" | null | undefined;
     title: string;
     body?: string | null;
     user: GitHubUser;
@@ -26,7 +27,8 @@ export type IssueDto = {
     locked: boolean;
     active_lock_reason?: string | null;
     comments: number;
-    pull_request?: IssuePullRequest
+    pull_request?: IssuePullRequest;
+    repository?: Repository;
     closed_at: string | null;
     created_at: string;
     updated_at: string;

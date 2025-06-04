@@ -157,7 +157,7 @@ const Onboarding = () => {
                     </div>
                 </div>
             </div>
-            {(activeProject!.repoUrls.length > 0) ? (
+            {(activeProject && activeProject?.repoUrls.length > 0) ? (
                 <div className="w-full draft-box relative py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
                     <p className="flex items-center gap-[5px] text-title-large text-light-100">
                         <span>Draft: Issues Selected</span>

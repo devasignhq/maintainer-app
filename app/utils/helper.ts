@@ -73,3 +73,18 @@ export function moneyFormat(
         return (value || value === 0) ? nf.format(Number(value)) : "--";
     }
 }
+
+/**
+ * Converts a GitHub API URL to a GitHub web URL
+ * @param apiUrl - The GitHub API URL (e.g., "https://api.github.com/repos/owner/repo/issues/123")
+ * @returns The corresponding GitHub web URL (e.g., "https://github.com/owner/repo/issues/123")
+ */
+export function convertGitHubApiUrlToWebUrlRegex(apiUrl: string): string {
+    const match = apiUrl.match(/^https:\/\/api\.github\.com\/repos\/(.+)$/);
+    
+    if (!match) {
+        return apiUrl;
+    }
+    
+    return `https://github.com/${match[1]}`;
+}
