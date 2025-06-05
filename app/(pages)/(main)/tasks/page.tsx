@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import TaskListSection from "./sections/TaskListSection";
 import TaskDetailSection from "./sections/TaskDetailSection";
@@ -8,11 +9,15 @@ import { useSearchParams } from "next/navigation";
 import { useAsyncEffect } from "ahooks";
 import { TaskAPI } from "@/app/services/task.service";
 
-export const ActiveTaskContext = createContext<TaskDto | null>(null);
+export const ActiveTaskContext = createContext<{
+    activeTask: TaskDto | null;
+    loadingTask: boolean;
+}>({} as any);
 
 const Tasks = () => {
     const searchParams = useSearchParams();
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
+    const [loadingTask, setLoadingTask] = useState(false);
 
     useAsyncEffect(async () => {
         const taskId = searchParams.get("taskId");
@@ -20,6 +25,8 @@ const Tasks = () => {
             setActiveTask(null);
             return;
         }
+        
+        setLoadingTask(true);
 
         const task = await TaskAPI.getTaskById(taskId);
 
@@ -28,11 +35,13 @@ const Tasks = () => {
         } else {
             setActiveTask(null);
         }
+
+        setLoadingTask(false);
     }, [searchParams]);
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">
-            <ActiveTaskContext.Provider value={activeTask}>
+            <ActiveTaskContext.Provider value={{ activeTask, loadingTask }}>
                 <TaskListSection />
                 <TaskDetailSection />
                 <TaskOverviewSection />

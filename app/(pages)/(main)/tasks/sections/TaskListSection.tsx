@@ -16,7 +16,7 @@ import { useCustomSearchParams } from "@/app/utils/hooks";
 
 const TaskListSection = () => {
     const { activeProject } = useProjectStore();
-    const activeTask = useContext(ActiveTaskContext);
+    const { activeTask } = useContext(ActiveTaskContext);
     const { searchParams, updateSearchParams } = useCustomSearchParams();
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [taskFilters, setTaskFilters] = useState<FilterTasks>();
