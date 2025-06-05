@@ -60,6 +60,42 @@ export async function getRepoIssues(
     return issues;
 };
 
+// TODO: Update later as this method will be removed by September 4th, 2025
+export async function getRepoIssuesWithSearch(
+    repoUrl: string,
+    githubToken: string,
+    filters?: IssueFilters,
+    page: number = 1,
+    perPage: number = 30,
+) {
+    const octokit = new Octokit({ auth: githubToken });
+    const [owner, repo] = getOwnerAndRepo(repoUrl);
+
+    // Build search query
+    let query = `repo:${owner}/${repo} is:issue is:open`;
+    
+    if (filters?.labels?.length) {
+        query += ` ${filters.labels.map(label => `label:"${label}"`).join(' ')}`;
+    }
+    
+    if (filters?.milestone) {
+        query += ` milestone:"${filters.milestone}"`;
+    }
+    
+    query += ` -label:"💵 Bounty"`; // Exclude bounty label
+
+    const response = await octokit.search.issuesAndPullRequests({
+        q: query,
+        sort: filters?.sort || 'created',
+        order: filters?.direction || 'desc',
+        per_page: perPage,
+        page,
+        advanced_search: "true",
+    });
+
+    return response.data.items;
+}
+
 export async function getRepoIssue(
     repoUrl: string,
     githubToken: string,
@@ -127,6 +163,7 @@ export async function createBountyLabel(repoUrl: string, githubToken: string) {
         name: "💵 Bounty",
         color: "85BB65",
         description: "Issues with a monetary reward"
+        // description: "A bounty on DevAsign"
     });
 
     return response.data;
