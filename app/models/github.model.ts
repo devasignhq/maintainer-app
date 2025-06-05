@@ -20,7 +20,7 @@ export type IssueDto = {
     title: string;
     body?: string | null;
     user: GitHubUser;
-    labels: (string | IssueLabel)[];
+    labels: IssueLabel[];
     assignee: GitHubUser;
     assignees?: GitHubUser | null;
     milestone: unknown;

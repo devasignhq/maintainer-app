@@ -12,24 +12,30 @@ import { useInfiniteScroll, useRequest, useToggle } from "ahooks";
 import useProjectStore from "@/app/state-management/useProjectStore";
 import useTaskStore from "@/app/state-management/useTaskStore";
 import { PiEyeBold, PiEyeSlashBold } from "react-icons/pi";
-import { getRepoIssues, getRepoLabels, getRepoMilestones } from "@/app/services/github.service";
+import { getRepoIssues, getRepoLabels, getRepoMilestones, updateRepoIssue } from "@/app/services/github.service";
 import { IssueDto, IssueFilters } from "@/app/models/github.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { useGitHubContext } from "@/app/layout";
 import { CreateTaskDto, TaskDto } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
+import { moneyFormat } from "@/app/utils/helper";
+import { ROUTES } from "@/app/utils/data";
+import { useRouter } from "next/navigation";
 
 type TaskPayload = {
     payload: CreateTaskDto;
     valid: boolean;
 }
 
+type UploadStatus = "PENDING" | "CREATED" | "FAILED";
+
 type ImportTaskModalProps = {
     toggleModal: () => void;
 };
 
 const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
+    const router = useRouter();
     const { githubToken, reAuthenticate } = useGitHubContext();
     const { activeProject } = useProjectStore();
     const { draftTasks, setDraftTasks } = useTaskStore();
@@ -38,7 +44,9 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
     const [issueFilters, setIssueFilters] = useState<IssueFilters>();
     const [currentPage, setCurrentPage] = useState(1);
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
-    const [createdTasks, setCreatedTasks] = useState<Map<number, TaskDto>>(new Map());
+    const [uploadingTasks, setUploadingTasks] = useState(false);
+    // const [totalBounties, setTotalBounties] = useState(false);
+    const [uploadedTasks, setUploadedTasks] = useState<Map<number, UploadStatus>>(new Map());
     const [selectedTasks, setSelectedTasks] = useState<Map<number, TaskPayload>>(() => {
         const initialMap = new Map();
         draftTasks.forEach(draft => {
@@ -65,6 +73,7 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
         loadingMore: loadingMoreIssues,
         noMore: noMoreIssues,
         loadMore: loadMoreIssues,
+        reload: reloadIssues,
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             const pageToLoad = currentData ? currentPage + 1 : 1;
@@ -146,51 +155,75 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
             return;
         }
 
-        const newCreatedTasks = new Map<number, TaskDto>();
+        // TODO: Check if user USDC balance is enough (open fund wallet modal if it ain't enough)
+        // const totalBounties = Array.from(selectedTasks.values())
+        //     .reduce((total, task) => total + Number(task.payload.bounty), 0);
+
+        setUploadingTasks(true);
+
+        const draftTasks: CreateTaskDto[] = [];
+        const createdTasks: TaskDto[] = [];
         let hasErrors = false;
 
         for (const task of Array.from(selectedTasks.values())) {
+            setUploadedTasks(prev => {
+                prev.set(task.payload.issue.id, "PENDING");
+                return prev;
+            });
+
             try {
-                const response = await TaskAPI.createTask({
-                    payload: {
-                        repoUrl: task.payload.repoUrl,
-                        projectId: task.payload.projectId,
-                        issue: task.payload.issue,
-                        timeline: Number(task.payload.timeline),
-                        timelineType: task.payload.timelineType,
-                        bounty: task.payload.bounty
-                    }
-                });
+                const createdTask = await TaskAPI.createTask({ payload: task.payload });
                 
-                newCreatedTasks.set(task.payload.issue.id, response);
-                toast.success(`Task #${task.payload.issue.number} created successfully!`);
+                try {
+                    let issueLabels = task.payload.issue.labels.reduce<string[]>((acc, label) => [...acc, label.name], []);
+                    issueLabels = [...issueLabels, "💵 Bounty"];
+
+                    await updateRepoIssue(
+                        task.payload.issue.repository_url, 
+                        githubToken, 
+                        task.payload.issue.number,
+                        task.payload.issue.title + ` (${moneyFormat(task.payload.bounty)} USDC)`,
+                        task.payload.issue.body + `\n\n## 💵 ${moneyFormat(task.payload.bounty)} USDC bounty\n\n### ❗ Important guidelines:\n- To claim a bounty, you need to **provide a short demo video** of your changes in your pull request.\n- If anything is unclear, **ask for clarification** before starting as this will help avoid potential rework.\n\n**To work on this task, [Apply here](https://dev.devasign.com?taskId=${createdTask.id})**`,
+                        issueLabels as unknown as string[]
+                    )
+
+                    toast.success(`Task #${task.payload.issue.number} created successfully!`);
+                    setUploadedTasks(prev => {
+                        prev.set(task.payload.issue.id, "CREATED");
+                        return prev;
+                    });
+                    createdTasks.push(createdTask);
+                } catch (error) {
+                    toast.info(`Task #${task.payload.issue.number} created successfully but failed to update issue.`);
+                    setUploadedTasks(prev => {
+                        prev.set(task.payload.issue.id, "CREATED");
+                        return prev;
+                    });
+                    createdTasks.push(createdTask);
+                    console.error(`Error updating issue #${task.payload.issue.number}:`, error);
+                }
             } catch (error) {
+                setUploadedTasks(prev => {
+                    prev.set(task.payload.issue.id, "FAILED");
+                    return prev;
+                });
                 hasErrors = true;
-                toast.error(`Failed to create task #${task.payload.issue.number}`);
+                draftTasks.push(task.payload);
                 console.error(`Error creating task #${task.payload.issue.number}:`, error);
             }
         }
 
-        setCreatedTasks(newCreatedTasks);
-
-        if (newCreatedTasks.size > 0) {
-            // Only clear successfully created tasks
-            setSelectedTasks(prev => {
-                const remaining = new Map(prev);
-                newCreatedTasks.forEach((_, id) => remaining.delete(id));
-                return remaining;
-            });
-
-            // Update drafts to only keep failed tasks
-            const remainingDrafts = Array.from(selectedTasks.values())
-                .filter(task => !newCreatedTasks.has(task.payload.issue.id))
-                .map(task => task.payload);
-            setDraftTasks(remainingDrafts);
-
-            if (!hasErrors) {
-                toggleModal();
-            }
+        if (!hasErrors) {
+            toggleModal();
+            setUploadingTasks(false);
+            toast.success("All tasks created successfully!");
+            return;
         }
+
+        reloadIssues();
+        setDraftTasks(draftTasks);
+        setUploadingTasks(false);
+        router.push(ROUTES.TASKS);
     };
 
     const saveDraft = () => {
@@ -234,6 +267,20 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                 </div>
             </section>
             <section className="my-[30px] flex items-center gap-2.5">
+                {/* <div className="relative">
+                    <InputField 
+                        Icon={FiSearch}
+                        attributes={{
+                            placeholder: "Search Issues",
+                            name: "search",
+                        }}
+                        extendedContainerClassName="h- full"
+                        extendedInputClassName="h-full"
+                    />
+                    <button>
+
+                    </button>
+                </div> */}
                 <FilterDropdown 
                     title="Labels"
                     options={repoLabels || []}
@@ -258,10 +305,10 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                     noMultiSelect
                 />
                 <FilterDropdown 
-                    title="Order By"
+                    title="Sort By"
                     options={[
                         { label: "Date Created", value: "created" },
-                        { label: "Date Updated", value: "updated" },
+                        { label: "Last Updated", value: "updated" },
                         { label: "Most Comments", value: "comments" }
                     ]}
                     fieldName="label"
@@ -274,7 +321,7 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                     noMultiSelect
                 />
                 <FilterDropdown 
-                    title="Order Direction"
+                    title="Order"
                     options={[
                         { label: "Ascending", value: "asc" },
                         { label: "Descending", value: "desc" }
@@ -334,6 +381,8 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                             defaultSelected={Boolean(selectedTasks.get(issue.id))}
                             showFields
                             onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload)}
+                            uploadStatus={uploadedTasks.get(issue.id)}
+                            disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id))}
                         />
                     ))
                 ):(
@@ -345,6 +394,8 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                                 defaultSelected={Boolean(selectedTasks.get(issue.id))}
                                 showFields={false}
                                 onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload)}
+                                uploadStatus={uploadedTasks.get(issue.id)}
+                                disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id))}
                             />
                         ))}
                         {(repoIssues?.list && repoIssues.list.length < 1 && !loadingIssues) && (
