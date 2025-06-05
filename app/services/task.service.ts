@@ -2,6 +2,7 @@ import { HttpClient } from "@/lib/axiosInstance";
 import { ENDPOINTS } from "./_endpoints";
 import { 
     CreateTaskDto,
+    FilterTasks,
     MarkAsCompleteDto,
     QueryTaskDto,
     ReplyTimelineExtensionRequestDto,
@@ -11,11 +12,11 @@ import {
     UpdateTaskBountyDto,
 } from "../models/task.model";
 import { AddCommentDto, CommentDto, UpdateCommentDto } from "../models/comment.model";
-import { MessageResponse, MessageWithDataResponse } from "../models/_global";
+import { MessageResponse, MessageWithDataResponse, PaginatedResponse } from "../models/_global";
 
 export class TaskAPI {
-    static async getTasks(query?: QueryTaskDto) {
-        return HttpClient.get<TaskDto[]>(ENDPOINTS.TASK.GET_ALL, { params: query });
+    static async getTasks(query?: QueryTaskDto, filter?: FilterTasks) {
+        return HttpClient.get<PaginatedResponse<TaskDto>>(ENDPOINTS.TASK.GET_ALL, { data: filter, params: query });
     }
 
     static async getTaskById(taskId: string) {

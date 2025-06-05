@@ -1,25 +1,107 @@
 "use client";
 import FilterDropdown from "@/app/components/Dropdown/Filter";
 import InputField from "@/app/components/InputField";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
 import TaskCard from "../components/TaskCard";
 import ImportTaskModal from "../modals/ImportTaskModal";
-import { useToggle } from "ahooks";
+import { useInfiniteScroll, useToggle } from "ahooks";
+import useProjectStore from "@/app/state-management/useProjectStore";
+import { FilterTasks } from "@/app/models/task.model";
+import { Data } from "ahooks/lib/useInfiniteScroll/types";
+import { TaskAPI } from "@/app/services/task.service";
+import { ActiveTaskContext } from "../page";
+import { useCustomSearchParams } from "@/app/utils/hooks";
 
 const TaskListSection = () => {
-    const [activeTaskId, setActiveTaskId] = useState("1");
+    const { activeProject } = useProjectStore();
+    const activeTask = useContext(ActiveTaskContext);
+    const { searchParams, updateSearchParams } = useCustomSearchParams();
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
+    const [taskFilters, setTaskFilters] = useState<FilterTasks>();
+    
+    const {
+        data: projectTasks,
+        loading: loadingTasks,
+        loadingMore: loadingMoreTasks,
+        noMore: noMoreTasks,
+        loadMore: loadMoreTasks,
+        reload: reloadTasks,
+    } = useInfiniteScroll<Data>(
+        async (currentData) => {
+            const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
+            
+            const response = await TaskAPI.getTasks(
+                { 
+                    projectId: activeProject?.id, 
+                    page: pageToLoad,
+                    limit: 30,
+                },
+                taskFilters
+            );
+
+            if (!searchParams.get("taskId") && !activeTask && response.data.length > 0) {
+                updateSearchParams({ taskId: response.data[0].id });
+            }
+
+            return { 
+                list: response.data,
+                pagination: response.pagination,
+            };
+        }, {
+            isNoMore: (data) => !data?.pagination.hasMore,
+            reloadDeps: [activeProject?.id, ...(taskFilters ? Object.values(taskFilters) : [])]
+        }
+    );
+
+    // const { loading: loadingLabels, data: repoLabels } = useRequest(
+    //     () => getRepoLabels(
+    //         activeRepo || activeProject?.repoUrls[0] || "",
+    //         githubToken || "",
+    //     ), 
+    //     {
+    //         retryCount: 1,
+    //         cacheKey: `${activeRepo}-labels`,
+    //         refreshDeps: [activeRepo],,
+            // onError: () => {
+            //     if (!githubToken) reAuthenticate();
+            // }
+    //     }
+    // );
+
+    // const { loading: loadingMilestones, data: repoMilestones } = useRequest(
+    //     () => getRepoMilestones(
+    //         activeRepo || activeProject?.repoUrls[0] || "",
+    //         githubToken || "",
+    //     ), 
+    //     {
+    //         retryCount: 1,
+    //         cacheKey: `${activeRepo}-milestones`,
+    //         refreshDeps: [activeRepo],
+    //         onSuccess: () => {},
+    //         onError: () => {}
+    //     }
+    // );
 
     return (
         <>
         <section className="min-w-[366px] w-[12%] h-full pt-[30px] flex flex-col">
-            <div className="space-y-2.5 pr-5">
+            <div className="pr-5 flex items-center justify-between">
+                <h6 className="text-headline-small text-light-100">Project Tasks</h6>
+                <button 
+                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                    onClick={toggleImportTaskModal}
+                >
+                    <span>Import Tasks</span>
+                    <HiPlus className="text-2xl" />
+                </button>
+            </div>
+            <div className="space-y-2.5 pr-5 my-[30px]">
                 <InputField 
                     Icon={FiSearch}
                     attributes={{
-                        placeholder: "Search Tasks or Issues",
+                        placeholder: "Search Tasks or Tasks",
                         name: "search",
                         style: { fontSize: "12px", height: "40px" },
                     }}
@@ -29,12 +111,16 @@ const TaskListSection = () => {
                 <div className="flex items-center gap-2.5">
                     <FilterDropdown
                         title="Code Repo"
-                        options={["https://github.com/", "https://github.com/", "https://github.com/"]}
+                        options={activeProject?.repoUrls || []}
                         extendedContainerClassName="w-full"
                         extendedButtonClassName="w-full py-[5px]"
                         buttonAttributes={{ 
                             style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }
                         }}
+                        setField={(value) => setTaskFilters((prev) => ({
+                            ...prev,
+                            repoUrl: value as string
+                        }))}
                         noMultiSelect
                     />
                     <FilterDropdown
@@ -46,6 +132,10 @@ const TaskListSection = () => {
                             style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
                             disabled: true
                         }}
+                        setField={(value) => setTaskFilters((prev) => ({
+                            ...prev,
+                            issueLabels: value as string[]
+                        }))}
                     />
                     <FilterDropdown
                         title="Milestone"
@@ -56,112 +146,57 @@ const TaskListSection = () => {
                             style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
                             disabled: true
                         }}
+                        setField={(value) => setTaskFilters((prev) => ({
+                            ...prev,
+                            issueMilestone: value as string
+                        }))}
                         noMultiSelect
                     />
                 </div>
             </div>
-            <div className="pr-5 flex items-center justify-between my-[30px]">
-                <h6 className="text-headline-small text-light-100">Project Tasks</h6>
-                <button 
-                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                    onClick={toggleImportTaskModal}
-                >
-                    <span>Import Tasks</span>
-                    <HiPlus className="text-2xl" />
-                </button>
-            </div>
             <div className="grow pr-5 pb-5 overflow-y-auto space-y-[15px]">
-                {sampleTasks.map((task) => (
+                {projectTasks?.list?.map((task) => (
                     <TaskCard
                         key={task.id}
-                        issueNumber={task.issueNumber}
-                        label={task.label}
-                        bounty={task.bounty}
-                        title={task.title}
-                        active={activeTaskId === task.id}
-                        onClick={() => setActiveTaskId(task.id)}
+                        task={task}
+                        active={(activeTask?.id || searchParams.get("taskId")) === task.id}
+                        onClick={() => updateSearchParams({ taskId: task.id })}
                     />
                 ))}
+                {(projectTasks?.list && projectTasks.list.length < 1 && !loadingTasks) && (
+                    <div className="flex justify-center py-4">
+                        <span className="text-body-medium text-light-100">No tasks found</span>
+                    </div>
+                )}
+                {loadingTasks && (
+                    <div className="flex justify-center py-4">
+                        <span className="text-body-medium text-light-100">Loading tasks...</span>
+                    </div>
+                )}
+                {loadingMoreTasks && (
+                    <div className="flex justify-center pt-2.5">
+                        <span className="text-body-medium text-light-100">Loading more tasks...</span>
+                    </div>
+                )}
+                {(!loadingMoreTasks && !noMoreTasks) && (
+                    <button 
+                        className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
+                        onClick={loadMoreTasks}
+                    >
+                        Load More
+                    </button>
+                )}
             </div>
         </section>
         
-        {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
+        {openImportTaskModal && (
+            <ImportTaskModal 
+                toggleModal={toggleImportTaskModal} 
+                onSuccess={reloadTasks} 
+            />
+        )}
         </>
     );
 }
  
 export default TaskListSection;
-
-type Task = {
-    id: string;
-    issueNumber: number;
-    label: string;
-    bounty: string;
-    title: string;
-};
-
-const sampleTasks: Task[] = [
-    {
-        id: "1",
-        issueNumber: 42,
-        label: "bug",
-        bounty: "150",
-        title: "Fix authentication token refresh mechanism"
-    },
-    {
-        id: "2",
-        issueNumber: 43,
-        label: "feature",
-        bounty: "300",
-        title: "Implement dark mode toggle with system preference detection"
-    },
-    {
-        id: "3",
-        issueNumber: 44,
-        label: "enhancement",
-        bounty: "200",
-        title: "Optimize image loading performance on dashboard"
-    },
-    {
-        id: "4",
-        issueNumber: 45,
-        label: "bug",
-        bounty: "175",
-        title: "Fix mobile responsive layout issues in project cards"
-    },
-    {
-        id: "5",
-        issueNumber: 46,
-        label: "feature",
-        bounty: "500",
-        title: "Add real-time collaboration features to project workspace"
-    },
-    {
-        id: "6",
-        issueNumber: 47,
-        label: "enhancement",
-        bounty: "250",
-        title: "Improve code quality and maintainability in the codebase"
-    },
-    {
-        id: "7",
-        issueNumber: 48,
-        label: "bug",
-        bounty: "175",
-        title: "Fix mobile responsive layout issues in project cards"
-    },
-    {
-        id: "8",
-        issueNumber: 49,
-        label: "feature",
-        bounty: "500",
-        title: "Add real-time collaboration features to project workspace"
-    },
-    {
-        id: "9",
-        issueNumber: 50,
-        label: "enhancement",
-        bounty: "250",
-        title: "Improve code quality and maintainability in the codebase"
-    },
-];
