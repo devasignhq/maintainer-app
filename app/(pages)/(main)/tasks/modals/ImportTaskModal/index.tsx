@@ -16,12 +16,10 @@ import { getRepoIssues, getRepoLabels, getRepoMilestones, updateRepoIssue } from
 import { IssueDto, IssueFilters } from "@/app/models/github.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { useGitHubContext } from "@/app/layout";
-import { CreateTaskDto, TaskDto } from "@/app/models/task.model";
+import { CreateTaskDto } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
 import { moneyFormat } from "@/app/utils/helper";
-import { ROUTES } from "@/app/utils/data";
-import { useRouter } from "next/navigation";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -32,10 +30,10 @@ type UploadStatus = "PENDING" | "CREATED" | "FAILED";
 
 type ImportTaskModalProps = {
     toggleModal: () => void;
+    onSuccess: () => void;
 };
 
-const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
-    const router = useRouter();
+const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
     const { githubToken, reAuthenticate } = useGitHubContext();
     const { activeProject } = useProjectStore();
     const { draftTasks, setDraftTasks } = useTaskStore();
@@ -110,9 +108,7 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
         {
             retryCount: 1,
             cacheKey: `${activeRepo}-labels`,
-            refreshDeps: [activeRepo],
-            onSuccess: () => {},
-            onError: () => {}
+            refreshDeps: [activeRepo]
         }
     );
 
@@ -124,9 +120,7 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
         {
             retryCount: 1,
             cacheKey: `${activeRepo}-milestones`,
-            refreshDeps: [activeRepo],
-            onSuccess: () => {},
-            onError: () => {}
+            refreshDeps: [activeRepo]
         }
     );
 
@@ -162,7 +156,6 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
         setUploadingTasks(true);
 
         const draftTasks: CreateTaskDto[] = [];
-        const createdTasks: TaskDto[] = [];
         let hasErrors = false;
 
         for (const task of Array.from(selectedTasks.values())) {
@@ -194,14 +187,12 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                         prev.set(task.payload.issue.id, "CREATED");
                         return prev;
                     });
-                    createdTasks.push(createdTask);
                 } catch (error) {
                     toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to update issue.`);
                     setUploadedTasks(prev => {
                         prev.set(task.payload.issue.id, "CREATED");
                         return prev;
                     });
-                    createdTasks.push(createdTask);
                     console.error(`Error updating issue #${task.payload.issue.number}:`, error);
                 }
             } catch (error) {
@@ -217,10 +208,10 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
         }
 
         if (!hasErrors) {
-            toggleModal();
-            setUploadingTasks(false);
             toast.success("All tasks created successfully!");
-            router.push(ROUTES.TASKS);
+            setUploadingTasks(false);
+            toggleModal();
+            onSuccess();
             return;
         }
 

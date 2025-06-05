@@ -18,6 +18,8 @@ import { toast } from "react-toastify";
 import { useGitHubContext } from '@/app/layout';
 import { createBountyLabel, getRepoDetails } from '@/app/services/github.service';
 import { moneyFormat } from '@/app/utils/helper';
+import { useRouter } from "next/navigation";
+import { ROUTES } from '@/app/utils/data';
 
 const repoUrlSchema = string()
     .matches(
@@ -27,6 +29,7 @@ const repoUrlSchema = string()
     .required("Repository URL is required");
 
 const Onboarding = () => {
+    const router = useRouter();
     const { githubToken, reAuthenticate } = useGitHubContext();
     const { currentUser } = useUserStore();
     const { activeProject, setActiveProject } = useProjectStore();
@@ -207,7 +210,12 @@ const Onboarding = () => {
             </div>
         </div>
         
-        {openImportTaskModal && <ImportTaskModal toggleModal={toggleImportTaskModal} />}
+        {openImportTaskModal && (
+            <ImportTaskModal 
+                toggleModal={toggleImportTaskModal} 
+                onSuccess={() => router.push(ROUTES.TASKS)} 
+            />
+        )}
         {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal}/>}
         </>
     );
