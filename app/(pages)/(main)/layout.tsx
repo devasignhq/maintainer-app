@@ -34,10 +34,10 @@ export default function MainLayout({
         {
             retryCount: 2,
             cacheKey: "project-list",
-            onSuccess: (data) => {
-                if (data) {
-                    setProjectList(data);
-                    if (!activeProject) setActiveProject(data[0]);
+            onSuccess: (response) => {
+                if (response) {
+                    setProjectList(response.data);
+                    if (!activeProject) setActiveProject(response.data[0]);
                 }
             },
             onError: () => {}

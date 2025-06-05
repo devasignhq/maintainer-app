@@ -14,10 +14,11 @@ import {
 } from "../models/project.model";
 import { MessageResponse, MessageWithDataResponse } from "../models/_global";
 import { IssueDto, IssueLabel, IssueMilestone } from "../models/github.model";
+import { PaginatedResponse } from "../models/_global";
 
 export class ProjectAPI {
     static async getProjects(query?: QueryProjectDto) {
-        return HttpClient.get<ProjectDto[]>(ENDPOINTS.PROJECT.GET_ALL, { params: query });
+        return HttpClient.get<PaginatedResponse<ProjectDto>>(ENDPOINTS.PROJECT.GET_ALL, { params: query });
     }
 
     static async getProjectById(projectId: string) {
