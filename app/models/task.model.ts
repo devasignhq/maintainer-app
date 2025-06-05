@@ -66,7 +66,6 @@ export type TaskSubmission = {
 }
 
 export type CreateTaskDto = {
-    repoUrl: string
     projectId: string
     issue: TaskIssue
     timeline?: number
@@ -104,6 +103,13 @@ export type QueryTaskDto = {
     page?: number
     limit?: number
     orderBy?: "asc" | "desc"
+}
+
+export type FilterTasks = {
+    repoUrl?: string;
+    issueTitle?: string;
+    issueLabels?: string[];
+    issueMilestone?: string;
 }
 
 export type TimelineExtensionesponse = {

@@ -63,7 +63,6 @@ const CreateTaskCard = ({
     const handleToggleCheck = (selected: boolean) => {
         if (selected) {
             const taskPayload: CreateTaskDto = {
-                repoUrl: convertGitHubApiUrlToWebUrlRegex(issue.repository_url),
                 projectId: activeProject!.id,
                 issue: {
                     id: issue.id,
