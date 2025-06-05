@@ -9,7 +9,7 @@ import { MdOutlineCancel } from "react-icons/md";
 
 const ConversationView = () => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const [comments] = useState<CommentDto[]>(sampleComments);
+    const [comments] = useState<CommentDto[]>([]);
 
     const adjustHeight = () => {
         const textarea = textareaRef.current;
@@ -20,7 +20,7 @@ const ConversationView = () => {
 
     return (
         <>
-            <div className={`grow px-5 my-[30px] overflow-y-auto ${comments.length < 1 ? "grid place-content-center" : ""}`}>
+            <div className={`grow px-5 mb-[30px] overflow-y-auto ${comments.length < 1 ? "grid place-content-center" : ""}`}>
                 {comments.length < 1 ? (
                     <div className="space-y-2.5 text-center">
                         <Image 
@@ -128,73 +128,73 @@ const ConversationView = () => {
  
 export default ConversationView;
 
-export const sampleComments: CommentDto[] = [
-    {
-        id: "40",
-        userId: "user2",
-        taskId: "task1",
-        type: CommentType.TIMELINE_MODIFICATION,
-        message: "Looking at the scope, we might need to adjust the timeline. What do you think about extending it by 2 weeks?",
-        metadata: {
-            requestedTimeline: 14,
-            newTimeline: 28
-        },
-        attachments: [],
-        createdAt: "2024-05-07T10:15:00Z",
-        updatedAt: "2024-05-07T10:15:00Z"
-    },
-    {
-        id: "1",
-        userId: "user1",
-        taskId: "task1",
-        type: CommentType.GENERAL,
-        message: "Hi! I'm interested in working on this task. I have experience with similar implementations.",
-        attachments: [],
-        createdAt: "2024-05-07T09:30:00Z",
-        updatedAt: "2024-05-07T09:30:00Z"
-    },
-    {
-        id: "2",
-        userId: "user2",
-        taskId: "task1",
-        type: CommentType.GENERAL,
-        message: "Great! Can you share some examples of your previous work?",
-        attachments: [],
-        createdAt: "2024-05-07T09:45:00Z",
-        updatedAt: "2024-05-07T09:45:00Z"
-    },
-    {
-        id: "3",
-        userId: "user1",
-        taskId: "task1",
-        type: CommentType.GENERAL,
-        message: "Sure! Here's a link to my portfolio and some relevant projects I've worked on.",
-        attachments: [],
-        createdAt: "2024-05-07T10:00:00Z",
-        updatedAt: "2024-05-07T10:00:00Z"
-    },
-    {
-        id: "4",
-        userId: "user2",
-        taskId: "task1",
-        type: CommentType.TIMELINE_MODIFICATION,
-        message: "Looking at the scope, we might need to adjust the timeline. What do you think about extending it by 2 weeks?",
-        metadata: {
-            requestedTimeline: 14,
-            newTimeline: 28
-        },
-        attachments: ["https://example.com/scope.pdf"],
-        createdAt: "2024-05-07T10:15:00Z",
-        updatedAt: "2024-05-07T10:15:00Z"
-    },
-    {
-        id: "5",
-        userId: "user1",
-        taskId: "task1",
-        type: CommentType.GENERAL,
-        message: "That sounds reasonable. I can provide detailed progress updates every 3 days to ensure we stay on track.",
-        attachments: [],
-        createdAt: "2024-05-07T10:30:00Z",
-        updatedAt: "2024-05-07T10:30:00Z"
-    }
-];
+// export const sampleComments: CommentDto[] = [
+//     {
+//         id: "40",
+//         userId: "user2",
+//         taskId: "task1",
+//         type: CommentType.TIMELINE_MODIFICATION,
+//         message: "Looking at the scope, we might need to adjust the timeline. What do you think about extending it by 2 weeks?",
+//         metadata: {
+//             requestedTimeline: 14,
+//             newTimeline: 28
+//         },
+//         attachments: [],
+//         createdAt: "2024-05-07T10:15:00Z",
+//         updatedAt: "2024-05-07T10:15:00Z"
+//     },
+//     {
+//         id: "1",
+//         userId: "user1",
+//         taskId: "task1",
+//         type: CommentType.GENERAL,
+//         message: "Hi! I'm interested in working on this task. I have experience with similar implementations.",
+//         attachments: [],
+//         createdAt: "2024-05-07T09:30:00Z",
+//         updatedAt: "2024-05-07T09:30:00Z"
+//     },
+//     {
+//         id: "2",
+//         userId: "user2",
+//         taskId: "task1",
+//         type: CommentType.GENERAL,
+//         message: "Great! Can you share some examples of your previous work?",
+//         attachments: [],
+//         createdAt: "2024-05-07T09:45:00Z",
+//         updatedAt: "2024-05-07T09:45:00Z"
+//     },
+//     {
+//         id: "3",
+//         userId: "user1",
+//         taskId: "task1",
+//         type: CommentType.GENERAL,
+//         message: "Sure! Here's a link to my portfolio and some relevant projects I've worked on.",
+//         attachments: [],
+//         createdAt: "2024-05-07T10:00:00Z",
+//         updatedAt: "2024-05-07T10:00:00Z"
+//     },
+//     {
+//         id: "4",
+//         userId: "user2",
+//         taskId: "task1",
+//         type: CommentType.TIMELINE_MODIFICATION,
+//         message: "Looking at the scope, we might need to adjust the timeline. What do you think about extending it by 2 weeks?",
+//         metadata: {
+//             requestedTimeline: 14,
+//             newTimeline: 28
+//         },
+//         attachments: ["https://example.com/scope.pdf"],
+//         createdAt: "2024-05-07T10:15:00Z",
+//         updatedAt: "2024-05-07T10:15:00Z"
+//     },
+//     {
+//         id: "5",
+//         userId: "user1",
+//         taskId: "task1",
+//         type: CommentType.GENERAL,
+//         message: "That sounds reasonable. I can provide detailed progress updates every 3 days to ensure we stay on track.",
+//         attachments: [],
+//         createdAt: "2024-05-07T10:30:00Z",
+//         updatedAt: "2024-05-07T10:30:00Z"
+//     }
+// ];

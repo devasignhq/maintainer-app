@@ -8,8 +8,11 @@ import { useToggle } from "ahooks";
 import SetTaskBountyModal from "../modals/SetTaskBountyModal";
 import SetTaskTimelineModal from "../modals/SetTaskTimelineModal";
 import DeleteTaskModal from "../modals/DeleteTaskModal";
+import { useContext } from "react";
+import { ActiveTaskContext } from "../page";
 
 const TaskOverviewSection = () => {
+    const activeTask = useContext(ActiveTaskContext);
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);

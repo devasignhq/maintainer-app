@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import TaskListSection from "./sections/TaskListSection";
 import TaskDetailSection from "./sections/TaskDetailSection";
@@ -9,10 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { useAsyncEffect } from "ahooks";
 import { TaskAPI } from "@/app/services/task.service";
 
-export const ActiveTaskContext = createContext<{
-    activeTask: TaskDto | null;
-    loadingTask: boolean;
-}>({} as any);
+export const ActiveTaskContext = createContext<TaskDto | null>(null);
 
 const Tasks = () => {
     const searchParams = useSearchParams();
@@ -25,7 +21,7 @@ const Tasks = () => {
             setActiveTask(null);
             return;
         }
-        
+
         setLoadingTask(true);
 
         const task = await TaskAPI.getTaskById(taskId);
@@ -41,10 +37,24 @@ const Tasks = () => {
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">
-            <ActiveTaskContext.Provider value={{ activeTask, loadingTask }}>
+            <ActiveTaskContext.Provider value={activeTask}>
                 <TaskListSection />
-                <TaskDetailSection />
-                <TaskOverviewSection />
+                {!activeTask && !loadingTask && (
+                    <section className="grow border-l border-dark-200 grid place-content-center">
+                        <p className="text-body-medium text-light-100">No task selected</p>
+                    </section>
+                )}
+                {loadingTask && (
+                    <section className="grow border-l border-dark-200 grid place-content-center">
+                        <p className="text-body-medium text-light-100">Loading Task...</p>
+                    </section>
+                )}
+                {!loadingTask && activeTask && (
+                    <>
+                    <TaskDetailSection />
+                    <TaskOverviewSection />
+                    </>
+                )}
             </ActiveTaskContext.Provider>
         </div>
     );
