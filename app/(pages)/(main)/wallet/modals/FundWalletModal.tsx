@@ -2,75 +2,79 @@
 import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { QRCodeCanvas } from "qrcode.react";
 import CopyButton from "../../../../components/CopyButton";
-import useTaskStore from "@/app/state-management/useTaskStore";
 import useProjectStore from "@/app/state-management/useProjectStore";
-import { usePathname } from "next/navigation";
-import { ROUTES } from "@/app/utils/data";
 import { useEffect, useState } from "react";
 import { moneyFormat } from "@/app/utils/helper";
 import { useXLMUSDCFromStellarDEX } from "@/app/services/horizon.service";
+import { LiaExchangeAltSolid } from "react-icons/lia";
 
 type FundWalletModalProps = {
     toggleModal: () => void;
-    userBalanceSum?: number;
-};
+    displayTopUpAmount?: {
+        totalBountiesInUSDC: string;
+        xlmBalance: string;
+    };
+}
 
-const FundWalletModal = ({ toggleModal, userBalanceSum }: FundWalletModalProps) => {
-    const currentPath = usePathname();
+const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalProps) => {
     const { activeProject } = useProjectStore();
-    const { draftTasks } = useTaskStore();
-    const [totalBounties, setTotalBounties] = useState("");
-    const [amountToSend, setAmountToSend] = useState("");
+    const [totalBountiesInXLM, setTotalBountiesInXLM] = useState("");
+    const [topUpAmount, setTopUpAmount] = useState("");
     const { 
         xlmPrice, 
         isLoading: priceLoading, 
         error: priceError 
-    } = useXLMUSDCFromStellarDEX(5000);
+    } = useXLMUSDCFromStellarDEX(5000, !displayTopUpAmount);
 
     useEffect(() => {
-        if (currentPath !== ROUTES.ONBOARDING || draftTasks.length < 1) return;
+        if (!displayTopUpAmount) return;
 
-        const totalBountiesValue = draftTasks.reduce((acc, task) => acc + (task.bounty || 0), 0);
-        setTotalBounties(moneyFormat(totalBountiesValue));
-
-        // Calculate XLM to send using the latest DEX price
         if (xlmPrice && Number(xlmPrice) > 0) {
-            const xlmToSend = (totalBountiesValue / Number(xlmPrice)).toFixed(2);
-            setAmountToSend(xlmToSend);
+            const xlmToSend = (Number(displayTopUpAmount.totalBountiesInUSDC) / Number(xlmPrice)).toFixed(2);
+            setTotalBountiesInXLM(xlmToSend);
         } else {
-            setAmountToSend("");
+            setTotalBountiesInXLM("");
         }
-    }, [draftTasks, currentPath, xlmPrice]);
+    }, [displayTopUpAmount, xlmPrice]);
+
+    useEffect(() => {
+        if (!totalBountiesInXLM || !displayTopUpAmount) return;
+
+        setTopUpAmount((Number(totalBountiesInXLM) - Number(displayTopUpAmount?.xlmBalance)).toFixed(2));
+    }, [displayTopUpAmount, totalBountiesInXLM]);
     
     return (
         <PopupModalLayout title="Fund Wallet" toggleModal={toggleModal}>
             <p className="text-body-medium text-dark-100 mt-2.5">
                 Kindly deposit only XLM to the wallet below as any other token sent will be lost FOREVER.
             </p>
-            {(draftTasks.length > 0 && currentPath === ROUTES.ONBOARDING && userBalanceSum && userBalanceSum < 1) ? (
-                <section className="w-full flex gap-5 mt-5">
-                    <div className="w-full py-2.5 px-[15px] border border-dark-200">
-                        <p className="text-body-tiny text-light-100 mb-2.5">Total Bounties</p>
-                        <p className="text-light-200">
-                            <span className="text-display-small font-normal">{totalBounties.split(".")[0]}</span>
-                            <span className="text-body-medium">.{totalBounties.split(".")[1] || "00"}</span>
-                            <span className="text-display-small font-normal">{" "}USDC</span>
-                        </p>
-                    </div>
-                    <div className="w-full py-2.5 px-[15px] border border-dark-200">
-                        <p className="text-body-tiny text-light-100 mb-2.5">Amount to Send</p>
+            {displayTopUpAmount ? (
+                <section className="w-full space-y-5">
+                    <p className="text-body-tiny flex items-center gap-2.5">
+                        <span className="font-bold text-light-100">Total Bounties:</span>
+                        <span className="text-primary-400">
+                            {displayTopUpAmount.xlmBalance.split(".")[0]}.{displayTopUpAmount.xlmBalance.split(".")[1] || "00"} USDC
+                        </span>
+                        <LiaExchangeAltSolid className="text-xl text-primary-400" />
+                        <span className="text-primary-400">
+                            {(priceLoading && !xlmPrice) ? (
+                                <span className="h-4 w-12 rounded bg-dark-300 animate-pulse" />
+                            ) : priceError ? (
+                                <span>--</span>
+                            ) : (
+                                <span>{moneyFormat(totalBountiesInXLM).split(".")[0]}.{totalBountiesInXLM.split(".")[1] || "00"}</span>
+                            )}
+                            <span> XLM</span>
+                        </span>
+                    </p>
+                    <div className="w-full py-2.5 px-[15px] text-light-100 border border-dark-200">
+                        <p className="text-body-tiny mb-2.5">Top Up Amount (XLM)</p>
                         {(priceLoading && !xlmPrice) ? (
-                            <p className="flex items-end gap-0.5">
-                                <span className="h-6 w-12 rounded bg-dark-300 animate-pulse" />
-                                <span className="text-display-small font-normal">{" "}XLM</span>
-                            </p>
-                        ) : priceError ? (
-                            <p className="text-primary-400">-- XLM</p>
+                            <p className="text-display-small font-normal">-- XLM</p>
                         ) : (
-                            <p className="text-primary-400">
-                                <span className="text-display-small font-normal">{amountToSend.split(".")[0]}</span>
-                                <span className="text-body-medium">.{amountToSend.split(".")[1] || "00"}</span>
-                                <span className="text-display-small font-normal">{" "}XLM</span>
+                            <p>
+                                <span className="text-display-small font-normal">{topUpAmount.split(".")[0]}</span>
+                                <span className="text-body-medium">.{topUpAmount.split(".")[1]}{" "}XLM</span>
                             </p>
                         )}
                     </div>
