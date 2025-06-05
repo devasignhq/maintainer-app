@@ -2,13 +2,41 @@
 import TaskListSection from "./sections/TaskListSection";
 import TaskDetailSection from "./sections/TaskDetailSection";
 import TaskOverviewSection from "./sections/TaskOverviewSection";
+import { TaskDto } from "@/app/models/task.model";
+import { createContext, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useAsyncEffect } from "ahooks";
+import { TaskAPI } from "@/app/services/task.service";
+
+export const ActiveTaskContext = createContext<TaskDto | null>(null);
 
 const Tasks = () => {
+    const searchParams = useSearchParams();
+    const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
+
+    useAsyncEffect(async () => {
+        const taskId = searchParams.get("taskId");
+        if (!taskId) {
+            setActiveTask(null);
+            return;
+        }
+
+        const task = await TaskAPI.getTaskById(taskId);
+
+        if (task) {
+            setActiveTask(task);
+        } else {
+            setActiveTask(null);
+        }
+    }, [searchParams]);
+
     return (
         <div className="h-[calc(100dvh-123px)] flex">
-            <TaskListSection />
-            <TaskDetailSection />
-            <TaskOverviewSection />
+            <ActiveTaskContext.Provider value={activeTask}>
+                <TaskListSection />
+                <TaskDetailSection />
+                <TaskOverviewSection />
+            </ActiveTaskContext.Provider>
         </div>
     );
 }

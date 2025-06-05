@@ -17,13 +17,8 @@ export function useCustomSearchParams() {
             return router.push(pathname);
         }
 
-        Object.keys(params).forEach((key) => {
-            const value = params[key];
-            if (value) {
-                currentSearchParams.set(key, value.toString());
-            } else {
-                currentSearchParams.delete(key);
-            }
+        Object.entries(params).forEach(([key, value]) => {
+            currentSearchParams.set(key, value.toString());
         });
 
         let queryString = "";
