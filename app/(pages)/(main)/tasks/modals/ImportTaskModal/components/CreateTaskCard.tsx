@@ -69,7 +69,7 @@ const CreateTaskCard = ({
                     number: issue.number,
                     title: issue.title,
                     body: issue.body || undefined,
-                    url: issue.url,
+                    url: convertGitHubApiUrlToWebUrlRegex(issue.url),
                     labels: issue.labels,
                     locked: issue.locked,
                     state: issue.state,
