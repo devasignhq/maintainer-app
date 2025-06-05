@@ -166,6 +166,8 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
         let hasErrors = false;
 
         for (const task of Array.from(selectedTasks.values())) {
+            toast.info(`Creating task for issue #${task.payload.issue.number}...`, { autoClose: 2000 });
+            // toast.done()
             setUploadedTasks(prev => {
                 prev.set(task.payload.issue.id, "PENDING");
                 return prev;
@@ -187,14 +189,14 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                         issueLabels as unknown as string[]
                     )
 
-                    toast.success(`Task #${task.payload.issue.number} created successfully!`);
+                    toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
                     setUploadedTasks(prev => {
                         prev.set(task.payload.issue.id, "CREATED");
                         return prev;
                     });
                     createdTasks.push(createdTask);
                 } catch (error) {
-                    toast.info(`Task #${task.payload.issue.number} created successfully but failed to update issue.`);
+                    toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to update issue.`);
                     setUploadedTasks(prev => {
                         prev.set(task.payload.issue.id, "CREATED");
                         return prev;
@@ -203,6 +205,7 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
                     console.error(`Error updating issue #${task.payload.issue.number}:`, error);
                 }
             } catch (error) {
+                toast.error(`Task for issue #${task.payload.issue.number} failed to create.`);
                 setUploadedTasks(prev => {
                     prev.set(task.payload.issue.id, "FAILED");
                     return prev;
@@ -217,13 +220,13 @@ const ImportTaskModal = ({ toggleModal }: ImportTaskModalProps) => {
             toggleModal();
             setUploadingTasks(false);
             toast.success("All tasks created successfully!");
+            router.push(ROUTES.TASKS);
             return;
         }
 
         reloadIssues();
         setDraftTasks(draftTasks);
         setUploadingTasks(false);
-        router.push(ROUTES.TASKS);
     };
 
     const saveDraft = () => {

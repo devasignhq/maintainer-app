@@ -47,6 +47,7 @@ const CreateTaskCard = ({
     
     useUpdateEffect(() => setSelected(defaultSelected), [defaultSelected]);
         
+    // TODO: Add default values from draft tasks
     const formik = useFormik({
         initialValues: {
             bounty: "",
@@ -109,22 +110,16 @@ const CreateTaskCard = ({
                 uploadStatus === "PENDING" && "animate-pulse",
             )
         }>
-            <div className="flex items-center justify-between gap-[5px]">
-                <p className="text-body-medium text-primary-400">
-                    #{issue.number}
-                </p>
-                <p className="text-body-medium text-light-100 truncate">
-                    {issue.title}
-                </p>
-                <div className="flex items-center gap-[15px]">
-                    <button onClick={toggleSelect}>
-                        {selected ? (
-                            <IoIosCheckbox className="text-[18px] text-primary-100" />
-                        ) : (
-                            <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
-                        )}
-                    </button>
-                </div>
+            <div className="flex items-center gap-[15px]">
+                <p className="text-body-medium text-primary-400">#{issue.number}</p>
+                <p className="text-body-medium text-light-100 truncate">{issue.title}</p>
+                <button className="ml-auto" onClick={toggleSelect}>
+                    {selected ? (
+                        <IoIosCheckbox className="text-[18px] text-primary-100" />
+                    ) : (
+                        <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
+                    )}
+                </button>
             </div>
             <div className="max-w-[90%] flex item-center gap-[5px]">
                 <Link 
@@ -134,14 +129,16 @@ const CreateTaskCard = ({
                 >
                     {convertGitHubApiUrlToWebUrlRegex(issue.url)}
                 </Link>
-                <p className="py-0.5 px-[7px] bg-primary-300 text-primary-100 text-body-tiny font-bold max-w-[50%] truncate">
-                    {issue.labels
-                        .map(label => label.name)
-                        .map((name, index, array) => 
-                            index === array.length - 1 ? name : `${name}, `
-                        )
-                        .join('')}
-                </p>
+                {issue.labels?.length > 0 && (
+                    <p className="py-0.5 px-[7px] bg-primary-300 text-primary-100 text-body-tiny font-bold max-w-[50%] truncate">
+                        {issue.labels
+                            .map(label => label.name)
+                            .map((name, index, array) => 
+                                index === array.length - 1 ? name : `${name}, `
+                            )
+                            .join('')}
+                    </p>
+                )}
             </div>
             {showFields && (
                 <div className="flex items-center gap-5 mt-2.5">
