@@ -39,20 +39,31 @@ const TaskOverviewSection = () => {
                     <p className="text-body-tiny text-light-100">Bounty</p>
                     <div className="flex items-center gap-1">
                         <p className="text-body-large text-light-200">{moneyFormat(activeTask?.bounty || "")} USDC</p>
-                        <button onClick={toggleSetTaskBountyModal}>
-                            <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
-                        </button>
+                        {activeTask?.status === "OPEN" && (
+                            <button onClick={toggleSetTaskBountyModal}>
+                                <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
+                            </button>
+                        )}
                     </div>
                 </div>
-                <div className="space-y-2.5">
-                    <p className="text-body-tiny text-light-100">Time Left</p>
-                    <div className="flex items-center gap-1">
+                {activeTask?.status === "OPEN" ? (
+                    <div className="space-y-2.5">
+                        <p className="text-body-tiny text-light-100">Timeline</p>
+                        <div className="flex items-center gap-1">
+                            <p className="text-body-large text-light-200">
+                                {activeTask.timeline} {activeTask.timelineType?.toLowerCase()}(s)
+                            </p>
+                            <button onClick={toggleSetTaskTimelineModal}>
+                                <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
+                            </button>
+                        </div>
+                    </div>
+                ): (
+                    <div className="space-y-2.5">
+                        <p className="text-body-tiny text-light-100">Time Left</p>
                         <p className="text-body-large text-light-200">{getTimeLeft(activeTask!)}</p>
-                        <button onClick={toggleSetTaskTimelineModal}>
-                            <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
-                        </button>
                     </div>
-                </div>
+                )}
                 <ButtonPrimary
                     format="OUTLINE"
                     text="Delete Task"
@@ -145,7 +156,7 @@ const sampleTaskActivities: TaskActivity[] = [
 ];
 
 /**
- * Calculates the time left for a task based on its timeline, timelineType, and createdAt date
+ * Calculates the time left for a task based on its timeline, timelineType, and acceptedAt date
  * @param task - The task object containing timeline information
  * @returns Formatted string showing time left (e.g., "1 week(s) 5 day(s)", "1 week(s)", "5 day(s)")
  */
@@ -155,8 +166,8 @@ export const getTimeLeft = (task: TaskDto): string => {
         return "No deadline set";
     }
 
-    // Parse the createdAt date
-    const createdAt = new Date(task.createdAt);
+    // Parse the acceptedAt date
+    const acceptedAt = new Date(task.acceptedAt!);
     const now = new Date();
 
     // Calculate total days for the timeline
@@ -174,7 +185,7 @@ export const getTimeLeft = (task: TaskDto): string => {
     }
 
     // Calculate the deadline
-    const deadline = new Date(createdAt);
+    const deadline = new Date(acceptedAt);
     deadline.setDate(deadline.getDate() + totalTimelineDays);
 
     // Calculate the difference in milliseconds
@@ -235,7 +246,7 @@ export const getDetailedTimeLeft = (task: TaskDto) => {
         };
     }
 
-    const createdAt = new Date(task.createdAt);
+    const acceptedAt = new Date(task.acceptedAt!);
     const now = new Date();
 
     let totalTimelineDays: number;
@@ -258,7 +269,7 @@ export const getDetailedTimeLeft = (task: TaskDto) => {
         };
     }
 
-    const deadline = new Date(createdAt);
+    const deadline = new Date(acceptedAt);
     deadline.setDate(deadline.getDate() + totalTimelineDays);
 
     const timeDiff = deadline.getTime() - now.getTime();
@@ -300,7 +311,7 @@ export const getTaskDeadline = (task: TaskDto): Date | null => {
         return null;
     }
 
-    const createdAt = new Date(task.createdAt);
+    const acceptedAt = new Date(task.acceptedAt!);
     let totalTimelineDays: number;
     
     if (task.timelineType === TIMELINE_TYPE.WEEK) {
@@ -313,7 +324,7 @@ export const getTaskDeadline = (task: TaskDto): Date | null => {
         return null;
     }
 
-    const deadline = new Date(createdAt);
+    const deadline = new Date(acceptedAt);
     deadline.setDate(deadline.getDate() + totalTimelineDays);
     
     return deadline;
