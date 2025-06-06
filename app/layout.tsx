@@ -75,7 +75,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <head>
-                <title>DevAsign</title>
+                <title>DevAsign (Project Maintainer)</title>
                 <meta name="description" content="The Open Source Project Management Tool" />
             </head>
             <body className={`${geistMono.className} antialiased`}>

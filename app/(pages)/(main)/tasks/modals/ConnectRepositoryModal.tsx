@@ -99,7 +99,7 @@ const ConnectRepositoryModal = ({ toggleModal }: ConnectRepositoryModalProps) =>
             />
             <ButtonPrimary
                 format="SOLID"
-                text="Let's Go!"
+                text={importingRepo ? "Connecting..." : "Let's Go!"}
                 sideItem={<FiArrowUpRight />}
                 attributes={{
                     onClick: connectRepository,

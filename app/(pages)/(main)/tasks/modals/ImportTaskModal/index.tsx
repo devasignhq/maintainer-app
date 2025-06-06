@@ -421,15 +421,17 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
             <section className="flex gap-2.5">
                 <ButtonPrimary
                     format="SOLID"
-                    text={showSelectedTasks ? "Upload" : "Proceed"}
+                    text={
+                        showSelectedTasks 
+                            ? uploadingTasks
+                                ? "Uploading..."
+                                : "Upload" 
+                            : "Proceed"
+                    }
                     sideItem={<FiArrowRight />}
                     attributes={{
-                        onClick: () => {
-                            createTasks();
-                            console.count()
-                            Array.from(selectedTasks.values()).map(task => console.log(task))
-                        },
-                        disabled: (!validPayload && showSelectedTasks)
+                        onClick: createTasks,
+                        disabled: uploadingTasks || (!validPayload && showSelectedTasks)
                     }}
                 />
                 <ButtonPrimary
@@ -437,7 +439,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                     text="Save Draft"
                     attributes={{
                         onClick: saveDraft,
-                        disabled: !validPayload
+                        disabled: uploadingTasks || !validPayload
                     }}
                 />
             </section>

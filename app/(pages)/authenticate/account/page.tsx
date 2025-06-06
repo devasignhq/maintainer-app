@@ -19,9 +19,11 @@ const Account = () => {
         useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })), 
         {
             manual: true,
-            onSuccess: (data) => {
+            onSuccess: (data, params) => {
                 toast.success("User created successfully.");
-                setCurrentUser(data!);
+                if (data) {
+                    setCurrentUser({ ...data, username: params[0] });
+                }
                 router.push(ROUTES.SETUP_PROJECT);
             },
             onError: () => toast.error("Failed to create user.")
@@ -34,8 +36,11 @@ const Account = () => {
         {
             manual: true,
             cacheKey: "user-object",
-            onSuccess: (data) => {
-                setCurrentUser(data!);
+            onSuccess: (data, params) => {
+                if (data) {
+                    setCurrentUser({ ...data, username: params[0] });
+                }
+                // TODO: Send user to task page if project count is valid
                 router.push(ROUTES.SETUP_PROJECT);
             },
             onError: (err, params) => {

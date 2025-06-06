@@ -48,7 +48,7 @@ export default function MainLayout({
         <main className="h-full w-full px-[6.75%] flex flex-col">
             <section className="pt-5 flex items-center justify-between">
                 <img src="/davasign-logo.svg" alt="DevAsign" className="h-auto w-auto" />
-                <div className="flex items-center gap-2 5">
+                <div className="flex items-center gap-2.5">
                     <div className="relative">
                         <div className="flex items-center gap-2.5 text-light-100">
                             <span className="flex items-center gap-[15px] text-headline-small">

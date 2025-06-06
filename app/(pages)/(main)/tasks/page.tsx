@@ -5,7 +5,7 @@ import TaskOverviewSection from "./sections/TaskOverviewSection";
 import { TaskDto } from "@/app/models/task.model";
 import { createContext, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useAsyncEffect } from "ahooks";
+import { useAsyncEffect, useLockFn } from "ahooks";
 import { TaskAPI } from "@/app/services/task.service";
 
 export const ActiveTaskContext = createContext<TaskDto | null>(null);
@@ -15,7 +15,7 @@ const Tasks = () => {
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
     const [loadingTask, setLoadingTask] = useState(false);
 
-    useAsyncEffect(async () => {
+    useAsyncEffect(useLockFn(async () => {
         const taskId = searchParams.get("taskId");
         if (!taskId) {
             setActiveTask(null);
@@ -24,16 +24,15 @@ const Tasks = () => {
 
         setLoadingTask(true);
 
-        const task = await TaskAPI.getTaskById(taskId);
-
-        if (task) {
+        try {
+            const task = await TaskAPI.getTaskById(taskId);
             setActiveTask(task);
-        } else {
+        } catch {
             setActiveTask(null);
+        } finally {
+            setLoadingTask(false);
         }
-
-        setLoadingTask(false);
-    }, [searchParams]);
+    }), [searchParams]);
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">

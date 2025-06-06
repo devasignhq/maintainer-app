@@ -123,7 +123,7 @@ const Onboarding = () => {
                             </div>
                             <ButtonPrimary
                                 format="SOLID"
-                                text="Import"
+                                text={importingRepo ? "Connecting..." : "Connect"}
                                 sideItem={<FiArrowUpRight />}
                                 attributes={{ 
                                     onClick: connectRepository,
