@@ -5,7 +5,7 @@ import { ActiveTaskContext } from "../../../page";
 import MarkdownFormatter from "@/app/components/MarkdownFormatter";
 
 const DetailsView = () => {
-    const { activeTask } = useContext(ActiveTaskContext);
+    const activeTask = useContext(ActiveTaskContext);
     
     return (
         <>
@@ -29,7 +29,11 @@ const DetailsView = () => {
             )}
             <div className="px-5 text-body-medium space-y-2.5 mb-[30px]">
                 <p className="font-bold text-dark-100">Issue URL</p>
-                <Link href={activeTask?.issue.url || ""} className="text-light-100">
+                <Link 
+                    href={activeTask?.issue.url || ""} 
+                    target="_blank" 
+                    className="text-light-100 hover:text-light-200"
+                >
                     {activeTask?.issue.url}
                 </Link>
             </div>
