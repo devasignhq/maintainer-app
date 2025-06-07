@@ -112,6 +112,11 @@ const SubscriptionPlan = () => {
                         disabled: creatingProject || !formik.isValid || !formik.dirty, 
                     }}
                 />
+                {creatingProject && (
+                    <p className="text-body-tiny text-dark-100 mt-1">
+                        This usually takes less than a minute.
+                    </p>
+                )}
             </form>
         </div>
     );

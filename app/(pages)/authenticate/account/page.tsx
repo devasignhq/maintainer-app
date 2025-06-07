@@ -40,7 +40,10 @@ const Account = () => {
                 if (data) {
                     setCurrentUser({ ...data, username: params[0] });
                 }
-                // TODO: Send user to task page if project count is valid
+                if (data?._count && data._count?.projects > 0) {
+                    router.push(ROUTES.TASKS);
+                    return
+                }
                 router.push(ROUTES.SETUP_PROJECT);
             },
             onError: (err, params) => {

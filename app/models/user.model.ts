@@ -11,6 +11,7 @@ export type UserDto = {
     addressBook: AddressBook[]
     createdAt: string
     updatedAt: string
+    _count?: { projects: number }
 
     contributionSummary?: ContributionSummary | null
     assets?: BalanceLineAsset[]
