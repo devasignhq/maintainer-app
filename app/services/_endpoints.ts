@@ -52,6 +52,6 @@ export const ENDPOINTS = {
         GET_WALLET: preset.WALLET + "/account",
         WITHDRAW: preset.WALLET + "/withdraw",
         SWAP: preset.WALLET + "/swap",
-        TRANSACTIONS: preset.WALLET + "/transactions/{projectId}",
+        TRANSACTIONS: preset.WALLET + "/transactions",
     },
 };

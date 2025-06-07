@@ -3,12 +3,14 @@ import { TaskDto } from "./task.model"
 import { UserDto } from "./user.model"
 
 export type WithdrawAssetDto = {
+    projectId: string
     walletAddress: string
     amount: string
     assetType: "XLM" | "USDC"
 }
 
 export type SwapAssetDto = {
+    projectId: string
     amount: string
     toAssetType: "XLM" | "USDC"
 }
@@ -26,6 +28,8 @@ export type TransactionDto = {
     assetTo: string | null
     projectId: string
     userId: string
+    createdAt: string
+    updatedAt: string
     
     task?: TaskDto | null
     project?: ProjectDto

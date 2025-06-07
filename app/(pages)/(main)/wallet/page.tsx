@@ -9,7 +9,7 @@ import BountyTable from "./tables/BountyTable";
 import TopUpTable from "./tables/TopUpTable";
 import WithdrawalTable from "./tables/WithdrawalTable";
 import SwapTable from "./tables/SwapTable";
-import { useLockFn, useRequest, useToggle } from "ahooks";
+import { useInfiniteScroll, useToggle } from "ahooks";
 import SwapAssetModal from "./modals/SwapAssetModal";
 import WithdrawAssetModal from "./modals/WithdrawAssetModal";
 import FundWalletModal from "./modals/FundWalletModal";
@@ -17,6 +17,7 @@ import { useStreamAccountBalance } from "@/app/services/horizon.service";
 import useProjectStore from "@/app/state-management/useProjectStore";
 import { moneyFormat } from "@/app/utils/helper";
 import { WalletAPI } from "@/app/services/wallet.service";
+import { Data } from "ahooks/lib/useInfiniteScroll/types";
 
 const Wallet = () => {
     const { activeProject } = useProjectStore();
@@ -31,21 +32,40 @@ const Wallet = () => {
         setSwapAssetFrom(from);
         toggleSwapAssetModal();
     };
-    
-    const { loading: fetchingTransactions, data } = useRequest(
-        useLockFn(() => WalletAPI.getTransactions(
-            activeProject!.id, 
-            { categories: activeTab.enum, page: 1, limit: 20, sort: "desc" }
-        )), 
-        {
-            retryCount: 1,
-            cacheKey: `transactions-${activeTab.enum}-${activeProject?.id}`,
-            // onSuccess: (data) => {
-            //     if (data) {
-            //         setProjectList(data);
-            //         if (!activeProject) setActiveProject(data[0]);
-            //     }
-            // },
+        
+    const {
+        data: projectTasks,
+        loading: loadingTasks,
+        loadingMore: loadingMoreTasks,
+        noMore: noMoreTasks,
+        loadMore: loadMoreTasks,
+    } = useInfiniteScroll<Data>(
+        async (currentData) => {
+            const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
+
+            const category = activeTab.enum === "ALL" 
+                ? "" 
+                : activeTab.enum === "SWAP"
+                    ? "SWAP_XLM,SWAP_USDC" 
+                    : activeTab.enum;
+            
+            const response = await WalletAPI.getTransactions(
+                activeProject!.id,
+                { 
+                    page: pageToLoad, 
+                    limit: 20, 
+                    sort: "desc",
+                    ...(category && { categories: category })
+                }
+            );
+
+            return { 
+                list: response.transactions,
+                hasMore: response.hasMore,
+            };
+        }, {
+            isNoMore: (data) => !data?.hasMore,
+            reloadDeps: [activeTab]
         }
     );
 
@@ -123,11 +143,51 @@ const Wallet = () => {
                     ))}
                 </div>
             </section>
-            {activeTab.enum === "ALL" && <AllTable />}
-            {activeTab.enum === "BOUNTY" && <BountyTable />}
-            {activeTab.enum === "TOP_UP" && <TopUpTable />}
-            {activeTab.enum === "SWAP" && <SwapTable />}
-            {activeTab.enum === "WITHDRAWAL" && <WithdrawalTable />}
+            {activeTab.enum === "ALL" && (
+                <AllTable 
+                    data={projectTasks?.list || []}
+                    loading={loadingTasks}
+                    loadingMore={loadingMoreTasks}
+                    noMore={noMoreTasks}
+                    loadMore={loadMoreTasks}
+                />
+            )}
+            {activeTab.enum === "BOUNTY" && (
+                <BountyTable 
+                    data={projectTasks?.list || []}
+                    loading={loadingTasks}
+                    loadingMore={loadingMoreTasks}
+                    noMore={noMoreTasks}
+                    loadMore={loadMoreTasks}
+                />
+            )}
+            {activeTab.enum === "TOP_UP" && (
+                <TopUpTable 
+                    data={projectTasks?.list || []}
+                    loading={loadingTasks}
+                    loadingMore={loadingMoreTasks}
+                    noMore={noMoreTasks}
+                    loadMore={loadMoreTasks}
+                />
+            )}
+            {activeTab.enum === "SWAP" && (
+                <SwapTable 
+                    data={projectTasks?.list || []}
+                    loading={loadingTasks}
+                    loadingMore={loadingMoreTasks}
+                    noMore={noMoreTasks}
+                    loadMore={loadMoreTasks}
+                />
+            )}
+            {activeTab.enum === "WITHDRAWAL" && (
+                <WithdrawalTable 
+                    data={projectTasks?.list || []}
+                    loading={loadingTasks}
+                    loadingMore={loadingMoreTasks}
+                    noMore={noMoreTasks}
+                    loadMore={loadMoreTasks}
+                />
+            )}
         </div>
         
         {openWithdrawAssetModal && <WithdrawAssetModal toggleModal={toggleWithdrawAssetModal} />}
