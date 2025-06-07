@@ -106,7 +106,7 @@ export type ReplyTimelineExtensionRequestDto = {
 
 export type MarkAsCompleteDto = {
     pullRequest: string
-    videoUrl: string
+    attachmentUrl: string
 }
 
 export type QueryTaskDto = {
@@ -132,7 +132,7 @@ export type FilterTasks = {
     issueMilestone?: string;
 }
 
-export type TimelineExtensionesponse = {
+export type TimelineExtensionResponse = {
     comment: CommentDto;
     task?: Pick<TaskDto, "timeline" | "timelineType" | "status" | "updatedAt">;
 }

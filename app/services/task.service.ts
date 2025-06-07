@@ -10,7 +10,7 @@ import {
     RequestTimelineExtensionDto,
     TaskActivity,
     TaskDto,
-    TimelineExtensionesponse,
+    TimelineExtensionResponse,
     UpdateTaskBountyDto,
 } from "../models/task.model";
 import { AddCommentDto, CommentDto, UpdateCommentDto } from "../models/comment.model";
@@ -60,12 +60,12 @@ export class TaskAPI {
     }
 
     static async requestTimelineModification(taskId: string, data: RequestTimelineExtensionDto) {
-        return HttpClient.post<TimelineExtensionesponse>(ENDPOINTS.TASK.REQUEST_TIMELINE_MODIFICATION
+        return HttpClient.post<TimelineExtensionResponse>(ENDPOINTS.TASK.REQUEST_TIMELINE_MODIFICATION
             .replace("{taskId}", taskId), data);
     }
 
     static async replyTimelineModification(taskId: string, data: ReplyTimelineExtensionRequestDto) {
-        return HttpClient.post<TimelineExtensionesponse>(ENDPOINTS.TASK.REPLY_TIMELINE_MODIFICATION
+        return HttpClient.post<TimelineExtensionResponse>(ENDPOINTS.TASK.REPLY_TIMELINE_MODIFICATION
             .replace("{taskId}", taskId), data);
     }
 
