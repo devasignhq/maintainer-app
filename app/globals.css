@@ -240,3 +240,11 @@ form textarea {
   padding: 1px;
   background: linear-gradient(to right bottom, rgba(254, 137, 31, 0.175) 65.53%, rgba(254, 137, 31, 0.195) 89.38%);
 }
+
+/* .text-body-medium-clamp-2 {
+  display: '-webkit-box';
+  maxHeight: '2.5rem'; 
+  WebkitLineClamp: 2;
+  WebkitBoxOrient: 'vertical';
+  lineHeight: '1.25rem';
+} */

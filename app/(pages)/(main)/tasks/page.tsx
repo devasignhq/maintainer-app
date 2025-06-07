@@ -8,7 +8,10 @@ import { useSearchParams } from "next/navigation";
 import { useAsyncEffect, useLockFn } from "ahooks";
 import { TaskAPI } from "@/app/services/task.service";
 
-export const ActiveTaskContext = createContext<TaskDto | null>(null);
+export const ActiveTaskContext = createContext<{
+    activeTask: TaskDto | null;
+    setActiveTask: React.Dispatch<React.SetStateAction<TaskDto | null>>
+}>({} as any);
 
 const Tasks = () => {
     const searchParams = useSearchParams();
@@ -36,7 +39,7 @@ const Tasks = () => {
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">
-            <ActiveTaskContext.Provider value={activeTask}>
+            <ActiveTaskContext.Provider value={{ activeTask, setActiveTask }}>
                 <TaskListSection />
                 {!activeTask && !loadingTask && (
                     <section className="grow border-l border-dark-200 grid place-content-center">

@@ -14,7 +14,7 @@ import { moneyFormat } from "@/app/utils/helper";
 import { TaskDto, TIMELINE_TYPE } from "@/app/models/task.model";
 
 const TaskOverviewSection = () => {
-    const activeTask = useContext(ActiveTaskContext);
+    const { activeTask } = useContext(ActiveTaskContext);
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
@@ -28,7 +28,7 @@ const TaskOverviewSection = () => {
                     <div className="space-y-2.5">
                         <p className="text-body-tiny text-light-100">Developer</p>
                         <div className="flex items-center gap-1">
-                            <p className="text-body-large text-light-200">{activeTask?.contributor?.username}</p>
+                            <p className="text-body-large text-light-200">@{activeTask?.contributor?.username}</p>
                             <Link href={`https://github.com/${activeTask?.contributor?.username}`} target="_blank">
                                 <FiArrowUpRight className="text-2xl text-primary-100 hover:text-light-100" />
                             </Link>
@@ -74,13 +74,12 @@ const TaskOverviewSection = () => {
             </div>
             <h6 className="pt-[30px] pl-5 text-headline-small text-light-100">Task Activities</h6>
             <div className="pl-5 pb-5 mt-[30px] overflow-y-auto space-y-[15px]">
-                {sampleTaskActivities.map((activity) => (
+                {activeTask?.taskActivities?.map((activity) => (
                     <TaskActivityCard
                         key={activity.id}
-                        issueNumber={activity.issueNumber}
-                        activityTitle={activity.activityTitle}
-                        issueUrl={activity.issueUrl}
-                        onClick={() => window.open(`https://${activity.issueUrl}`, '_blank')}
+                        issueNumber={activeTask.issue.number}
+                        activity={activity}
+                        issueUrl={activeTask.issue.url}
                     />
                 ))}
             </div>
@@ -94,66 +93,6 @@ const TaskOverviewSection = () => {
 }
  
 export default TaskOverviewSection;
-
-type TaskActivity = {
-    id: string;
-    issueNumber: number;
-    activityTitle: string;
-    issueUrl: string;
-    timestamp: string;
-};
-
-const sampleTaskActivities: TaskActivity[] = [
-    {
-        id: "1",
-        issueNumber: 42,
-        activityTitle: "Bounty increased to $200",
-        issueUrl: "github.com/DevAsign/app-pm/issues/42",
-        timestamp: "2024-05-02T10:30:00Z"
-    },
-    {
-        id: "2",
-        issueNumber: 42,
-        activityTitle: "New comment added by @sarah_dev",
-        issueUrl: "github.com/DevAsign/app-pm/issues/42#comment-1",
-        timestamp: "2024-05-02T09:15:00Z"
-    },
-    {
-        id: "3",
-        issueNumber: 42,
-        activityTitle: "Pull request submitted for review",
-        issueUrl: "github.com/DevAsign/app-pm/pull/45",
-        timestamp: "2024-05-02T08:45:00Z"
-    },
-    {
-        id: "4",
-        issueNumber: 42,
-        activityTitle: "Task assigned to @lenny_malcolm",
-        issueUrl: "github.com/DevAsign/app-pm/issues/42",
-        timestamp: "2024-05-01T16:20:00Z"
-    },
-    {
-        id: "5",
-        issueNumber: 42,
-        activityTitle: "Task created with $150 bounty",
-        issueUrl: "github.com/DevAsign/app-pm/issues/42",
-        timestamp: "2024-05-01T15:00:00Z"
-    },
-    {
-        id: "6",
-        issueNumber: 42,
-        activityTitle: "Task closed by @lenny_malcolm",
-        issueUrl: "github.com/DevAsign/app-pm/issues/42",
-        timestamp: "2024-05-01T14:00:00Z"
-    },
-    {
-        id: "7",
-        issueNumber: 42,
-        activityTitle: "Task reopened by @sarah_dev",
-        issueUrl: "github.com/DevAsign/app-pm/issues/42",
-        timestamp: "2024-05-01T13:00:00Z"
-    }
-];
 
 /**
  * Calculates the time left for a task based on its timeline, timelineType, and acceptedAt date

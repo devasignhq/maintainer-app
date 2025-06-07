@@ -37,7 +37,7 @@ export const ENDPOINTS = {
         DELETE: preset.TASK + "/{taskId}",
         
         SUBMIT_APPLICATION: preset.TASK + "/{taskId}/apply",
-        ACCEPT_APPLICATION: preset.TASK + "/{taskId}/accept/{userId}",
+        ACCEPT_APPLICATION: preset.TASK + "/{taskId}/accept/{contributorId}",
         MARK_AS_COMPLETE: preset.TASK + "/{taskId}/complete",
         VALIDATE_COMPLETION: preset.TASK + "/{taskId}/validate",
 

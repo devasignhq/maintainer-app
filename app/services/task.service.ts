@@ -36,10 +36,10 @@ export class TaskAPI {
         return HttpClient.post<MessageResponse>(ENDPOINTS.TASK.SUBMIT_APPLICATION.replace("{taskId}", taskId), {});
     }
 
-    static async acceptTaskApplication(taskId: string, userId: string) {
-        return HttpClient.post<MessageResponse>(ENDPOINTS.TASK.ACCEPT_APPLICATION
+    static async acceptTaskApplication(taskId: string, contributorId: string) {
+        return HttpClient.post<Pick<TaskDto, "status" | "contributor" | "acceptedAt">>(ENDPOINTS.TASK.ACCEPT_APPLICATION
             .replace("{taskId}", taskId)
-            .replace("{userId}", userId), {});
+            .replace("{contributorId}", contributorId), {});
     }
 
     static async markAsComplete(taskId: string, data: MarkAsCompleteDto) {
@@ -53,11 +53,13 @@ export class TaskAPI {
     }
 
     static async requestTimelineModification(taskId: string, data: RequestTimelineExtensionDto) {
-        return HttpClient.post<TimelineExtensionesponse>(ENDPOINTS.TASK.REQUEST_TIMELINE_MODIFICATION.replace("{taskId}", taskId), data);
+        return HttpClient.post<TimelineExtensionesponse>(ENDPOINTS.TASK.REQUEST_TIMELINE_MODIFICATION
+            .replace("{taskId}", taskId), data);
     }
 
     static async replyTimelineModification(taskId: string, data: ReplyTimelineExtensionRequestDto) {
-        return HttpClient.post<TimelineExtensionesponse>(ENDPOINTS.TASK.REPLY_TIMELINE_MODIFICATION.replace("{taskId}", taskId), data);
+        return HttpClient.post<TimelineExtensionesponse>(ENDPOINTS.TASK.REPLY_TIMELINE_MODIFICATION
+            .replace("{taskId}", taskId), data);
     }
 
     static async addTaskComment(taskId: string, data: AddCommentDto) {

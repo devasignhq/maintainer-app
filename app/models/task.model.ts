@@ -43,7 +43,8 @@ export type TaskDto = {
     contributor?: UserDto | null
     project?: ProjectDto
     transactions?: UserProjectPermissionDto[]
-    taskSubmissions: TaskSubmission[]
+    taskSubmissions?: TaskSubmission[]
+    taskActivities?: TaskActivity[]
 }
 
 export type TaskIssue = Pick<IssueDto, "id" | "number" | "title" | "url" | "labels" | "locked" | "state" | "repository_url" | "created_at" | "updated_at"> & {
@@ -56,13 +57,26 @@ export type TaskSubmission = {
     taskId: string
     projectId: string
     pullRequest: string
-    videoUrl?: string
+    attachmentUrl: string | null
     createdAt: string
     updatedAt: string
     
     user?: UserDto
     task?: TaskDto
     project?: ProjectDto
+}
+
+export type TaskActivity = {
+    id: string
+    taskId: string
+    userId: string | null
+    taskSubmissionId: string | null
+    createdAt: string
+    updatedAt: string
+    
+    task?: TaskDto
+    user?: UserDto | null
+    taskSubmission?: TaskSubmission | null
 }
 
 export type CreateTaskDto = {
