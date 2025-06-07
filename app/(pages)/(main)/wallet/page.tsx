@@ -9,12 +9,18 @@ import BountyTable from "./tables/BountyTable";
 import TopUpTable from "./tables/TopUpTable";
 import WithdrawalTable from "./tables/WithdrawalTable";
 import SwapTable from "./tables/SwapTable";
-import { useToggle } from "ahooks";
+import { useLockFn, useRequest, useToggle } from "ahooks";
 import SwapAssetModal from "./modals/SwapAssetModal";
 import WithdrawAssetModal from "./modals/WithdrawAssetModal";
 import FundWalletModal from "./modals/FundWalletModal";
+import { useStreamAccountBalance } from "@/app/services/horizon.service";
+import useProjectStore from "@/app/state-management/useProjectStore";
+import { moneyFormat } from "@/app/utils/helper";
+import { WalletAPI } from "@/app/services/wallet.service";
 
 const Wallet = () => {
+    const { activeProject } = useProjectStore();
+    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeProject?.walletAddress, true);
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [openWithdrawAssetModal, { toggle: toggleWithdrawAssetModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
@@ -25,6 +31,23 @@ const Wallet = () => {
         setSwapAssetFrom(from);
         toggleSwapAssetModal();
     };
+    
+    const { loading: fetchingTransactions, data } = useRequest(
+        useLockFn(() => WalletAPI.getTransactions(
+            activeProject!.id, 
+            { categories: activeTab.enum, page: 1, limit: 20, sort: "desc" }
+        )), 
+        {
+            retryCount: 1,
+            cacheKey: `transactions-${activeTab.enum}-${activeProject?.id}`,
+            // onSuccess: (data) => {
+            //     if (data) {
+            //         setProjectList(data);
+            //         if (!activeProject) setActiveProject(data[0]);
+            //     }
+            // },
+        }
+    );
 
     return (
         <>
@@ -53,8 +76,8 @@ const Wallet = () => {
                         <div className="space-y-2.5">
                             <p className="text-body-small text-dark-100">XLM Balance</p>
                             <p className="text-primary-400">
-                                <span className="text-display-large">5,538</span>
-                                <span className="text-body-medium">.99 XLM</span>
+                                <span className="text-display-large">{moneyFormat(xlmBalance).split(".")[0]}</span>
+                                <span className="text-body-medium">.{xlmBalance.split(".")[1] || "00"} XLM</span>
                             </p>
                         </div>
                         <button 
@@ -69,8 +92,8 @@ const Wallet = () => {
                         <div className="space-y-2.5">
                             <p className="text-body-small text-dark-100">USDC Balance</p>
                             <p className="text-light-100">
-                                <span className="text-display-large">1,598</span>
-                                <span className="text-body-medium">.00 USDC</span>
+                                <span className="text-display-large">{moneyFormat(usdcBalance).split(".")[0]}</span>
+                                <span className="text-body-medium">.{usdcBalance.split(".")[1] || "00"} USDC</span>
                             </p>
                         </div>
                         <button 
@@ -109,12 +132,12 @@ const Wallet = () => {
         
         {openWithdrawAssetModal && <WithdrawAssetModal toggleModal={toggleWithdrawAssetModal} />}
         {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
-        {openSwapAssetModal && 
+        {openSwapAssetModal && (
             <SwapAssetModal 
                 toggleModal={toggleSwapAssetModal} 
                 from={swapAssetFrom}
             />
-        }
+        )}
         </>
     )
 }

@@ -233,7 +233,6 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
     };
 
     return (
-        <>
         <PopupModalLayout title="Import from GitHub Issues" toggleModal={toggleModal}>
             <section className="mt-[15px] space-y-2.5">
                 <p className="text-body-medium text-light-200">Repository URL(s)</p>
@@ -446,7 +445,6 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
         
             {openConnectRepositoryModal && <ConnectRepositoryModal toggleModal={toggleConnectRepositoryModal} />}
         </PopupModalLayout>
-        </>
     );
 }
  

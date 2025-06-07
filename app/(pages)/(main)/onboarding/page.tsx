@@ -52,7 +52,6 @@ const Onboarding = () => {
 
         try {
             await repoUrlSchema.validate(repoUrl.trim());
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             toast.error(err.message || "Invalid repository URL");
             setImportingRepo(false);

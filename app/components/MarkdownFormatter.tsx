@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// First install these packages:
 // npm install react-markdown rehype-raw remark-gfm rehype-sanitize
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';

@@ -3,16 +3,16 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { FiArrowUpRight } from "react-icons/fi";
 import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { object, string } from 'yup';
 import { UpdateProjectDto } from "@/app/models/project.model";
 import { ProjectAPI } from "@/app/services/project.service";
 import useProjectStore from "@/app/state-management/useProjectStore";
 import { useRequest, useLockFn } from "ahooks";
 import { toast } from "react-toastify";
 
-const projectSchema = yup.object({
-    name: yup.string().required("Project name is required"),
-    description: yup.string().optional(),
+const projectSchema = object({
+    name: string().required("Project name is required"),
+    description: string().optional(),
 });
 
 type EditProjectModalProps = {
@@ -38,7 +38,13 @@ const EditProjectModal = ({ toggleModal }: EditProjectModalProps) => {
                     );
                 }
             },
-            onError: () => toast.error("Failed to update project. Please try again.")
+            onError: (error: any) => {
+                if (error?.error?.message) {
+                    toast.error(error.error.message);
+                    return
+                }
+                toast.error("Failed to update project. Please try again.");
+            }
         }
     );
 
@@ -100,7 +106,7 @@ const EditProjectModal = ({ toggleModal }: EditProjectModalProps) => {
                     />
                     <ButtonPrimary
                         format="SOLID"
-                        text="Update Project"
+                        text={updatingProject ? "Updating..." : "Update Project"}
                         sideItem={<FiArrowUpRight />}
                         attributes={{
                             type: "submit",

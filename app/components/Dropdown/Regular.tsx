@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { usePopup } from "@/app/utils/hooks";
 import { useState } from "react";

@@ -7,6 +7,7 @@ import {
     TransactionDto,
     WithdrawAssetDto
 } from "../models/wallet.model";
+import { ItemWithPaginationResponse } from "../models/_global";
 
 export class WalletAPI {
     static async getWalletInfo() {
@@ -21,7 +22,8 @@ export class WalletAPI {
         return HttpClient.post<AccountRecord>(ENDPOINTS.WALLET.SWAP, data);
     }
 
-    static async getTransactions(query: QueryTransactionDto) {
-        return HttpClient.get<TransactionDto>(ENDPOINTS.WALLET.SWAP, { params: query });
+    static async getTransactions(projectId: string, query: QueryTransactionDto) {
+        return HttpClient.get<ItemWithPaginationResponse<"transactions", TransactionDto[]>>(
+            ENDPOINTS.WALLET.TRANSACTIONS.replace("{projectId}", projectId), { params: query });
     }
 }
