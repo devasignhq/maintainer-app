@@ -5,7 +5,7 @@ import { ActiveTaskContext } from "../../../page";
 import MarkdownFormatter from "@/app/components/MarkdownFormatter";
 
 const DetailsView = () => {
-    const activeTask = useContext(ActiveTaskContext);
+    const { activeTask } = useContext(ActiveTaskContext);
     
     return (
         <>

@@ -82,6 +82,9 @@ const TaskOverviewSection = () => {
                         issueUrl={activeTask.issue.url}
                     />
                 ))}
+                {activeTask?.taskActivities && activeTask?.taskActivities?.length === 0 && (
+                    <p className="text-body-medium text-light-100">No activity to show</p>
+                )}
             </div>
         </section>
         
