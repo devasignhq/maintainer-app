@@ -3,6 +3,7 @@ import Link from "next/link";
 import { TransactionDto } from "@/app/models/wallet.model";
 import { formatDateTime, moneyFormat } from "@/app/utils/helper";
 import { ROUTES } from "@/app/utils/data";
+import useProjectStore from "@/app/state-management/useProjectStore";
 
 type BountyTableProps = {
     data: TransactionDto[];
@@ -19,12 +20,14 @@ const BountyTable = ({
     noMore,
     loadMore
 }: BountyTableProps) => {
+    const { activeProject } = useProjectStore();
+
     return (
         <>
             <thead>
                 <tr className="pb-[7px] border-b border-[#585858] text-table-header text-dark-100 flex gap-5">
                     <th className="w-[18%]">Task Reference</th>
-                    <th className="w-[33%]">GitHub Issue</th>
+                    <th className="w-[33%]">Transaction Hash</th>
                     <th className="w-[15%]">Contributor @</th>
                     <th className="w-[10%]">Bounty</th>
                     <th className="w-[18%]">Time</th>
@@ -46,8 +49,11 @@ const BountyTable = ({
                             </Link>
                         </td>
                         <td className="w-[33%] text-light-200 underline">
-                            <Link href={transaction.task?.issue.url || ""} target="_blank">
-                                {transaction.task?.issue.url}
+                            <Link 
+                                href={`https://stellar.expert/explorer/testnet/account/${activeProject?.walletAddress}/transactions/${transaction.txHash}`} 
+                                target="_blank"
+                            >
+                                {transaction.txHash}
                             </Link>
                         </td>
                         <td className="w-[15%]">{transaction.task?.contributor?.username}</td>

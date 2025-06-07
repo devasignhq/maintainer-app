@@ -17,6 +17,7 @@ export type SwapAssetDto = {
 
 export type TransactionDto = {
     id: string
+    txHash: string
     category: TransactionCategory
     amount: number
     doneAt: string
