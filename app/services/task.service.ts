@@ -4,9 +4,11 @@ import {
     CreateTaskDto,
     FilterTasks,
     MarkAsCompleteDto,
+    QueryTaskActivityDto,
     QueryTaskDto,
     ReplyTimelineExtensionRequestDto,
     RequestTimelineExtensionDto,
+    TaskActivity,
     TaskDto,
     TimelineExtensionesponse,
     UpdateTaskBountyDto,
@@ -21,6 +23,11 @@ export class TaskAPI {
 
     static async getTaskById(taskId: string) {
         return HttpClient.get<TaskDto>(ENDPOINTS.TASK.GET_BY_ID.replace("{taskId}", taskId));
+    }
+
+    static async getTaskActivities(taskId: string, query?: QueryTaskActivityDto) {
+        return HttpClient.get<PaginatedResponse<TaskActivity>>(
+            ENDPOINTS.TASK.GET_ACTIVITIES.replace("{taskId}", taskId), { params: query });
     }
 
     static async createTask(data: { payload: CreateTaskDto }) {

@@ -192,19 +192,6 @@ form textarea {
   text-primary-200 placeholder:text-neutral-300 text-b6-small focus:outline-none
 } */
 
-.opacity-animation {
-  animation: opacityAnimation 0.7s ease 0s 1 normal forwards;
-}
-
-@keyframes opacityAnimation {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 .draft-box::before, 
 .popup-modal::before,
 .gradient-border-btn::before,
@@ -248,3 +235,25 @@ form textarea {
   WebkitBoxOrient: 'vertical';
   lineHeight: '1.25rem';
 } */
+
+.opacity-animation {
+  animation: opacityAnimation 0.7s ease 0s 1 normal forwards;
+}
+
+.rotate-loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes opacityAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -168,7 +168,7 @@ const TaskListSection = () => {
                         <span className="text-body-medium text-light-100">No tasks found</span>
                     </div>
                 )}
-                {loadingTasks && (
+                {(loadingTasks && projectTasks?.list && projectTasks.list.length < 1) && (
                     <div className="flex justify-center py-4">
                         <span className="text-body-medium text-light-100">Loading tasks...</span>
                     </div>

@@ -4,26 +4,60 @@ import { FiArrowUpRight, FiEdit3 } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "../components/TaskActivityCard";
 import Link from "next/link";
-import { useToggle } from "ahooks";
+import { useInfiniteScroll, useToggle } from "ahooks";
 import SetTaskBountyModal from "../modals/SetTaskBountyModal";
 import SetTaskTimelineModal from "../modals/SetTaskTimelineModal";
 import DeleteTaskModal from "../modals/DeleteTaskModal";
 import { useContext } from "react";
 import { ActiveTaskContext } from "../page";
-import { moneyFormat } from "@/app/utils/helper";
+import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
 import { TaskDto, TIMELINE_TYPE } from "@/app/models/task.model";
+import { HiOutlineRefresh } from "react-icons/hi";
+import { Data } from "ahooks/lib/useInfiniteScroll/types";
+import { TaskAPI } from "@/app/services/task.service";
 
 const TaskOverviewSection = () => {
     const { activeTask } = useContext(ActiveTaskContext);
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
+    
+    const {
+        data: activities,
+        loading: loadingActivities,
+        loadingMore: loadingMoreActivities,
+        noMore: noMoreActivities,
+        loadMore: loadMoreActivities,
+        reload: reloadActivities,
+    } = useInfiniteScroll<Data>(
+        async (currentData) => {
+            const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
+            
+            const response = await TaskAPI.getTaskActivities(
+                activeTask!.id,
+                { page: pageToLoad, limit: 30 }
+            );
+
+            return { 
+                list: response.data,
+                pagination: response.pagination,
+            };
+        }, {
+            isNoMore: (data) => !data?.pagination.hasMore,
+            reloadDeps: [activeTask]
+        }
+    );
 
     return (
         <>
         <section className="min-w-[360px] w-[12%] h-full pt-[30px] flex flex-col">
             <div className="pl-5 pb-[30px] space-y-[30px] border-b border-dark-200">
-                <h6 className="text-headline-small text-light-100">Task Overview</h6>
+                <div className="flex items-center justify-between">
+                    <h6 className="text-headline-small text-light-100">Task Overview</h6>
+                    <p className={`w-fit py-0.5 px-[7px] text-body-tiny font-bold ${taskStatusFormatter(activeTask!.status)[1]}`}>
+                        {taskStatusFormatter(activeTask!.status)[0]}
+                    </p>
+                </div>
                 {activeTask?.status !== "OPEN" && (
                     <div className="space-y-2.5">
                         <p className="text-body-tiny text-light-100">Developer</p>
@@ -64,26 +98,51 @@ const TaskOverviewSection = () => {
                         <p className="text-body-large text-light-200">{getTimeLeft(activeTask!)}</p>
                     </div>
                 )}
-                <ButtonPrimary
-                    format="OUTLINE"
-                    text="Delete Task"
-                    sideItem={<MdOutlineCancel />}
-                    attributes={{ onClick: toggleDeleteTaskModal }}
-                    extendedClassName="border-indicator-500 text-indicator-500"
-                />
+                {activeTask?.status === "OPEN" && (
+                    <ButtonPrimary
+                        format="OUTLINE"
+                        text="Delete Task"
+                        sideItem={<MdOutlineCancel />}
+                        attributes={{ onClick: toggleDeleteTaskModal }}
+                        extendedClassName="border-indicator-500 text-indicator-500"
+                    />
+                )}
             </div>
-            <h6 className="pt-[30px] pl-5 text-headline-small text-light-100">Task Activities</h6>
+            <div className="pt-[30px] pl-5 flex items-center justify-between">
+                <h6 className="text-headline-small text-light-100">Task Activities</h6>
+                <button 
+                    onClick={reloadActivities}
+                    disabled={loadingActivities || loadingMoreActivities}
+                    className={(loadingActivities || loadingMoreActivities) ? "rotate-loading" : ""}
+                >
+                    <HiOutlineRefresh className="text-2xl text-light-200 hover:text-light-100" />
+                </button>
+            </div>
             <div className="pl-5 pb-5 mt-[30px] overflow-y-auto space-y-[15px]">
-                {activeTask?.taskActivities?.map((activity) => (
+                {activities?.list?.map((activity) => (
                     <TaskActivityCard
                         key={activity.id}
-                        issueNumber={activeTask.issue.number}
+                        issueNumber={activeTask!.issue.number}
                         activity={activity}
-                        issueUrl={activeTask.issue.url}
+                        issueUrl={activeTask!.issue.url}
                     />
                 ))}
-                {activeTask?.taskActivities && activeTask?.taskActivities?.length === 0 && (
+                {(activities?.list && activities.list.length < 1 && !loadingActivities) && (
                     <p className="text-body-medium text-light-100">No activity to show</p>
+                )}
+                {(loadingActivities && activities?.list && activities.list.length < 1) && (
+                    <p className="text-body-medium text-light-100">Loading activities...</p>
+                )}
+                {loadingMoreActivities && (
+                    <p className="text-body-medium text-light-100">Loading more activities...</p>
+                )}
+                {(!loadingMoreActivities && !noMoreActivities) && (
+                    <button 
+                        className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
+                        onClick={loadMoreActivities}
+                    >
+                        Load More
+                    </button>
                 )}
             </div>
         </section>

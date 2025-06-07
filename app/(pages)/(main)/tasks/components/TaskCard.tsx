@@ -1,6 +1,6 @@
 "use client";
 import { TaskDto } from "@/app/models/task.model";
-import { moneyFormat } from "@/app/utils/helper";
+import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
 
 type TaskCardProps = {
     task: TaskDto;
@@ -45,6 +45,11 @@ const TaskCard = ({ task, active, onClick }: TaskCardProps) => {
             >
                 {task.issue.title}
             </p>
+            {!active && (
+                <p className={`w-fit py-0.5 px-[7px] text-body-tiny font-bold ${taskStatusFormatter(task.status)[1]}`}>
+                    {taskStatusFormatter(task.status)[0]}
+                </p>
+            )}
         </div>
     );
 }

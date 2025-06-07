@@ -116,7 +116,13 @@ export type QueryTaskDto = {
     detailed?: boolean
     page?: number
     limit?: number
-    orderBy?: "asc" | "desc"
+    sort?: "asc" | "desc"
+}
+
+export type QueryTaskActivityDto = {
+    page?: number
+    limit?: number
+    sort?: "asc" | "desc"
 }
 
 export type FilterTasks = {
