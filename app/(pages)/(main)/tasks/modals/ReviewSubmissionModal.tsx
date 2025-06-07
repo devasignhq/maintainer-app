@@ -29,19 +29,13 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
                 <p className="text-body-tiny tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>
                     #{activeTask?.issue.number}
                 </p>
-                <p 
-                    className="grow text-body-medium font-bold text-light-100 line-clamp-2"
-                    style={{
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        maxHeight: '2.5rem', 
-                        lineHeight: '1.25rem'
-                    }}
-                >
+                <p className="grow text-body-medium font-bold text-light-100 truncate">
                     {activeTask?.issue.title}
                 </p>
-                <p className="text-body-tiny font-bold tracking-[-3%] text-primary-100" style={{ lineHeight: "20px" }}>
+                <p 
+                    className="text-body-tiny font-bold tracking-[-3%] text-primary-100 whitespace-nowrap" 
+                    style={{ lineHeight: "20px" }}
+                >
                     {moneyFormat(activeTask?.bounty || "")} USDC
                 </p>
             </div>

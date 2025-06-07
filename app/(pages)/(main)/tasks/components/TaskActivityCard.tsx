@@ -7,13 +7,11 @@ import ReviewTaskApplicationModal from "../modals/ReviewTaskApplicationModal";
 type TaskActivityCardProps = {
     activity: TaskActivity;
     issueNumber: number;
-    issueUrl: string;
 };
 
 const TaskActivityCard = ({ 
     activity,
     issueNumber,
-    issueUrl,
 }: TaskActivityCardProps) => {
     const [openReviewSubmissionModal, { toggle: toggleReviewSubmissionModal }] = useToggle(false);
     const [openReviewTaskApplicationModal, { toggle: toggleReviewTaskApplicationModal }] = useToggle(false);
@@ -23,9 +21,9 @@ const TaskActivityCard = ({
         <div 
             onClick={() => {
                 if (activity.taskSubmissionId) {
-                    toggleReviewTaskApplicationModal();
-                } else {
                     toggleReviewSubmissionModal();
+                } else {
+                    toggleReviewTaskApplicationModal();
                 }
             }}
             role="button"
@@ -39,10 +37,11 @@ const TaskActivityCard = ({
             </div>
             <div className="grow space-y-[5px] overflow-hidden">
                 <p className="text-body-medium text-light-100 truncate">
-                    {activity.taskSubmissionId ? "New task application" : "Review Submission"}
+                    {activity.taskSubmissionId ? "Review Submission" : "New task application"}
                 </p>
-                {/* // TODO: Use username for applications and pr link otherwise */}
-                <p className="text-body-tiny text-dark-100 truncate">{issueUrl}</p>
+                <p className="text-body-tiny text-dark-100 truncate">
+                    {activity.taskSubmissionId ? activity.taskSubmission?.pullRequest : activity.user?.username}
+                </p>
             </div>
             <FaChevronRight className="text-2xl text-light-100" />
         </div>

@@ -124,7 +124,6 @@ const TaskOverviewSection = () => {
                         key={activity.id}
                         issueNumber={activeTask!.issue.number}
                         activity={activity}
-                        issueUrl={activeTask!.issue.url}
                     />
                 ))}
                 {(activities?.list && activities.list.length < 1 && !loadingActivities) && (
