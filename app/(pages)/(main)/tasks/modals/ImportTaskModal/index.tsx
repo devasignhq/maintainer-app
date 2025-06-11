@@ -12,14 +12,13 @@ import { useInfiniteScroll, useRequest, useToggle } from "ahooks";
 import useProjectStore from "@/app/state-management/useProjectStore";
 import useTaskStore from "@/app/state-management/useTaskStore";
 import { PiEyeBold, PiEyeSlashBold } from "react-icons/pi";
-import { getRepoIssues, getRepoLabels, getRepoMilestones, updateRepoIssue } from "@/app/services/github.service";
+import { getRepoIssues, getRepoLabels, getRepoMilestones } from "@/app/services/github.service";
 import { IssueDto, IssueFilters } from "@/app/models/github.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { useGitHubContext } from "@/app/layout";
 import { CreateTaskDto } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
-import { moneyFormat } from "@/app/utils/helper";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -167,34 +166,41 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
             });
 
             try {
-                const createdTask = await TaskAPI.createTask({ payload: task.payload });
+                await TaskAPI.createTask({ payload: task.payload });
+                // const createdTask = await TaskAPI.createTask({ payload: task.payload });
                 
-                try {
-                    let issueLabels = task.payload.issue.labels.reduce<string[]>((acc, label) => [...acc, label.name], []);
-                    issueLabels = [...issueLabels, "💵 Bounty"];
+                // try {
+                //     let issueLabels = task.payload.issue.labels.reduce<string[]>((acc, label) => [...acc, label.name], []);
+                //     issueLabels = [...issueLabels, "💵 Bounty"];
 
-                    await updateRepoIssue(
-                        task.payload.issue.repository_url, 
-                        githubToken, 
-                        task.payload.issue.number,
-                        task.payload.issue.title + ` (${moneyFormat(task.payload.bounty)} USDC)`,
-                        task.payload.issue.body + `\n\n## 💵 ${moneyFormat(task.payload.bounty)} USDC bounty\n\n### ❗ Important guidelines:\n- To claim a bounty, you need to **provide a short demo video** of your changes in your pull request.\n- If anything is unclear, **ask for clarification** before starting as this will help avoid potential rework.\n\n**To work on this task, [Apply here](https://dev.devasign.com?taskId=${createdTask.id})**`,
-                        issueLabels as unknown as string[]
-                    )
+                //     await updateRepoIssue(
+                //         task.payload.issue.repository_url, 
+                //         githubToken, 
+                //         task.payload.issue.number,
+                //         task.payload.issue.title + ` (${moneyFormat(task.payload.bounty)} USDC)`,
+                //         task.payload.issue.body + `\n\n## 💵 ${moneyFormat(task.payload.bounty)} USDC bounty\n\n### ❗ Important guidelines:\n- To claim a bounty, you need to **provide a short demo video** of your changes in your pull request.\n- If anything is unclear, **ask for clarification** before starting as this will help avoid potential rework.\n\n**To work on this task, [Apply here](https://dev.devasign.com?taskId=${createdTask.id})**`,
+                //         issueLabels as unknown as string[]
+                //     )
 
-                    toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
-                    setUploadedTasks(prev => {
-                        prev.set(task.payload.issue.id, "CREATED");
-                        return prev;
-                    });
-                } catch (error) {
-                    toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to update issue.`);
-                    setUploadedTasks(prev => {
-                        prev.set(task.payload.issue.id, "CREATED");
-                        return prev;
-                    });
-                    console.error(`Error updating issue #${task.payload.issue.number}:`, error);
-                }
+                //     toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
+                //     setUploadedTasks(prev => {
+                //         prev.set(task.payload.issue.id, "CREATED");
+                //         return prev;
+                //     });
+                // } catch (error) {
+                //     toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to update issue.`);
+                //     setUploadedTasks(prev => {
+                //         prev.set(task.payload.issue.id, "CREATED");
+                //         return prev;
+                //     });
+                //     console.error(`Error updating issue #${task.payload.issue.number}:`, error);
+                // }
+
+                toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
+                setUploadedTasks(prev => {
+                    prev.set(task.payload.issue.id, "CREATED");
+                    return prev;
+                });
             } catch (error) {
                 toast.error(`Task for issue #${task.payload.issue.number} failed to create.`);
                 setUploadedTasks(prev => {
@@ -396,7 +402,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                                 <span className="text-body-medium text-light-100">No issues found</span>
                             </div>
                         )}
-                        {loadingIssues && (
+                        {(loadingIssues && repoIssues?.list && repoIssues.list.length < 1) && (
                             <div className="flex justify-center py-4">
                                 <span className="text-body-medium text-light-100">Loading issues...</span>
                             </div>

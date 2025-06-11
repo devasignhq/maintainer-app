@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<br/>
+<div align="center">
+  <a href="https://www.devasign.com" style="display: block; margin: 0 auto;">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="./public/readme-cover-nobg.png">
+      <source media="(prefers-color-scheme: light)" srcset="./public/readme-cover.png">
+      <img alt="DevAsign Logo" src="./public/readme-cover-nobg.png" height="150" style="display: block; margin: 0 auto;">
+    </picture>
+  </a>
+<br/>
 
-## Getting Started
+<br/>
 
-First, run the development server:
+<p align="center">
+  <strong style="font-size: 16px;">Backed by</strong> <a href="https://communityfund.stellar.org/" style="margin-left: 10px;"><img src="https://devasign.com/assets/scf%20logo-39ec023b.svg" height="40" alt="Stellar Community Fund" align="center" /></a>
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+</div>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+DevAsign streamlines open-source project management by automating contributor payments and intelligently handling pull requests with advanced AI review.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Community
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+[Join our Discord!](https://discord.com/channels/1335941257155055688/1335941257641328743) We are here to answer questions and help you get the most out of DevAsign.
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+We welcome community contributions. For guidelines, refer to our [CONTRIBUTING.md](/CONTRIBUTING.md).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Attribution-NonCommercial 4.0 International, see [LICENSE](https://github.com/devasignhq/devasign-api/blob/main/LICENSE).
