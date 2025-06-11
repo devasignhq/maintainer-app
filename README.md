@@ -29,4 +29,4 @@ We welcome community contributions. For guidelines, refer to our [CONTRIBUTING.m
 
 ## License
 
-Attribution-NonCommercial 4.0 International, see [LICENSE](https://github.com/devasignhq/devasign-api/blob/main/LICENSE).
+Attribution-NonCommercial 4.0 International, see [LICENSE](https://github.com/devasignhq/app.devasign.com/blob/main/LICENSE).
