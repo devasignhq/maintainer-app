@@ -17,6 +17,7 @@
     "firebase": "^11.6.0",
     "formik": "^2.4.6",
     "next": "15.3.1",
+    "octokit": "^5.0.3",
     "postcss": "^8.5.3",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
