@@ -13,6 +13,7 @@ export type IssueDto = {
     id: number;
     node_id: string;
     url: string;
+    html_url: string;
     repository_url: string;
     number: number;
     state: string;

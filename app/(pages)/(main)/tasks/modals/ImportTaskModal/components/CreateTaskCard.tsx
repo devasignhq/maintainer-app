@@ -69,7 +69,7 @@ const CreateTaskCard = ({
                     number: issue.number,
                     title: issue.title,
                     body: issue.body || undefined,
-                    url: convertGitHubApiUrlToWebUrlRegex(issue.url),
+                    url: issue.html_url,
                     labels: issue.labels,
                     locked: issue.locked,
                     state: issue.state,
@@ -122,11 +122,11 @@ const CreateTaskCard = ({
             </div>
             <div className="max-w-[90%] flex item-center gap-[5px]">
                 <Link 
-                    href={convertGitHubApiUrlToWebUrlRegex(issue.url)} 
+                    href={issue.html_url} 
                     target="_blank" 
                     className="text-body-micro text-light-200 mt-[5px] max-w-[50%] truncate"
                 >
-                    {convertGitHubApiUrlToWebUrlRegex(issue.url)}
+                    {issue.html_url}
                 </Link>
                 {issue.labels?.length > 0 && (
                     <p className="py-0.5 px-[7px] bg-primary-300 text-primary-100 text-body-tiny font-bold max-w-[50%] truncate">

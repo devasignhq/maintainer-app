@@ -34,11 +34,11 @@ const Wallet = () => {
     };
         
     const {
-        data: projectTasks,
-        loading: loadingTasks,
-        loadingMore: loadingMoreTasks,
-        noMore: noMoreTasks,
-        loadMore: loadMoreTasks,
+        data: projectTransactions,
+        loading: loadingTransactions,
+        loadingMore: loadingMoreTransactions,
+        noMore: noMoreTransactions,
+        loadMore: loadMoreTransactions,
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
@@ -145,47 +145,47 @@ const Wallet = () => {
             </section>
             {activeTab.enum === "ALL" && (
                 <AllTable 
-                    data={projectTasks?.list || []}
-                    loading={loadingTasks}
-                    loadingMore={loadingMoreTasks}
-                    noMore={noMoreTasks}
-                    loadMore={loadMoreTasks}
+                    data={projectTransactions?.list || []}
+                    loading={loadingTransactions}
+                    loadingMore={loadingMoreTransactions}
+                    noMore={noMoreTransactions}
+                    loadMore={loadMoreTransactions}
                 />
             )}
             {activeTab.enum === "BOUNTY" && (
                 <BountyTable 
-                    data={projectTasks?.list || []}
-                    loading={loadingTasks}
-                    loadingMore={loadingMoreTasks}
-                    noMore={noMoreTasks}
-                    loadMore={loadMoreTasks}
+                    data={projectTransactions?.list || []}
+                    loading={loadingTransactions}
+                    loadingMore={loadingMoreTransactions}
+                    noMore={noMoreTransactions}
+                    loadMore={loadMoreTransactions}
                 />
             )}
             {activeTab.enum === "TOP_UP" && (
                 <TopUpTable 
-                    data={projectTasks?.list || []}
-                    loading={loadingTasks}
-                    loadingMore={loadingMoreTasks}
-                    noMore={noMoreTasks}
-                    loadMore={loadMoreTasks}
+                    data={projectTransactions?.list || []}
+                    loading={loadingTransactions}
+                    loadingMore={loadingMoreTransactions}
+                    noMore={noMoreTransactions}
+                    loadMore={loadMoreTransactions}
                 />
             )}
             {activeTab.enum === "SWAP" && (
                 <SwapTable 
-                    data={projectTasks?.list || []}
-                    loading={loadingTasks}
-                    loadingMore={loadingMoreTasks}
-                    noMore={noMoreTasks}
-                    loadMore={loadMoreTasks}
+                    data={projectTransactions?.list || []}
+                    loading={loadingTransactions}
+                    loadingMore={loadingMoreTransactions}
+                    noMore={noMoreTransactions}
+                    loadMore={loadMoreTransactions}
                 />
             )}
             {activeTab.enum === "WITHDRAWAL" && (
                 <WithdrawalTable 
-                    data={projectTasks?.list || []}
-                    loading={loadingTasks}
-                    loadingMore={loadingMoreTasks}
-                    noMore={noMoreTasks}
-                    loadMore={loadMoreTasks}
+                    data={projectTransactions?.list || []}
+                    loading={loadingTransactions}
+                    loadingMore={loadingMoreTransactions}
+                    noMore={noMoreTransactions}
+                    loadMore={loadMoreTransactions}
                 />
             )}
         </div>
