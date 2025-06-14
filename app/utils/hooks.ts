@@ -2,7 +2,7 @@ import { useToggle, useClickAway } from "ahooks";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useRef } from "react";
 import useUserStore from "../state-management/useUserStore";
-import useProjectStore from "../state-management/useProjectStore";
+import useInstallationStore from "../state-management/useInstallationStore";
 import useTaskStore from "../state-management/useTaskStore";
 
 export function useCustomSearchParams() {
@@ -50,7 +50,7 @@ export function usePopup() {
 
 export function useClearStores() {
     const { clearUserStore } = useUserStore();
-    const { clearProjectStore } = useProjectStore();
+    const { clearProjectStore } = useInstallationStore();
     const { clearTaskStore } = useTaskStore();
 
     return () => {

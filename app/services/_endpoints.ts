@@ -1,6 +1,6 @@
 const preset = {
     USER: "/users",
-    PROJECT: "/projects",
+    INSTALLATION: "/installations",
     TASK: "/tasks",
     WALLET: "/wallet",
 };
@@ -12,21 +12,16 @@ export const ENDPOINTS = {
         UPDATE_USERNAME: preset.USER + "/username",
         ADDRESS_BOOK: preset.USER + "/address-book",
     },
-    PROJECT: {
-        GET_ALL: preset.PROJECT + "",
-        GET_BY_ID: preset.PROJECT + "/{projectId}",
-        CREATE: preset.PROJECT + "",
-        UPDATE: preset.PROJECT + "/{projectId}",
-        CONNECT_REPO: preset.PROJECT + "/{projectId}/connect-repo",
-        DELETE: preset.PROJECT + "/{projectId}",
+    INSTALLATION: {
+        GET_ALL: preset.INSTALLATION + "",
+        GET_BY_ID: preset.INSTALLATION + "/{installationId}",
+        CREATE: preset.INSTALLATION + "",
+        UPDATE: preset.INSTALLATION + "/{installationId}",
+        DELETE: preset.INSTALLATION + "/{installationId}",
 
-        ADD_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team",
-        UPDATE_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team/{userId}",
-        REMOVE_TEAM_MEMBER: preset.PROJECT + "/{projectId}/team/{userId}",
-
-        ISSUES: preset.PROJECT + "/issues",
-        LABELS: preset.PROJECT + "/labels",
-        MILESTONES: preset.PROJECT + "/milestones",
+        ADD_TEAM_MEMBER: preset.INSTALLATION + "/{installationId}/team",
+        UPDATE_TEAM_MEMBER: preset.INSTALLATION + "/{installationId}/team/{userId}",
+        REMOVE_TEAM_MEMBER: preset.INSTALLATION + "/{installationId}/team/{userId}",
     },
     TASK: {
         GET_ALL: preset.TASK + "",

@@ -9,89 +9,26 @@ import { useToggle } from 'ahooks';
 import FundWalletModal from '@/app/(pages)/(main)/wallet/modals/FundWalletModal';
 import useUserStore from '@/app/state-management/useUserStore';
 import { useStreamAccountBalance } from '@/app/services/horizon.service';
-import useProjectStore from '@/app/state-management/useProjectStore';
+import useInstallationStore from '@/app/state-management/useInstallationStore';
 import useTaskStore from '@/app/state-management/useTaskStore';
 import { useState } from 'react';
-import { ProjectAPI } from '@/app/services/project.service';
-import { string } from "yup";
+import { InstallationAPI } from '@/app/services/installation.service';
 import { toast } from "react-toastify";
 import { useGitHubContext } from '@/app/layout';
-import { createBountyLabel, getRepoDetails } from '@/app/services/github.service';
 import { moneyFormat } from '@/app/utils/helper';
 import { useRouter } from "next/navigation";
 import { ROUTES } from '@/app/utils/data';
-
-const repoUrlSchema = string()
-    .matches(
-        /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/,
-        "Please enter a valid GitHub repository URL (e.g. https://github.com/user/repo)"
-    )
-    .required("Repository URL is required");
 
 const Onboarding = () => {
     const router = useRouter();
     const { githubToken, reAuthenticate } = useGitHubContext();
     const { currentUser } = useUserStore();
-    const { activeProject, setActiveProject } = useProjectStore();
+    const { activeInstallation, setActiveInstallation } = useInstallationStore();
     const { draftTasks } = useTaskStore();
-    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeProject?.walletAddress, true);
-    const [repoUrl, setRepoUrl] = useState("");
+    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeInstallation?.walletAddress, true);
     const [importingRepo, setImportingRepo] = useState(false);
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
-
-    const connectRepository = async () => {
-        if (!activeProject?.id) return;
-        if (!githubToken) {
-            await reAuthenticate();
-            toast.info("Try importing repository again.");
-            return;
-        }
-
-        setImportingRepo(true);
-
-        try {
-            await repoUrlSchema.validate(repoUrl.trim());
-        } catch (err: any) {
-            toast.error(err.message || "Invalid repository URL");
-            setImportingRepo(false);
-            return;
-        }
-
-        if (activeProject.repoUrls.includes(repoUrl.trim())) {
-            toast.error("Repository already connected.");
-            setImportingRepo(false);
-            return;
-        }
-
-        // Validate if user is an admin on the repository
-        const repoDetails = await getRepoDetails(repoUrl, githubToken);
-        if (!repoDetails.permissions || !repoDetails.permissions.admin) {
-            toast.error("You must be an admin on the repository.");
-            setImportingRepo(false);
-            return;
-        }
-
-        const { repoUrls } = await ProjectAPI.connectRepository(
-            activeProject.id,
-            { repoUrl: repoUrl.trim() }
-        );
-
-        const completion = () => {
-            setActiveProject({ ...activeProject, repoUrls });
-            setImportingRepo(false);
-            toast.success("Repository connected successfully!");
-            toggleImportTaskModal();
-        };
-
-        // TODO: Reviw to handle errors properly
-        try {
-            await createBountyLabel(repoUrl, githubToken);
-            completion();
-        } catch {
-            completion();
-        }
-    };
 
     return (
         <>
@@ -103,7 +40,7 @@ const Onboarding = () => {
                 </span>👋
             </h1>
             <div className="flex gap-[30px] mt-10 mb-[30px]">
-                {(activeProject && activeProject.repoUrls.length < 1) ? (
+                {!activeInstallation && (
                     <div className="w-full p-5 border border-primary-200">
                         <h6 className="text-headline-small font-black text-light-200 pb-2.5">Connect Project Repository</h6>
                         <p className="text-body-medium text-dark-100 mb-[30px]">
@@ -112,27 +49,27 @@ const Onboarding = () => {
                         <div className="w-full flex gap-2.5">
                             <div className="w-full relative">
                                 <FaGithub className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />
-                                <input
+                                {/* <input
                                     type="text"
                                     placeholder="Project GitHub repository URL"
                                     className="w-full h-full p-2.5 pl-[42px] bg-dark-400 border border-dark-100 text-body-tiny text-light-100"
                                     value={repoUrl}
                                     onChange={(e) => setRepoUrl(e.target.value)}
-                                />
+                                /> */}
                             </div>
                             <ButtonPrimary
                                 format="SOLID"
                                 text={importingRepo ? "Connecting..." : "Connect"}
                                 sideItem={<FiArrowUpRight />}
                                 attributes={{ 
-                                    onClick: connectRepository,
-                                    disabled: !repoUrl.trim() || importingRepo
+                                    onClick: () => {},
+                                    disabled: importingRepo
                                 }}
                                 extendedClassName="bg-light-200 hover:bg-light-100"
                             />
                         </div>
                     </div>
-                ): null}
+                )}
                 <div className="w-full p-5 border border-primary-200">
                     <h6 className="text-headline-small font-black text-light-100 pb-2.5">Fund Wallet</h6>
                     <p className="text-body-medium text-dark-100 mb-[30px]">
@@ -159,7 +96,7 @@ const Onboarding = () => {
                     </div>
                 </div>
             </div>
-            {(activeProject && activeProject?.repoUrls.length > 0) ? (
+            {activeInstallation && (
                 <div className="w-full draft-box relative py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
                     <p className="flex items-center gap-[5px] text-title-large text-light-100">
                         <span>Draft: Issues Selected</span>
@@ -175,7 +112,7 @@ const Onboarding = () => {
                         <FiArrowUpRight className="text-2xl" />
                     </button>
                 </div>
-            ): null}
+            )}
             <div className="w-full p-10 border border-primary-200 flex items-center justify-between gap-10 
                 bg-[linear-gradient(130.86deg,_rgba(0,_26,_37,_0.5)_15.53%,_rgba(163,_82,_7,_0.5)_79.38%)]"
             >

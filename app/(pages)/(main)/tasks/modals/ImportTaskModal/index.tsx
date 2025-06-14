@@ -7,9 +7,8 @@ import CreateTaskCard from "./components/CreateTaskCard";
 import { HiPlus } from "react-icons/hi";
 import RepoMenuCard from "./components/RepoMenuCard";
 import { useMemo, useState } from "react";
-import ConnectRepositoryModal from "../ConnectRepositoryModal";
-import { useInfiniteScroll, useRequest, useToggle } from "ahooks";
-import useProjectStore from "@/app/state-management/useProjectStore";
+import { useInfiniteScroll, useRequest } from "ahooks";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 import useTaskStore from "@/app/state-management/useTaskStore";
 import { PiEyeBold, PiEyeSlashBold } from "react-icons/pi";
 import { getRepoIssues, getRepoLabels, getRepoMilestones } from "@/app/services/github.service";
@@ -34,10 +33,9 @@ type ImportTaskModalProps = {
 
 const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
     const { githubToken, reAuthenticate } = useGitHubContext();
-    const { activeProject } = useProjectStore();
+    const { activeInstallation } = useInstallationStore();
     const { draftTasks, setDraftTasks } = useTaskStore();
-    const [activeRepo, setActiveRepo] = useState(activeProject?.repoUrls[0]);
-    const [openConnectRepositoryModal, { toggle: toggleConnectRepositoryModal }] = useToggle(false);
+    const [activeRepo, setActiveRepo] = useState(activeInstallation?.repoUrls[0]);
     const [issueFilters, setIssueFilters] = useState<IssueFilters>();
     const [currentPage, setCurrentPage] = useState(1);
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
@@ -76,7 +74,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
             const pageToLoad = currentData ? currentPage + 1 : 1;
 
             const issues = await getRepoIssues(
-                activeRepo || activeProject?.repoUrls[0] || "",
+                activeRepo || activeInstallation?.repoUrls[0] || "",
                 githubToken || "",
                 issueFilters || {},
                 pageToLoad
@@ -101,7 +99,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
 
     const { loading: loadingLabels, data: repoLabels } = useRequest(
         () => getRepoLabels(
-            activeRepo || activeProject?.repoUrls[0] || "",
+            activeRepo || activeInstallation?.repoUrls[0] || "",
             githubToken || "",
         ), 
         {
@@ -113,7 +111,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
 
     const { loading: loadingMilestones, data: repoMilestones } = useRequest(
         () => getRepoMilestones(
-            activeRepo || activeProject?.repoUrls[0] || "",
+            activeRepo || activeInstallation?.repoUrls[0] || "",
             githubToken || "",
         ), 
         {
@@ -244,7 +242,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                 <p className="text-body-medium text-light-200">Repository URL(s)</p>
                 <div className="flex items-end justify-between gap-2.5">
                     <div className="w-full border-b border-dark-200 flex gap-[15px] overflow-x-auto">
-                        {activeProject?.repoUrls?.map((repo) => (
+                        {activeInstallation?.repoUrls?.map((repo) => (
                             <RepoMenuCard
                                 key={repo}
                                 repoName={repo.split("/")[4]}
@@ -259,7 +257,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                         text="Add Repo"
                         sideItem={<HiPlus />}
                         attributes={{
-                            onClick: toggleConnectRepositoryModal,
+                            onClick: () => {},
                         }}
                         extendedClassName="h-full bg-light-200 hover:bg-light-100"
                     />
@@ -448,8 +446,6 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                     }}
                 />
             </section>
-        
-            {openConnectRepositoryModal && <ConnectRepositoryModal toggleModal={toggleConnectRepositoryModal} />}
         </PopupModalLayout>
     );
 }

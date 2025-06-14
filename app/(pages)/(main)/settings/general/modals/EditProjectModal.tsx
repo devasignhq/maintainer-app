@@ -4,9 +4,9 @@ import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { FiArrowUpRight } from "react-icons/fi";
 import { useFormik } from 'formik';
 import { object, string } from 'yup';
-import { UpdateProjectDto } from "@/app/models/project.model";
-import { ProjectAPI } from "@/app/services/project.service";
-import useProjectStore from "@/app/state-management/useProjectStore";
+import { UpdateInstallationDto } from "@/app/models/installation.model";
+import { InstallationAPI } from "@/app/services/installation.service";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useRequest, useLockFn } from "ahooks";
 import { toast } from "react-toastify";
 
@@ -20,20 +20,20 @@ type EditProjectModalProps = {
 };
 
 const EditProjectModal = ({ toggleModal }: EditProjectModalProps) => {
-    const { projectList, activeProject, setActiveProject, setProjectList } = useProjectStore();
+    const { InstallationList, activeInstallation, setActiveInstallation, setInstallationList } = useInstallationStore();
 
     const { loading: updatingProject, run: updateProject } = useRequest(
-        useLockFn((data: UpdateProjectDto) => ProjectAPI.updateProject(activeProject!.id, data)), 
+        useLockFn((data: UpdateInstallationDto) => InstallationAPI.updateProject(activeInstallation!.id, data)), 
         {
             manual: true,
             onSuccess: (data) => {
                 toast.success("Project updated successfully.");
 
                 if (data) {
-                    setActiveProject({ ...activeProject!, ...data });
-                    setProjectList(
-                        projectList.map(project => 
-                            project.id === activeProject!.id ? { ...project, ...data } : project
+                    setActiveInstallation({ ...activeInstallation!, ...data });
+                    setInstallationList(
+                        InstallationList.map(project => 
+                            project.id === activeInstallation!.id ? { ...project, ...data } : project
                         )
                     );
                 }
@@ -50,8 +50,8 @@ const EditProjectModal = ({ toggleModal }: EditProjectModalProps) => {
 
     const formik = useFormik({
         initialValues: {
-            name: activeProject?.name || "",
-            description: activeProject?.description || "",
+            name: activeInstallation?.name || "",
+            description: activeInstallation?.description || "",
         },
         validationSchema: projectSchema,
         onSubmit: values => updateProject(values),

@@ -7,7 +7,7 @@ import { HiPlus } from "react-icons/hi";
 import TaskCard from "../components/TaskCard";
 import ImportTaskModal from "../modals/ImportTaskModal";
 import { useInfiniteScroll, useToggle } from "ahooks";
-import useProjectStore from "@/app/state-management/useProjectStore";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { FilterTasks } from "@/app/models/task.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
@@ -15,7 +15,7 @@ import { ActiveTaskContext } from "../page";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
 const TaskListSection = () => {
-    const { activeProject } = useProjectStore();
+    const { activeInstallation } = useInstallationStore();
     const { activeTask } = useContext(ActiveTaskContext);
     const { searchParams, updateSearchParams } = useCustomSearchParams();
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
@@ -34,7 +34,7 @@ const TaskListSection = () => {
             
             const response = await TaskAPI.getTasks(
                 { 
-                    projectId: activeProject?.id, 
+                    installationId: activeInstallation?.id, 
                     page: pageToLoad,
                     limit: 30,
                 },
@@ -51,13 +51,13 @@ const TaskListSection = () => {
             };
         }, {
             isNoMore: (data) => !data?.pagination.hasMore,
-            reloadDeps: [activeProject?.id, ...(taskFilters ? Object.values(taskFilters) : [])]
+            reloadDeps: [activeInstallation?.id, ...(taskFilters ? Object.values(taskFilters) : [])]
         }
     );
 
     // const { loading: loadingLabels, data: repoLabels } = useRequest(
     //     () => getRepoLabels(
-    //         activeRepo || activeProject?.repoUrls[0] || "",
+    //         activeRepo || activeInstallation?.repoUrls[0] || "",
     //         githubToken || "",
     //     ), 
     //     {
@@ -72,7 +72,7 @@ const TaskListSection = () => {
 
     // const { loading: loadingMilestones, data: repoMilestones } = useRequest(
     //     () => getRepoMilestones(
-    //         activeRepo || activeProject?.repoUrls[0] || "",
+    //         activeRepo || activeInstallation?.repoUrls[0] || "",
     //         githubToken || "",
     //     ), 
     //     {
@@ -111,7 +111,7 @@ const TaskListSection = () => {
                 <div className="flex items-center gap-2.5">
                     <FilterDropdown
                         title="Code Repo"
-                        options={activeProject?.repoUrls || []}
+                        options={[]}
                         extendedContainerClassName="w-full"
                         extendedButtonClassName="w-full py-[5px]"
                         buttonAttributes={{ 

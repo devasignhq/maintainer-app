@@ -1,7 +1,7 @@
 import { CommentDto } from "./comment.model"
 import { IssueDto } from "./github.model"
-import { UserProjectPermissionDto } from "./permission.model"
-import { ProjectDto } from "./project.model"
+import { UserInstallationPermissionDto } from "./permission.model"
+import { InstallationDto } from "./installation.model"
 import { UserDto } from "./user.model"
 
 export const TASK_STATUS = {
@@ -29,20 +29,19 @@ export type TaskDto = {
     bounty: number
     status: TaskStatus
     settled: boolean
-    pullRequests: string[]
     acceptedAt: string | null
     completedAt: string | null
     creatorId: string
     contributorId: string | null
-    projectId: string
+    installationId: string
     createdAt: string
     updatedAt: string
     
     applications?: UserDto[]
     creator?: UserDto
     contributor?: UserDto | null
-    project?: ProjectDto
-    transactions?: UserProjectPermissionDto[]
+    installation?: InstallationDto
+    transactions?: UserInstallationPermissionDto[]
     taskSubmissions?: TaskSubmission[]
     taskActivities?: TaskActivity[]
 }
@@ -55,7 +54,7 @@ export type TaskSubmission = {
     id: string
     userId: string
     taskId: string
-    projectId: string
+    installationId: string
     pullRequest: string
     attachmentUrl: string | null
     createdAt: string
@@ -63,7 +62,7 @@ export type TaskSubmission = {
     
     user?: UserDto
     task?: TaskDto
-    project?: ProjectDto
+    installation?: InstallationDto
 }
 
 export type TaskActivity = {
@@ -80,7 +79,7 @@ export type TaskActivity = {
 }
 
 export type CreateTaskDto = {
-    projectId: string
+    installationId: string
     issue: TaskIssue
     timeline?: number
     timelineType?: TimelineType
@@ -111,7 +110,7 @@ export type MarkAsCompleteDto = {
 
 export type QueryTaskDto = {
     status?: TaskStatus
-    projectId?: string
+    installationId?: string
     role?: 'creator' | 'contributor'
     detailed?: boolean
     page?: number

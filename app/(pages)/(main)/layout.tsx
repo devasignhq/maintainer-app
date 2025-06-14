@@ -7,8 +7,8 @@ import { ROUTES } from "@/app/utils/data";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FaCheck } from "react-icons/fa6";
 import { usePopup } from "@/app/utils/hooks";
-import useProjectStore from "@/app/state-management/useProjectStore";
-import { ProjectAPI } from "@/app/services/project.service";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
+import { InstallationAPI } from "@/app/services/installation.service";
 import { useRequest, useLockFn } from "ahooks";
 import { TbLogout } from "react-icons/tb";
 import { useLogoutUser } from "@/lib/firebase";
@@ -22,22 +22,22 @@ export default function MainLayout({
     const checkPath = (path: string) => currentPath.includes(path) || currentPath === path;
     const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
     const { 
-        projectList, 
-        activeProject,
-        setProjectList,
-        setActiveProject
-    } = useProjectStore();
+        InstallationList, 
+        activeInstallation,
+        setInstallationList,
+        setActiveInstallation
+    } = useInstallationStore();
     const logoutUser = useLogoutUser();
 
-    const { loading: fetchingProjects } = useRequest(
-        useLockFn(() => ProjectAPI.getProjects()), 
+    const { loading: fetchingInstallations } = useRequest(
+        useLockFn(() => InstallationAPI.getInstallations()), 
         {
             retryCount: 2,
-            cacheKey: "project-list",
+            cacheKey: "installation-list",
             onSuccess: (response) => {
                 if (response) {
-                    setProjectList(response.data);
-                    if (!activeProject) setActiveProject(response.data[0]);
+                    setInstallationList(response.data);
+                    if (!activeInstallation) setActiveInstallation(response.data[0]);
                 }
             },
             onError: () => {}
@@ -52,10 +52,10 @@ export default function MainLayout({
                     <div className="relative">
                         <div className="flex items-center gap-2.5 text-light-100">
                             <span className="flex items-center gap-[15px] text-headline-small">
-                                {activeProject?.name}
+                                {activeInstallation?.account.login}
                             </span>
                             <div className="px-2.5 py-[7px] bg-dark-300 text-table-header">
-                                {activeProject?.subscriptionPackage?.name}
+                                {activeInstallation?.subscriptionPackage?.name}
                             </div>
                             <button 
                                 ref={menuButtonRef}
@@ -71,7 +71,7 @@ export default function MainLayout({
                                     bg-dark-400 border border-dark-200 shadow-[-20px_4px_40px_0px_#000000]"
                             >
                                 <div className="w-full flex flex-col gap-2.5">
-                                    {fetchingProjects ? (
+                                    {fetchingInstallations ? (
                                         <>
                                             {[...Array(3)].map((_, i) => (
                                                 <div
@@ -81,47 +81,49 @@ export default function MainLayout({
                                             ))}
                                         </>
                                     ) : (
-                                        projectList.map((project) => {
-                                            return activeProject?.id === project.id ? (
+                                        InstallationList.map((installation) => {
+                                            return activeInstallation?.id === installation.id ? (
                                                 <button
-                                                    key={project.id}
+                                                    key={installation.id}
                                                     className="pb-2.5 flex items-center justify-between gap-2.5 border-b border-dark-200"
                                                 >
                                                     <div className="flex items-center gap-2.5">
-                                                        <p className="text-body-medium text-light-100">{project.name}</p>
+                                                        <p className="text-body-medium text-light-100">{installation.account.login}</p>
                                                         <div className={`px-2.5 py-[7px] text-body-small 
-                                                            ${project.subscriptionPackage?.price === 0 
+                                                            ${installation.subscriptionPackage?.price === 0 
                                                                 ? "text-light-100 bg-dark-300" 
                                                                 : "text-dark-500 bg-primary-100"}` 
                                                         }>
-                                                            {project.subscriptionPackage?.name}
+                                                            {installation.subscriptionPackage?.name}
                                                         </div>
                                                     </div>
                                                     <FaCheck className="text-xl text-light-100" />
                                                 </button>
                                             ) : (
                                                 <button
-                                                    key={project.name}
+                                                    key={installation.id}
                                                     className="group flex items-center justify-between gap-2.5"
-                                                    onClick={() => setActiveProject(project)}
+                                                    onClick={() => setActiveInstallation(installation)}
                                                 >
-                                                    <p className="text-body-medium text-dark-100 group-hover:text-light-100">{project.name}</p>
+                                                    <p className="text-body-medium text-dark-100 group-hover:text-light-100">
+                                                        {installation.account.login}
+                                                    </p>
                                                     <div className={`px-2.5 py-[7px] text-body-small 
-                                                        ${project.subscriptionPackage?.price === 0 
+                                                        ${installation.subscriptionPackage?.price === 0 
                                                         ? "text-light-100 bg-dark-300" 
                                                         : "text-dark-500 bg-primary-100"}` 
                                                     }>
-                                                        {project.subscriptionPackage?.name}
+                                                        {installation.subscriptionPackage?.name}
                                                     </div>
                                                 </button>
                                             )
                                         })
                                     )}
                                 </div>
-                                <Link href={ROUTES.SETUP_PROJECT}>
+                                <Link href={ROUTES.CONFIG.NEW_INSTALLATION} target="_blank">
                                     <ButtonPrimary
                                         format="OUTLINE"
-                                        text="New Project"
+                                        text="New Installation"
                                         sideItem={<HiPlus />}
                                         attributes={{ type: "button" }}
                                         extendedClassName="w-full mt-[30px]"

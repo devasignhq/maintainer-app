@@ -1,4 +1,4 @@
-import { ProjectDto } from "./project.model"
+import { InstallationDto } from "./installation.model"
 import { UserDto } from "./user.model"
 
 export type PermissionDto = {
@@ -9,7 +9,7 @@ export type PermissionDto = {
     updatedAt: string
 }
 
-export type UserProjectPermissionDto = {
+export type UserInstallationPermissionDto = {
     id: string
     userId: string
     projectId: string
@@ -19,5 +19,5 @@ export type UserProjectPermissionDto = {
 
     permissions?: PermissionDto[]
     user?: UserDto
-    project?: ProjectDto
+    installation?: InstallationDto
 }

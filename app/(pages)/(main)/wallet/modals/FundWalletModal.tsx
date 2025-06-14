@@ -2,7 +2,7 @@
 import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { QRCodeCanvas } from "qrcode.react";
 import CopyButton from "../../../../components/CopyButton";
-import useProjectStore from "@/app/state-management/useProjectStore";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useEffect, useState } from "react";
 import { moneyFormat } from "@/app/utils/helper";
 import { useXLMUSDCFromStellarDEX } from "@/app/services/horizon.service";
@@ -17,7 +17,7 @@ type FundWalletModalProps = {
 }
 
 const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalProps) => {
-    const { activeProject } = useProjectStore();
+    const { activeInstallation } = useInstallationStore();
     const [totalBountiesInXLM, setTotalBountiesInXLM] = useState("");
     const [topUpAmount, setTopUpAmount] = useState("");
     const { 
@@ -83,7 +83,7 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
             <section className="w-full flex items-center gap-5 mt-5">
                 <div className="py-2.5">
                     <QRCodeCanvas 
-                        value={activeProject!.walletAddress} 
+                        value={activeInstallation!.walletAddress} 
                         width={116}
                         height={112}
                         bgColor="#FEF3C7"
@@ -99,9 +99,9 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
                     <div className="w-full p-2.5 wallet-info relative bg-dark-400 flex items-center justify-between">
                         <p className="text-body-small">
                             <span className="font-bold text-light-200">Address:</span>
-                            <span className="text-light-100 truncate">{" "}{activeProject!.walletAddress}</span>
+                            <span className="text-light-100 truncate">{" "}{activeInstallation!.walletAddress}</span>
                         </p>
-                        <CopyButton text={activeProject!.walletAddress} />
+                        <CopyButton text={activeInstallation!.walletAddress} />
                     </div>
                 </div>
             </section>

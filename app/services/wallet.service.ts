@@ -10,8 +10,8 @@ import {
 import { ItemWithPaginationResponse } from "../models/_global";
 
 export class WalletAPI {
-    static async getWalletInfo(projectId: string) {
-        return HttpClient.get<AccountRecord>(ENDPOINTS.WALLET.GET_WALLET,  { data: { projectId } });
+    static async getWalletInfo(installationId: string) {
+        return HttpClient.get<AccountRecord>(ENDPOINTS.WALLET.GET_WALLET,  { data: { installationId } });
     }
 
     static async withdrawAsset(data: WithdrawAssetDto) {
@@ -22,8 +22,8 @@ export class WalletAPI {
         return HttpClient.post<AccountRecord>(ENDPOINTS.WALLET.SWAP, data);
     }
 
-    static async getTransactions(projectId: string, query?: QueryTransactionDto) {
+    static async getTransactions(installationId: string, query?: QueryTransactionDto) {
         return HttpClient.get<ItemWithPaginationResponse<"transactions", TransactionDto[]>>(
-            ENDPOINTS.WALLET.TRANSACTIONS, { data: { projectId }, params: query });
+            ENDPOINTS.WALLET.TRANSACTIONS, { data: { installationId }, params: query });
     }
 }

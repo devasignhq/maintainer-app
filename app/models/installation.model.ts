@@ -1,42 +1,50 @@
-import { UserProjectPermissionDto } from "./permission.model"
+import { UserInstallationPermissionDto } from "./permission.model"
 import { SubscriptionPlanDto } from "./subscription-plan.model"
 import { TaskDto, TaskSubmission } from "./task.model"
 import { UserDto } from "./user.model"
 import { TransactionDto } from "./wallet.model"
 
-export type ProjectDto = {
+export type InstallationDto = {
     id: string
-    name: string
-    description: string
-    repoUrls: string[]
+    htmlUrl: string
+    targetId: number
+    targetType: string
+    account: InstallationAccount
     walletAddress: string
     subscriptionPackageId: string | null
     createdAt: string
     updatedAt: string
       
-    stats?: ProjectStats
+    stats?: InstallationStats
     subscriptionPackage?: SubscriptionPlanDto | null
     tasks?: TaskDto[]
     users?: UserDto[]
-    userProjectPermissions?: UserProjectPermissionDto[]
+    userInstallationPermissions?: UserInstallationPermissionDto[]
     transactions?: TransactionDto[]
     taskSubmissions?: TaskSubmission[]
 }
 
-export type ProjectStats = {
-    totalBounty: number;
-    openTasks: number;
-    completedTasks: number;
-    totalTasks: number;
-    totalMembers: number;
+export type InstallationAccount = {
+    login: string 
+    nodeId: string 
+    avatarUrl: string 
+    htmlUrl: string
 }
 
-export type CreateProjectDto = {
+export type InstallationStats = {
+    totalBounty: number
+    openTasks: number
+    completedTasks: number
+    totalTasks: number
+    totalMembers: number
+}
+
+export type CreateInstallationDto = {
     name: string
     description?: string
 }
 
-export type UpdateProjectDto = Partial<CreateProjectDto>
+export type UpdateInstallationDto = Partial<CreateInstallationDto>
 
 export type ConnectRepositoryDto = {
     repoUrl: string
@@ -52,17 +60,13 @@ export type UpdateTeamMemberDto = {
     permissionCodes: string[]
 }
 
-export type GetRepoAttachments = {
-    repoUrl: string
-}
-
-export type QueryProjectDto = {
+export type QueryInstallationDto = {
     searchTerm?: string
     page?: string
     limit?: string
 }
 
-export type QueryProjectIssues = {
+export type QueryInstallationIssues = {
     page?: number
     limit?: number
     labels?: string

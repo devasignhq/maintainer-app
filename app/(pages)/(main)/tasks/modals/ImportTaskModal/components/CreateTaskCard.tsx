@@ -9,7 +9,7 @@ import { CreateTaskDto } from "@/app/models/task.model";
 import { useState } from "react";
 import { object, string, number } from 'yup';
 import { useFormik } from "formik";
-import useProjectStore from "@/app/state-management/useProjectStore";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useUpdateEffect } from "ahooks";
 import { convertGitHubApiUrlToWebUrlRegex } from "@/app/utils/helper";
 import { twMerge } from "tailwind-merge";
@@ -42,7 +42,7 @@ const CreateTaskCard = ({
     disableFields,
     uploadStatus
 }: CreateTaskCardProps) => {
-    const { activeProject } = useProjectStore();
+    const { activeInstallation } = useInstallationStore();
     const [selected, setSelected] = useState(defaultSelected);
     
     useUpdateEffect(() => setSelected(defaultSelected), [defaultSelected]);
@@ -63,7 +63,7 @@ const CreateTaskCard = ({
     const handleToggleCheck = (selected: boolean) => {
         if (selected) {
             const taskPayload: CreateTaskDto = {
-                projectId: activeProject!.id,
+                installationId: activeInstallation!.id,
                 issue: {
                     id: issue.id,
                     number: issue.number,

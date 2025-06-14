@@ -14,14 +14,14 @@ import SwapAssetModal from "./modals/SwapAssetModal";
 import WithdrawAssetModal from "./modals/WithdrawAssetModal";
 import FundWalletModal from "./modals/FundWalletModal";
 import { useStreamAccountBalance } from "@/app/services/horizon.service";
-import useProjectStore from "@/app/state-management/useProjectStore";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { moneyFormat } from "@/app/utils/helper";
 import { WalletAPI } from "@/app/services/wallet.service";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 
 const Wallet = () => {
-    const { activeProject } = useProjectStore();
-    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeProject?.walletAddress, true);
+    const { activeInstallation } = useInstallationStore();
+    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeInstallation?.walletAddress, true);
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [openWithdrawAssetModal, { toggle: toggleWithdrawAssetModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
@@ -50,7 +50,7 @@ const Wallet = () => {
                     : activeTab.enum;
             
             const response = await WalletAPI.getTransactions(
-                activeProject!.id,
+                activeInstallation!.id,
                 { 
                     page: pageToLoad, 
                     limit: 20, 
@@ -74,7 +74,9 @@ const Wallet = () => {
         <div className="w-[80%] max-h-[calc(100dvh-123px)] mx-auto flex flex-col pb-5">
             <section className="w-full space-y-5 mt-[30px] mb-[50px]">
                 <div className="flex items-start justify-between">
-                    <h1 className="text-display-small text-light-100">Project Wallet</h1>
+                    <h1 className="text-display-small text-light-100">
+                        {`Installation (${activeInstallation?.account.login}) Wallet`}
+                    </h1>
                     <div className="flex gap-2.5">
                         <ButtonPrimary
                             format="SOLID"
