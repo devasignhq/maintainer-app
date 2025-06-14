@@ -28,7 +28,14 @@ const Account = () => {
                 }
                 router.push(ROUTES.ONBOARDING);
             },
-            onError: () => toast.error("Failed to create user.")
+            onError: (err) => {
+                const error = err as unknown as ErrorResponse;
+                if (error.error.message) {
+                    toast.error(error.error.message);
+                    return
+                }
+                toast.error("Failed to create user.");
+            }
         }
     );
 
@@ -37,7 +44,6 @@ const Account = () => {
         useLockFn((gitHubUsername: string) => UserAPI.getUser({ view: "basic" })), 
         {
             manual: true,
-            cacheKey: "user-object",
             onSuccess: (data, params) => {
                 if (data) {
                     setCurrentUser({ ...data, username: params[0] });
@@ -52,7 +58,13 @@ const Account = () => {
                 const error = err as unknown as ErrorResponse;
                 if (error.error.name === "NotFoundError") {
                     createUser(params[0]);
+                    return
                 }
+                if (error.error.message) {
+                    toast.error(error.error.message);
+                    return
+                }
+                toast.error("Failed to fetch user.");
             }
         }
     );
