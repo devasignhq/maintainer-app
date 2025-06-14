@@ -1,7 +1,6 @@
 export const ROUTES = {
     ACCOUNT: "/authenticate/account",
     SUBSCRIPTION_PLAN: "/authenticate/subscription-plan",
-    SETUP_PROJECT: "/authenticate/setup-project",
     ONBOARDING: "/onboarding",
     OVERVIEW: "/overview",
     TASKS: "/tasks",

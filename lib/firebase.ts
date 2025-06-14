@@ -2,7 +2,7 @@ import { ROUTES } from '@/app/utils/data';
 import { useClearStores } from '@/app/utils/hooks';
 import { useLockFn, useAsyncEffect, clearCache } from 'ahooks';
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, GithubAuthProvider, User } from 'firebase/auth';
+import { getAuth, User } from 'firebase/auth';
 import { useRouter } from "next/navigation";
 
 const firebaseConfig = {
@@ -18,11 +18,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
-export const configureGithubProvider = () => {
-    const provider = new GithubAuthProvider();
-    provider.addScope('public_repo'); 
-    return provider;
-};
 
 export async function getCurrentUser() {
     const userPromise = new Promise<User | null>((resolve) => {

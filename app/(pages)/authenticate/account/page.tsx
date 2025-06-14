@@ -8,12 +8,14 @@ import { useLockFn, useRequest } from "ahooks";
 import { toast } from "react-toastify";
 import { ErrorResponse } from "@/app/models/_global";
 import useUserStore from "@/app/state-management/useUserStore";
-import { useGitHubContext } from "@/app/layout";
+import { auth } from "@/lib/firebase";
+import { GithubAuthProvider, signInWithPopup, getAdditionalUserInfo } from "@firebase/auth";
+
+export const githubProvider = new GithubAuthProvider();
 
 const Account = () => {
     const router = useRouter();
     const { setCurrentUser } = useUserStore();
-    const { handleGitHubAuth } = useGitHubContext();
 
     const { loading: creatingUser, run: createUser } = useRequest(
         useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })), 
@@ -24,7 +26,7 @@ const Account = () => {
                 if (data) {
                     setCurrentUser({ ...data, username: params[0] });
                 }
-                router.push(ROUTES.SETUP_PROJECT);
+                router.push(ROUTES.ONBOARDING);
             },
             onError: () => toast.error("Failed to create user.")
         }
@@ -40,11 +42,11 @@ const Account = () => {
                 if (data) {
                     setCurrentUser({ ...data, username: params[0] });
                 }
-                if (data?._count && data._count?.projects > 0) {
+                if (data?._count && data._count?.installations > 0) {
                     router.push(ROUTES.TASKS);
                     return
                 }
-                router.push(ROUTES.SETUP_PROJECT);
+                router.push(ROUTES.ONBOARDING);
             },
             onError: (err, params) => {
                 const error = err as unknown as ErrorResponse;
@@ -55,11 +57,16 @@ const Account = () => {
         }
     );
 
-    const authenticateUser = async () => {
-        const data = await handleGitHubAuth();
-
-        if (data?.additionalInfo) {
-            getUser(data.additionalInfo.username!);
+    const handleGitHubAuth = async () => {
+        try {
+            const result = await signInWithPopup(auth, githubProvider);
+            const additionalInfo = getAdditionalUserInfo(result);
+            // const credential = GithubAuthProvider.credentialFromResult(result);
+            
+            getUser(additionalInfo!.username!);
+        } catch (error) {
+            toast.error("GitHub sign-in failed. Please try again.");
+            console.error(error);
         }
     };
 
@@ -83,7 +90,7 @@ const Account = () => {
                 }
                 sideItem={<FaGithub />}
                 attributes={{ 
-                    onClick: authenticateUser,
+                    onClick: handleGitHubAuth,
                     disabled: creatingUser || fetchingUser, 
                 }}
                 extendedClassName="w-[264px]"
