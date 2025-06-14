@@ -1,3 +1,5 @@
+import { Octokit } from "octokit";
+
 export type Repository = {
     id: number;
     node_id: string;
@@ -101,4 +103,12 @@ export class IssueFilters {
     milestone?: string | "none" | "*";
     sort?: "created" | "updated" | "comments" = "created";
     direction?: "asc" | "desc" = "desc";
+}
+
+export type InstallationOctokit = Octokit & {
+    paginate: import("@octokit/plugin-paginate-rest").PaginateInterface;
+} & import("@octokit/plugin-paginate-graphql").paginateGraphQLInterface & import("@octokit/plugin-rest-endpoint-methods").Api & {
+    retry: {
+        retryRequest: (error: import("@octokit/request-error").RequestError, retries: number, retryAfter: number) => import("@octokit/request-error").RequestError;
+    };
 }

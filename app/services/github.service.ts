@@ -1,13 +1,12 @@
 import { Octokit } from "@octokit/rest";
 import { IssueFilters } from "../models/github.model";
-// import { App } from "octokit";
+import { App } from "octokit";
 
-// export const app = new App({
-//     appId: process.env.NEXT_PUBLIC_GITHUB_APP_ID!,
-//     privateKey: process.env.NEXT_PUBLIC_GITHUB_APP_PRIVATE_KEY!
-// });
+export const githubApp = new App({
+    appId: process.env.NEXT_PUBLIC_GITHUB_APP_ID!,
+    privateKey: process.env.NEXT_PUBLIC_GITHUB_APP_PRIVATE_KEY!
+});
 
-// const octokit = await app.getInstallationOctokit(INSTALLATION_ID);
 // const result = await octokit.request("GET /installation/repositories");
 
 // Helper function to check if GitHub user exists

@@ -9,15 +9,21 @@ import { FaCheck } from "react-icons/fa6";
 import { usePopup } from "@/app/utils/hooks";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { InstallationAPI } from "@/app/services/installation.service";
-import { useRequest, useLockFn } from "ahooks";
+import { useRequest, useLockFn, useAsyncEffect } from "ahooks";
 import { TbLogout } from "react-icons/tb";
 import { useLogoutUser } from "@/lib/firebase";
+import { createContext, useState } from "react";
+import { githubApp } from "@/app/services/github.service";
+import { InstallationOctokit } from "@/app/models/github.model";
+
+export const OctokitContext = createContext<InstallationOctokit | null>(null);
 
 export default function MainLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const logoutUser = useLogoutUser();
     const currentPath = usePathname();
     const checkPath = (path: string) => currentPath.includes(path) || currentPath === path;
     const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
@@ -27,7 +33,7 @@ export default function MainLayout({
         setInstallationList,
         setActiveInstallation
     } = useInstallationStore();
-    const logoutUser = useLogoutUser();
+    const [octokit, setOctokit] = useState<InstallationOctokit | null>(null);
 
     const { loading: fetchingInstallations } = useRequest(
         useLockFn(() => InstallationAPI.getInstallations()), 
@@ -43,6 +49,16 @@ export default function MainLayout({
             onError: () => {}
         }
     );
+
+    useAsyncEffect(useLockFn(async () => {
+        if (!activeInstallation) {
+            setOctokit(null);
+            return
+        }
+
+        const octokit = await githubApp.getInstallationOctokit(Number(activeInstallation.id));
+        setOctokit(octokit);
+    }), [activeInstallation]);
 
     return (
         <main className="h-full w-full px-[6.75%] flex flex-col">
@@ -155,7 +171,9 @@ export default function MainLayout({
                 </nav>
             )}
               
-            {children}
+            <OctokitContext.Provider value={octokit}>
+                {children}
+            </OctokitContext.Provider>
         </main>
     );
 }

@@ -50,12 +50,12 @@ export function usePopup() {
 
 export function useClearStores() {
     const { clearUserStore } = useUserStore();
-    const { clearProjectStore } = useInstallationStore();
+    const { clearInstallationStore } = useInstallationStore();
     const { clearTaskStore } = useTaskStore();
 
     return () => {
         clearUserStore();
-        clearProjectStore();
+        clearInstallationStore();
         clearTaskStore();
     };
 }
