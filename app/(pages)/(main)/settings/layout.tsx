@@ -34,7 +34,6 @@ export default function SettingsLayout({
 }
 
 const navItems = [
-    { name: "General", path: ROUTES.SETTINGS.GENERAL },
     { name: "Manage Team", path: ROUTES.SETTINGS.MANAGE_TEAM },
     { name: "Plans & Billings", path: ROUTES.SETTINGS.PLANS_AND_BILLINGS },
 ];

@@ -165,5 +165,5 @@ const navItems = [
     { name: "Tasks", path: ROUTES.TASKS },
     { name: "Wallet", path: ROUTES.WALLET },
     // { name: "Contributors", path: ROUTES.CONTRIBUTORS },
-    { name: "Settings", alias: "/settings", path: ROUTES.SETTINGS.GENERAL },
+    { name: "Settings", alias: "/settings", path: ROUTES.SETTINGS.MANAGE_TEAM },
 ];

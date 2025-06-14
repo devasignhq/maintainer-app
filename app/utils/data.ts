@@ -8,7 +8,6 @@ export const ROUTES = {
     // CONTRIBUTORS: "/contributors",
     WALLET: "/wallet",
     SETTINGS: {
-        GENERAL: "/settings/general",
         MANAGE_TEAM: "/settings/manage-team",
         PLANS_AND_BILLINGS: "/settings/plans-and-billings",
     },
