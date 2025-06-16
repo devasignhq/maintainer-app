@@ -1,7 +1,7 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { ROUTES } from "@/app/utils/data";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
 import { UserAPI } from "@/app/services/user.service";
 import { useLockFn, useRequest } from "ahooks";
@@ -15,7 +15,15 @@ export const githubProvider = new GithubAuthProvider();
 
 const Account = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { setCurrentUser } = useUserStore();
+
+    const getInstallation = () => {
+        const installationId = searchParams.get("installation_id");
+        if (installationId) {
+            router.push(ROUTES.INSTALLATION.CREATE + `?installation_id=${installationId}`);
+        }
+    };
 
     const { loading: creatingUser, run: createUser } = useRequest(
         useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })), 
@@ -26,6 +34,7 @@ const Account = () => {
                 if (data) {
                     setCurrentUser({ ...data, username: params[0] });
                 }
+                getInstallation();
                 router.push(ROUTES.ONBOARDING);
             },
             onError: (err) => {
@@ -48,6 +57,9 @@ const Account = () => {
                 if (data) {
                     setCurrentUser({ ...data, username: params[0] });
                 }
+
+                getInstallation();
+                
                 if (data?._count && data._count?.installations > 0) {
                     router.push(ROUTES.TASKS);
                     return
