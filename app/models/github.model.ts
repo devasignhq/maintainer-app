@@ -1,6 +1,6 @@
 import { Octokit } from "octokit";
 
-export type Repository = {
+export type RepositoryDto = {
     id: number;
     node_id: string;
     name: string;
@@ -31,7 +31,7 @@ export type IssueDto = {
     active_lock_reason?: string | null;
     comments: number;
     pull_request?: IssuePullRequest;
-    repository?: Repository;
+    repository?: RepositoryDto;
     closed_at: string | null;
     created_at: string;
     updated_at: string;

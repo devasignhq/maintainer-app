@@ -47,6 +47,7 @@ export type TaskDto = {
 }
 
 export type TaskIssue = Pick<IssueDto, "id" | "number" | "title" | "url" | "labels" | "locked" | "state" | "repository_url" | "created_at" | "updated_at"> & {
+    html_url?: string;
     body?: string;
 }
 

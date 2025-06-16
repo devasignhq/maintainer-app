@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { FiArrowRight } from "react-icons/fi";
 import ButtonPrimary from "../../../../../components/ButtonPrimary";
@@ -6,18 +7,32 @@ import FilterDropdown from "../../../../../components/Dropdown/Filter";
 import CreateTaskCard from "./components/CreateTaskCard";
 import { HiPlus } from "react-icons/hi";
 import RepoMenuCard from "./components/RepoMenuCard";
-import { useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useInfiniteScroll, useRequest } from "ahooks";
-import useInstallationStore from "@/app/state-management/useInstallationStore";
 import useTaskStore from "@/app/state-management/useTaskStore";
 import { PiEyeBold, PiEyeSlashBold } from "react-icons/pi";
-import { getRepoIssues, getRepoLabels, getRepoMilestones } from "@/app/services/github.service";
-import { IssueDto, IssueFilters } from "@/app/models/github.model";
+import {
+    getRepoIssues,
+    getRepoLabels,
+    getRepoMilestones,
+    updateRepoIssue
+} from "@/app/services/github.service";
+import { 
+    IssueDto, 
+    IssueFilters,
+    IssueLabel,
+    IssueMilestone,
+    RepositoryDto 
+} from "@/app/models/github.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
-import { useGitHubContext } from "@/app/layout";
 import { CreateTaskDto } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
+import { moneyFormat, openInNewTab } from "@/app/utils/helper";
+import { ROUTES } from "@/app/utils/data";
+import { OctokitContext } from "../../../layout";
+
+const updateIssueCTA = "http://localhost:4000";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -27,15 +42,21 @@ type TaskPayload = {
 type UploadStatus = "PENDING" | "CREATED" | "FAILED";
 
 type ImportTaskModalProps = {
+    installationRepos: RepositoryDto[];
+    loadingInstallationRepos: boolean;
     toggleModal: () => void;
     onSuccess: () => void;
 };
 
-const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
-    const { githubToken, reAuthenticate } = useGitHubContext();
-    const { activeInstallation } = useInstallationStore();
+const ImportTaskModal = ({ 
+    installationRepos,
+    loadingInstallationRepos,
+    toggleModal,
+    onSuccess
+}: ImportTaskModalProps) => {
+    const octokit = useContext(OctokitContext);
     const { draftTasks, setDraftTasks } = useTaskStore();
-    const [activeRepo, setActiveRepo] = useState(activeInstallation?.repoUrls[0]);
+    const [activeRepo, setActiveRepo] = useState<RepositoryDto | undefined>(installationRepos[0]);
     const [issueFilters, setIssueFilters] = useState<IssueFilters>();
     const [currentPage, setCurrentPage] = useState(1);
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
@@ -61,6 +82,11 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
         
         return Array.from(selectedTasks.values()).every(task => task.valid);
     }, [selectedTasks]);
+
+    useEffect(() => {
+        if (installationRepos.length === 0 || activeRepo) return;
+        setActiveRepo(installationRepos[0]);
+    }, [installationRepos.length]);
     
     const {
         data: repoIssues,
@@ -73,9 +99,13 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
         async (currentData) => {
             const pageToLoad = currentData ? currentPage + 1 : 1;
 
+            if (!activeRepo || !octokit) {
+                return { list: [], hasMore: false };
+            }
+
             const issues = await getRepoIssues(
-                activeRepo || activeInstallation?.repoUrls[0] || "",
-                githubToken || "",
+                activeRepo.url,
+                octokit,
                 issueFilters || {},
                 pageToLoad
             );
@@ -88,38 +118,40 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
             };
         }, {
             // target: taskSectionRef,
-            // cacheKey: `${activeRepo}-issues`,
             isNoMore: (data) => !data?.hasMore,
             reloadDeps: [activeRepo, ...(issueFilters ? Object.values(issueFilters) : [])],
-            onError: () => {
-                if (!githubToken) reAuthenticate();
-            }
         }
     );
 
-    const { loading: loadingLabels, data: repoLabels } = useRequest(
-        () => getRepoLabels(
-            activeRepo || activeInstallation?.repoUrls[0] || "",
-            githubToken || "",
-        ), 
+    const { loading: loadingLabels, data: repoLabels } = useRequest<IssueLabel[], any>(
+        () => {
+            if (!activeRepo || !octokit) {
+                return delayedArray();
+            } 
+            return getRepoLabels(activeRepo.url, octokit) as Promise<IssueLabel[]>;
+        }, 
         {
             retryCount: 1,
-            cacheKey: `${activeRepo}-labels`,
+            cacheKey: `${activeRepo?.id}-labels`,
             refreshDeps: [activeRepo]
         }
     );
 
-    const { loading: loadingMilestones, data: repoMilestones } = useRequest(
-        () => getRepoMilestones(
-            activeRepo || activeInstallation?.repoUrls[0] || "",
-            githubToken || "",
-        ), 
+    const { loading: loadingMilestones, data: repoMilestones } = useRequest<IssueMilestone[], any>(
+        () => {
+            if (!activeRepo || !octokit) {
+                return delayedArray();
+            } 
+            return getRepoMilestones(activeRepo.url, octokit) as Promise<IssueMilestone[]>;
+        }, 
         {
             retryCount: 1,
-            cacheKey: `${activeRepo}-milestones`,
+            cacheKey: `${activeRepo?.id}-milestones`,
             refreshDeps: [activeRepo]
         }
     );
+
+    const disableFilters = loadingInstallationRepos  || loadingIssues || loadingMoreIssues;
 
     const handleToggleCheck = (issueId: number, taskPayload: TaskPayload | null) => {
         setSelectedTasks(prev => {
@@ -165,34 +197,34 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
 
             try {
                 await TaskAPI.createTask({ payload: task.payload });
-                // const createdTask = await TaskAPI.createTask({ payload: task.payload });
+                const createdTask = await TaskAPI.createTask({ payload: task.payload });
                 
-                // try {
-                //     let issueLabels = task.payload.issue.labels.reduce<string[]>((acc, label) => [...acc, label.name], []);
-                //     issueLabels = [...issueLabels, "💵 Bounty"];
+                try {
+                    let issueLabels = task.payload.issue.labels.reduce<string[]>((acc, label) => [...acc, label.name], []);
+                    issueLabels = [...issueLabels, "💵 Bounty"];
 
-                //     await updateRepoIssue(
-                //         task.payload.issue.repository_url, 
-                //         githubToken, 
-                //         task.payload.issue.number,
-                //         task.payload.issue.title + ` (${moneyFormat(task.payload.bounty)} USDC)`,
-                //         task.payload.issue.body + `\n\n## 💵 ${moneyFormat(task.payload.bounty)} USDC bounty\n\n### ❗ Important guidelines:\n- To claim a bounty, you need to **provide a short demo video** of your changes in your pull request.\n- If anything is unclear, **ask for clarification** before starting as this will help avoid potential rework.\n\n**To work on this task, [Apply here](https://dev.devasign.com?taskId=${createdTask.id})**`,
-                //         issueLabels as unknown as string[]
-                //     )
+                    await updateRepoIssue(
+                        task.payload.issue.repository_url, 
+                        octokit!, 
+                        task.payload.issue.number,
+                        // task.payload.issue.title + ` (${moneyFormat(task.payload.bounty)} USDC)`,
+                        task.payload.issue.body + `\n\n\n## 💵 ${moneyFormat(task.payload.bounty)} USDC Bounty\n\n### ❗ Important guidelines:\n- To claim a bounty, you need to **provide a short demo video** of your changes in your pull request.\n- If anything is unclear, **ask for clarification** before starting as this will help avoid potential rework.\n\n**To work on this task, [Apply here](${updateIssueCTA}?taskId=${createdTask.id})**`,
+                        issueLabels as unknown as string[]
+                    )
 
-                //     toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
-                //     setUploadedTasks(prev => {
-                //         prev.set(task.payload.issue.id, "CREATED");
-                //         return prev;
-                //     });
-                // } catch (error) {
-                //     toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to update issue.`);
-                //     setUploadedTasks(prev => {
-                //         prev.set(task.payload.issue.id, "CREATED");
-                //         return prev;
-                //     });
-                //     console.error(`Error updating issue #${task.payload.issue.number}:`, error);
-                // }
+                    toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
+                    setUploadedTasks(prev => {
+                        prev.set(task.payload.issue.id, "CREATED");
+                        return prev;
+                    });
+                } catch (error) {
+                    toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to update issue.`);
+                    setUploadedTasks(prev => {
+                        prev.set(task.payload.issue.id, "CREATED");
+                        return prev;
+                    });
+                    console.error(`Error updating issue #${task.payload.issue.number}:`, error);
+                }
 
                 toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
                 setUploadedTasks(prev => {
@@ -241,23 +273,28 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
             <section className="mt-[15px] space-y-2.5">
                 <p className="text-body-medium text-light-200">Repository URL(s)</p>
                 <div className="flex items-end justify-between gap-2.5">
-                    <div className="w-full border-b border-dark-200 flex gap-[15px] overflow-x-auto">
-                        {activeInstallation?.repoUrls?.map((repo) => (
-                            <RepoMenuCard
-                                key={repo}
-                                repoName={repo.split("/")[4]}
-                                repoUrl={repo}
-                                active={activeRepo === repo}
-                                onClick={() => setActiveRepo(repo)}
-                            />
-                        ))}
-                    </div>
+                    {loadingInstallationRepos ? (
+                        <p className="text-body-medium text-light-100">Fetching repositories...</p>
+                    ):(
+                        <div className="w-full border-b border-dark-200 flex gap-[15px] overflow-x-auto">
+                            {installationRepos?.map((repo) => (
+                                <RepoMenuCard
+                                    key={repo.id}
+                                    repoName={repo.name || repo.url.split("/")[4]}
+                                    repoUrl={repo.url}
+                                    active={activeRepo?.id === repo.id}
+                                    onClick={() => setActiveRepo(repo)}
+                                />
+                            ))}
+                        </div>
+                    )}
                     <ButtonPrimary
                         format="SOLID"
                         text="Add Repo"
                         sideItem={<HiPlus />}
                         attributes={{
-                            onClick: () => {},
+                            onClick: () => openInNewTab(ROUTES.INSTALLATION.NEW),
+                            disabled: loadingInstallationRepos
                         }}
                         extendedClassName="h-full bg-light-200 hover:bg-light-100"
                     />
@@ -287,7 +324,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                         ...prev,
                         labels: value as string[]
                     }))}
-                    buttonAttributes={{ disabled: loadingLabels || loadingIssues || loadingMoreIssues }}
+                    buttonAttributes={{ disabled: loadingLabels || disableFilters }}
                 />
                 <FilterDropdown 
                     title="Milestones"
@@ -298,7 +335,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                         ...prev,
                         milestone: value as string
                     }))}
-                    buttonAttributes={{ disabled: loadingMilestones || loadingIssues || loadingMoreIssues }}
+                    buttonAttributes={{ disabled: loadingMilestones || disableFilters }}
                     noMultiSelect
                 />
                 <FilterDropdown 
@@ -314,7 +351,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                         ...prev,
                         sort: value as "created" | "updated" | "comments"
                     }))}
-                    buttonAttributes={{ disabled: loadingIssues || loadingMoreIssues }}
+                    buttonAttributes={{ disabled: disableFilters }}
                     noMultiSelect
                 />
                 <FilterDropdown 
@@ -329,7 +366,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                         ...prev,
                         direction: value as "asc" | "desc"
                     }))}
-                    buttonAttributes={{ disabled: loadingIssues || loadingMoreIssues }}
+                    buttonAttributes={{ disabled: disableFilters }}
                     noMultiSelect
                 />
             </section>
@@ -402,12 +439,12 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                         )}
                         {(loadingIssues && repoIssues?.list && repoIssues.list.length < 1) && (
                             <div className="flex justify-center py-4">
-                                <span className="text-body-medium text-light-100">Loading issues...</span>
+                                <span className="text-body-medium text-light-100">Fetching issues...</span>
                             </div>
                         )}
                         {loadingMoreIssues && (
                             <div className="flex justify-center pt-2.5">
-                                <span className="text-body-medium text-light-100">Loading more issues...</span>
+                                <span className="text-body-medium text-light-100">Fetching more issues...</span>
                             </div>
                         )}
                         {(!loadingMoreIssues && !noMoreIssues) && (
@@ -415,7 +452,7 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
                                 className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
                                 onClick={loadMoreIssues}
                             >
-                                Load More
+                                Get More
                             </button>
                         )}
                     </>
@@ -451,3 +488,11 @@ const ImportTaskModal = ({ toggleModal, onSuccess }: ImportTaskModalProps) => {
 }
  
 export default ImportTaskModal;
+
+const delayedArray = (): Promise<any[]> => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([]);
+        }, 1000);
+    });
+};
