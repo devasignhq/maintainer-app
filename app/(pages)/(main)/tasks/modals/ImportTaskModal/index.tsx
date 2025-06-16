@@ -57,7 +57,7 @@ const ImportTaskModal = ({
     const octokit = useContext(OctokitContext);
     const { draftTasks, setDraftTasks } = useTaskStore();
     const [activeRepo, setActiveRepo] = useState<RepositoryDto | undefined>(installationRepos[0]);
-    const [issueFilters, setIssueFilters] = useState<IssueFilters>();
+    const [issueFilters, setIssueFilters] = useState<IssueFilters>(defaultIssueFilters);
     const [currentPage, setCurrentPage] = useState(1);
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
     const [uploadingTasks, setUploadingTasks] = useState(false);
@@ -114,7 +114,7 @@ const ImportTaskModal = ({
 
             return { 
                 list: issues as unknown as IssueDto[],
-                hasMore: issues.length > 0,
+                hasMore: issues.length === 30,
             };
         }, {
             // target: taskSectionRef,
@@ -188,15 +188,13 @@ const ImportTaskModal = ({
         let hasErrors = false;
 
         for (const task of Array.from(selectedTasks.values())) {
-            toast.info(`Creating task for issue #${task.payload.issue.number}...`, { autoClose: 2000 });
-            // toast.done()
+            toast.info(`Creating task for issue #${task.payload.issue.number}...`, { autoClose: 2000 }); // ? Use toast.promise here
             setUploadedTasks(prev => {
                 prev.set(task.payload.issue.id, "PENDING");
                 return prev;
             });
 
             try {
-                await TaskAPI.createTask({ payload: task.payload });
                 const createdTask = await TaskAPI.createTask({ payload: task.payload });
                 
                 try {
@@ -208,7 +206,7 @@ const ImportTaskModal = ({
                         octokit!, 
                         task.payload.issue.number,
                         // task.payload.issue.title + ` (${moneyFormat(task.payload.bounty)} USDC)`,
-                        task.payload.issue.body + `\n\n\n## 💵 ${moneyFormat(task.payload.bounty)} USDC Bounty\n\n### ❗ Important guidelines:\n- To claim a bounty, you need to **provide a short demo video** of your changes in your pull request.\n- If anything is unclear, **ask for clarification** before starting as this will help avoid potential rework.\n\n**To work on this task, [Apply here](${updateIssueCTA}?taskId=${createdTask.id})**`,
+                        task.payload.issue.body + `\n\n\n## 💵 ${moneyFormat(task.payload.bounty)} USDC Bounty\n\n### Steps to solve:\n1. **Accept task**: Follow the CTA and apply to solve this issue.\n2. **Submit work**: If your application was accepted, you'll be required to submit the link to your pull request and an optional link to a reference that will give more credibility to the work done.\n3. **Receive payment**: When your pull request is approved, 100% of the bounty is instantly transferred to your wallet.\n\n**To work on this task, [Apply here](${updateIssueCTA}?taskId=${createdTask.id})**`,
                         issueLabels as unknown as string[]
                     )
 
@@ -225,12 +223,6 @@ const ImportTaskModal = ({
                     });
                     console.error(`Error updating issue #${task.payload.issue.number}:`, error);
                 }
-
-                toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
-                setUploadedTasks(prev => {
-                    prev.set(task.payload.issue.id, "CREATED");
-                    return prev;
-                });
             } catch (error) {
                 toast.error(`Task for issue #${task.payload.issue.number} failed to create.`);
                 setUploadedTasks(prev => {
@@ -366,7 +358,7 @@ const ImportTaskModal = ({
                         ...prev,
                         direction: value as "asc" | "desc"
                     }))}
-                    buttonAttributes={{ disabled: disableFilters }}
+                    buttonAttributes={{ disabled: disableFilters || !issueFilters.sort }}
                     noMultiSelect
                 />
             </section>
@@ -496,3 +488,10 @@ const delayedArray = (): Promise<any[]> => {
         }, 1000);
     });
 };
+
+const defaultIssueFilters: IssueFilters = {
+    labels: undefined,
+    milestone: undefined,
+    sort: undefined,
+    direction: undefined,
+}

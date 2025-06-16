@@ -52,7 +52,6 @@ export async function getRepoIssues(
         page,
         ...filters,
         labels: filters?.labels?.join(','),
-        milestone: filters?.milestone
     });
 
     const issues = response.data.filter(issue => !issue.pull_request);
