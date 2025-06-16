@@ -4,7 +4,7 @@ import { InstallationDto } from "../models/installation.model";
 
 type InstallationStore = {
     activeInstallation: InstallationDto | null,
-    InstallationList: InstallationDto[],
+    installationList: InstallationDto[],
     setActiveInstallation: (data: InstallationDto) => void,
     setInstallationList: (data: InstallationDto[]) => void,
     clearInstallationStore: () => void,
@@ -14,15 +14,15 @@ const useInstallationStore = create(
     persist<InstallationStore>(
         (set) => ({
             activeInstallation: null,
-            InstallationList: [],
+            installationList: [],
             setActiveInstallation: (data: InstallationDto) => {
                 set({ activeInstallation: data })
             },
             setInstallationList: (data: InstallationDto[]) => {
-                set({ InstallationList: data })
+                set({ installationList: data })
             },
             clearInstallationStore: () => {
-                set({ activeInstallation: null, InstallationList: [] })
+                set({ activeInstallation: null, installationList: [] })
             },
         }),
         {

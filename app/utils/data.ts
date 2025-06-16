@@ -10,7 +10,8 @@ export const ROUTES = {
         MANAGE_TEAM: "/settings/manage-team",
         PLANS_AND_BILLINGS: "/settings/plans-and-billings",
     },
-    CONFIG: {
-        NEW_INSTALLATION: "https://github.com/apps/dev-asign/installations/new"
+    INSTALLATION: {
+        NEW: "https://github.com/apps/dev-asign/installations/new",
+        CREATE: "/installation",
     }
 };

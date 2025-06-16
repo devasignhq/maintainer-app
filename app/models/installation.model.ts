@@ -40,15 +40,14 @@ export type InstallationStats = {
 }
 
 export type CreateInstallationDto = {
-    name: string
-    description?: string
+    installationId: string
+    htmlUrl: string
+    targetId: number
+    targetType: string
+    account: InstallationAccount
 }
 
-export type UpdateInstallationDto = Partial<CreateInstallationDto>
-
-export type ConnectRepositoryDto = {
-    repoUrl: string
-}
+export type UpdateInstallationDto = Partial<Pick<CreateInstallationDto, "htmlUrl" | "targetId" | "account">>
 
 export type AddTeamMemberDto = {
     username: string
