@@ -152,6 +152,17 @@ body {
   @apply bg-dark-500 h-[100dvh] w-screen overflow-hidden
 }
 
+/* Toast font customization */
+.Toastify__toast-container {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.Toastify__toast {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.Toastify__toast-body {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 .app-container {
   @apply max-sm:px-5 xl:w-[92%] max-xl:w-[90%] max-sm:w-full max-w-[1546px] mx-auto
 }
@@ -242,6 +253,9 @@ form textarea {
 
 .rotate-loading {
   animation: spin 1s linear infinite;
+}
+.rotate-loading-slower {
+  animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
