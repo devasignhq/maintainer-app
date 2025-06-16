@@ -1,18 +1,13 @@
-import { Octokit } from "@octokit/rest";
-import { IssueFilters } from "../models/github.model";
 import { App } from "octokit";
+import { IssueFilters, InstallationOctokit } from "../models/github.model";
 
 export const githubApp = new App({
     appId: process.env.NEXT_PUBLIC_GITHUB_APP_ID!,
     privateKey: process.env.NEXT_PUBLIC_GITHUB_APP_PRIVATE_KEY!
 });
 
-// const result = await octokit.request("GET /installation/repositories");
-
 // Helper function to check if GitHub user exists
-export async function checkGithubUser(username: string, githubToken: string) {
-    const octokit = new Octokit({ auth: githubToken });
-
+export async function checkGithubUser(username: string, octokit: InstallationOctokit) {
     const response = await octokit.rest.users.getByUsername({
         username,
     });
@@ -21,20 +16,18 @@ export async function checkGithubUser(username: string, githubToken: string) {
 };
 
 // Extract owner and repo from GitHub URL
-// Example URL: https://github.com/owner/repo
 function getOwnerAndRepo(repoUrl: string) {
-    const [owner, repo] = repoUrl
-        .split("https://github.com/")[1]
-        .split("/");
+    const [owner, repo] = repoUrl.split("/").slice(-2);
 
     return [owner, repo];
 }
 
-export async function getRepoDetails(repoUrl: string, githubToken: string) {
-    const octokit = new Octokit({ auth: githubToken });
+// TODO: Use octokit.graphql in place of octokit.rest
+
+export async function getRepoDetails(repoUrl: string, octokit: InstallationOctokit) {
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
-    const response = await octokit.repos.get({
+    const response = await octokit.rest.repos.get({
         owner,
         repo,
     });
@@ -44,15 +37,14 @@ export async function getRepoDetails(repoUrl: string, githubToken: string) {
 
 export async function getRepoIssues(
     repoUrl: string,
-    githubToken: string,
+    octokit: InstallationOctokit,
     filters?: IssueFilters,
     page: number = 1,
     perPage: number = 30,
 ) {
-    const octokit = new Octokit({ auth: githubToken });
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
-    const response = await octokit.issues.listForRepo({
+    const response = await octokit.rest.issues.listForRepo({
         owner,
         repo,
         state: "open",
@@ -71,15 +63,13 @@ export async function getRepoIssues(
 // TODO: Update later as this method will be removed by September 4th, 2025
 export async function getRepoIssuesWithSearch(
     repoUrl: string,
-    githubToken: string,
+    octokit: InstallationOctokit,
     filters?: IssueFilters,
     page: number = 1,
     perPage: number = 30,
 ) {
-    const octokit = new Octokit({ auth: githubToken });
     const [owner, repo] = getOwnerAndRepo(repoUrl);
-
-    // Build search query
+    
     let query = `repo:${owner}/${repo} is:issue is:open`;
     
     if (filters?.labels?.length) {
@@ -90,9 +80,9 @@ export async function getRepoIssuesWithSearch(
         query += ` milestone:"${filters.milestone}"`;
     }
     
-    query += ` -label:"💵 Bounty"`; // Exclude bounty label
+    query += ` -label:"💵 Bounty"`;
 
-    const response = await octokit.search.issuesAndPullRequests({
+    const response = await octokit.rest.search.issuesAndPullRequests({
         q: query,
         sort: filters?.sort || 'created',
         order: filters?.direction || 'desc',
@@ -106,13 +96,12 @@ export async function getRepoIssuesWithSearch(
 
 export async function getRepoIssue(
     repoUrl: string,
-    githubToken: string,
+    octokit: InstallationOctokit,
     issueNumber: number
 ) {
-    const octokit = new Octokit({ auth: githubToken });
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
-    const response = await octokit.issues.get({
+    const response = await octokit.rest.issues.get({
         owner,
         repo,
         issue_number: issueNumber,
@@ -123,22 +112,19 @@ export async function getRepoIssue(
 
 export async function updateRepoIssue(
     repoUrl: string,
-    githubToken: string,
+    octokit: InstallationOctokit,
     issueNumber: number,
-    title?: string,
     body?: string,
     labels?: string[],
     assignees?: string[],
     state?: "open" | "closed",
 ) {
-    const octokit = new Octokit({ auth: githubToken });
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
-    const response = await octokit.issues.update({
+    const response = await octokit.rest.issues.update({
         owner,
         repo,
         issue_number: issueNumber,
-        title,
         body,
         state,
         labels,
@@ -148,11 +134,10 @@ export async function updateRepoIssue(
     return response.data;
 };
 
-export async function getRepoLabels(repoUrl: string, githubToken: string) {
-    const octokit = new Octokit({ auth: githubToken });
+export async function getRepoLabels(repoUrl: string, octokit: InstallationOctokit) {
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
-    const response = await octokit.issues.listLabelsForRepo({
+    const response = await octokit.rest.issues.listLabelsForRepo({
         owner,
         repo,
         per_page: 100,
@@ -161,11 +146,10 @@ export async function getRepoLabels(repoUrl: string, githubToken: string) {
     return response.data;
 };
 
-export async function createBountyLabel(repoUrl: string, githubToken: string) {
-    const octokit = new Octokit({ auth: githubToken });
+export async function createBountyLabel(repoUrl: string, octokit: InstallationOctokit) {
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
-    const response = await octokit.issues.createLabel({
+    const response = await octokit.rest.issues.createLabel({
         owner,
         repo,
         name: "💵 Bounty",
@@ -177,11 +161,10 @@ export async function createBountyLabel(repoUrl: string, githubToken: string) {
     return response.data;
 };
 
-export async function getBountyLabel(repoUrl: string, githubToken: string) {
-    const octokit = new Octokit({ auth: githubToken });
+export async function getBountyLabel(repoUrl: string, octokit: InstallationOctokit) {
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
-    const response = await octokit.issues.getLabel({
+    const response = await octokit.rest.issues.getLabel({
         owner,
         repo,
         name: "💵 Bounty",
@@ -190,11 +173,10 @@ export async function getBountyLabel(repoUrl: string, githubToken: string) {
     return response.data;
 };
 
-export async function getRepoMilestones(repoUrl: string, githubToken: string) {
-    const octokit = new Octokit({ auth: githubToken });
+export async function getRepoMilestones(repoUrl: string, octokit: InstallationOctokit) {
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
-    const response = await octokit.issues.listMilestones({
+    const response = await octokit.rest.issues.listMilestones({
         owner,
         repo,
         state: "open",
