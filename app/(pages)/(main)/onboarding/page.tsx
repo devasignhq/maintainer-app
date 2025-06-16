@@ -1,6 +1,5 @@
 "use client";
 import Image from 'next/image';
-import { FaGithub } from 'react-icons/fa6';
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight } from 'react-icons/fi';
 import { HiPlus } from 'react-icons/hi';
@@ -11,24 +10,34 @@ import useUserStore from '@/app/state-management/useUserStore';
 import { useStreamAccountBalance } from '@/app/services/horizon.service';
 import useInstallationStore from '@/app/state-management/useInstallationStore';
 import useTaskStore from '@/app/state-management/useTaskStore';
-import { useState } from 'react';
-import { InstallationAPI } from '@/app/services/installation.service';
-import { toast } from "react-toastify";
-import { useGitHubContext } from '@/app/layout';
-import { moneyFormat } from '@/app/utils/helper';
-import { useRouter } from "next/navigation";
+import { moneyFormat, openInNewTab } from '@/app/utils/helper';
+import { useRouter, useSearchParams } from "next/navigation";
 import { ROUTES } from '@/app/utils/data';
+import { useEffect } from 'react';
+import { OctokitContext } from '../layout';
+import { useGetInstallationRepositories } from '@/app/utils/hooks';
 
 const Onboarding = () => {
     const router = useRouter();
-    const { githubToken, reAuthenticate } = useGitHubContext();
+    const searchParams = useSearchParams();
     const { currentUser } = useUserStore();
-    const { activeInstallation, setActiveInstallation } = useInstallationStore();
+    const { activeInstallation } = useInstallationStore();
     const { draftTasks } = useTaskStore();
     const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeInstallation?.walletAddress, true);
-    const [importingRepo, setImportingRepo] = useState(false);
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
+
+    const { 
+        repositories: installationRepos, 
+        loading: loadingInstallationRepos 
+    } = useGetInstallationRepositories(OctokitContext);
+
+    useEffect(() => {
+        if (searchParams.get("newInstallation") === "true") {
+            toggleImportTaskModal();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     return (
         <>
@@ -44,36 +53,23 @@ const Onboarding = () => {
                     <div className="w-full p-5 border border-primary-200">
                         <h6 className="text-headline-small font-black text-light-200 pb-2.5">Connect Project Repository</h6>
                         <p className="text-body-medium text-dark-100 mb-[30px]">
-                            Enter your project GitHub public repository URL to import your project tasks (issues).
+                            Install DevAsign app in GitHub and select the repositories you want to set bounties on.
                         </p>
-                        <div className="w-full flex gap-2.5">
-                            <div className="w-full relative">
-                                <FaGithub className="text-xl text-light-100 absolute top-1/2 -translate-y-1/2 left-2.5" />
-                                {/* <input
-                                    type="text"
-                                    placeholder="Project GitHub repository URL"
-                                    className="w-full h-full p-2.5 pl-[42px] bg-dark-400 border border-dark-100 text-body-tiny text-light-100"
-                                    value={repoUrl}
-                                    onChange={(e) => setRepoUrl(e.target.value)}
-                                /> */}
-                            </div>
-                            <ButtonPrimary
-                                format="SOLID"
-                                text={importingRepo ? "Connecting..." : "Connect"}
-                                sideItem={<FiArrowUpRight />}
-                                attributes={{ 
-                                    onClick: () => {},
-                                    disabled: importingRepo
-                                }}
-                                extendedClassName="bg-light-200 hover:bg-light-100"
-                            />
-                        </div>
+                        <ButtonPrimary
+                            format="SOLID"
+                            text="Install in GitHub"
+                            sideItem={<FiArrowUpRight />}
+                            attributes={{ 
+                                onClick: () => openInNewTab(ROUTES.INSTALLATION.NEW),
+                            }}
+                            extendedClassName="bg-light-200 hover:bg-light-100"
+                        />
                     </div>
                 )}
                 <div className="w-full p-5 border border-primary-200">
                     <h6 className="text-headline-small font-black text-light-100 pb-2.5">Fund Wallet</h6>
                     <p className="text-body-medium text-dark-100 mb-[30px]">
-                        Top-up wallet to can add bounties and manage contributor payouts seamlessly.
+                        Top-up wallet to add bounties and manage contributor payouts seamlessly.
                     </p>
                     <div className="flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-[15px]">
@@ -148,6 +144,8 @@ const Onboarding = () => {
         
         {openImportTaskModal && (
             <ImportTaskModal 
+                installationRepos={installationRepos}
+                loadingInstallationRepos={loadingInstallationRepos}
                 toggleModal={toggleImportTaskModal} 
                 onSuccess={() => router.push(ROUTES.TASKS)} 
             />
