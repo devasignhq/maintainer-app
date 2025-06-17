@@ -8,10 +8,12 @@ import CreateTaskCard from "./components/CreateTaskCard";
 import { HiPlus } from "react-icons/hi";
 import RepoMenuCard from "./components/RepoMenuCard";
 import { useContext, useEffect, useMemo, useState } from "react";
-import { useInfiniteScroll, useRequest } from "ahooks";
+import { useAsyncEffect, useInfiniteScroll, useRequest } from "ahooks";
 import useTaskStore from "@/app/state-management/useTaskStore";
 import { PiEyeBold, PiEyeSlashBold } from "react-icons/pi";
 import {
+    createBountyLabel,
+    getBountyLabel,
     getRepoIssues,
     getRepoLabels,
     getRepoMilestones,
@@ -48,6 +50,7 @@ type ImportTaskModalProps = {
     onSuccess: () => void;
 };
 
+// TODO: Transfer logic to custom hook
 const ImportTaskModal = ({ 
     installationRepos,
     loadingInstallationRepos,
@@ -61,6 +64,7 @@ const ImportTaskModal = ({
     const [currentPage, setCurrentPage] = useState(1);
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
     const [uploadingTasks, setUploadingTasks] = useState(false);
+    const [validBountyLabel, setValidBountyLabel] = useState<Map<string, boolean>>(new Map());
     // const [totalBounties, setTotalBounties] = useState(false);
     const [uploadedTasks, setUploadedTasks] = useState<Map<number, UploadStatus>>(new Map());
     const [selectedTasks, setSelectedTasks] = useState<Map<number, TaskPayload>>(() => {
@@ -83,10 +87,30 @@ const ImportTaskModal = ({
         return Array.from(selectedTasks.values()).every(task => task.valid);
     }, [selectedTasks]);
 
+    // Set active repo upon initialization
     useEffect(() => {
         if (installationRepos.length === 0 || activeRepo) return;
         setActiveRepo(installationRepos[0]);
     }, [installationRepos.length]);
+
+    // Check if repo has bounty label
+    useAsyncEffect(async () => {
+        if (!activeRepo || !octokit) return;
+        if (validBountyLabel.get(activeRepo.url)) return;
+        
+        let bountyLabel;
+        try {
+            bountyLabel = await getBountyLabel(activeRepo.url, octokit);
+            setValidBountyLabel(validBountyLabel.set(activeRepo.url, true));
+        } catch {}
+
+        if (!bountyLabel) {
+            try {
+                await createBountyLabel(activeRepo.url, octokit);
+                setValidBountyLabel(validBountyLabel.set(activeRepo.url, true));
+            } catch {}
+        }
+    }, [activeRepo, octokit])
     
     const {
         data: repoIssues,
@@ -168,6 +192,8 @@ const ImportTaskModal = ({
         });
     };
 
+    // TODO: Update toast content to 'Task for <prometheues issue #3>...'
+    // TODO: Alert users when bounty label was not added to issue. They should do it manually 
     const createTasks = async () => {
         if (selectedTasks.size === 0) {
             toast.error("Please select at least one issue to import.");
