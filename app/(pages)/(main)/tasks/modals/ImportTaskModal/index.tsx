@@ -30,11 +30,9 @@ import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { CreateTaskDto } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
-import { moneyFormat, openInNewTab } from "@/app/utils/helper";
-import { ROUTES } from "@/app/utils/data";
+import { openInNewTab } from "@/app/utils/helper";
+import { customBountyMessage, ROUTES } from "@/app/utils/data";
 import { OctokitContext } from "../../../layout";
-
-const updateIssueCTA = "http://localhost:4000";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -232,7 +230,7 @@ const ImportTaskModal = ({
                         octokit!, 
                         task.payload.issue.number,
                         // task.payload.issue.title + ` (${moneyFormat(task.payload.bounty)} USDC)`,
-                        task.payload.issue.body + `\n\n\n## 💵 ${moneyFormat(task.payload.bounty)} USDC Bounty\n\n### Steps to solve:\n1. **Accept task**: Follow the CTA and apply to solve this issue.\n2. **Submit work**: If your application was accepted, you'll be required to submit the link to your pull request and an optional link to a reference that will give more credibility to the work done.\n3. **Receive payment**: When your pull request is approved, 100% of the bounty is instantly transferred to your wallet.\n\n**To work on this task, [Apply here](${updateIssueCTA}?taskId=${createdTask.id})**`,
+                        task.payload.issue.body + customBountyMessage(task.payload.bounty, createdTask.id),
                         issueLabels as unknown as string[]
                     )
 
