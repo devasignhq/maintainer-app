@@ -12,7 +12,8 @@ import { FilterTasks } from "@/app/models/task.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import { ActiveTaskContext } from "../page";
-import { useCustomSearchParams } from "@/app/utils/hooks";
+import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/utils/hooks";
+import { OctokitContext } from "../../layout";
 
 const TaskListSection = () => {
     const { activeInstallation } = useInstallationStore();
@@ -20,6 +21,11 @@ const TaskListSection = () => {
     const { searchParams, updateSearchParams } = useCustomSearchParams();
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [taskFilters, setTaskFilters] = useState<FilterTasks>();
+    
+    const { 
+        repositories: installationRepos, 
+        loading: loadingInstallationRepos 
+    } = useGetInstallationRepositories(OctokitContext);
     
     const {
         data: projectTasks,
@@ -191,6 +197,8 @@ const TaskListSection = () => {
         
         {openImportTaskModal && (
             <ImportTaskModal 
+                installationRepos={installationRepos}
+                loadingInstallationRepos={loadingInstallationRepos}
                 toggleModal={toggleImportTaskModal} 
                 onSuccess={reloadTasks} 
             />

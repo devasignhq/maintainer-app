@@ -45,11 +45,16 @@ const TaskCard = ({ task, active, onClick }: TaskCardProps) => {
             >
                 {task.issue.title}
             </p>
-            {!active && (
-                <p className={`w-fit py-0.5 px-[7px] text-body-tiny font-bold ${taskStatusFormatter(task.status)[1]}`}>
-                    {taskStatusFormatter(task.status)[0]}
+            <div className="flex items-end justify-between mt-[15px]">
+                <p className="text-body-tiny font-bold text-light-200 truncate">
+                    {task.issue?.url.split("/").slice(-1)[0]}
                 </p>
-            )}
+                {!active && (
+                    <p className={`w-fit py-0.5 px-[7px] text-body-tiny font-bold ${taskStatusFormatter(task.status)[1]}`}>
+                        {taskStatusFormatter(task.status)[0]}
+                    </p>
+                )}
+            </div>
         </div>
     );
 }
