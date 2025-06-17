@@ -60,7 +60,6 @@ export type UpdateTeamMemberDto = {
 }
 
 export type QueryInstallationDto = {
-    searchTerm?: string
     page?: string
     limit?: string
 }

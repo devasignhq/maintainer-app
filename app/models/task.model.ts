@@ -1,8 +1,8 @@
 import { CommentDto } from "./comment.model"
 import { IssueDto } from "./github.model"
-import { UserInstallationPermissionDto } from "./permission.model"
 import { InstallationDto } from "./installation.model"
 import { UserDto } from "./user.model"
+import { TransactionDto } from "./wallet.model"
 
 export const TASK_STATUS = {
     OPEN: 'OPEN',
@@ -41,7 +41,7 @@ export type TaskDto = {
     creator?: UserDto
     contributor?: UserDto | null
     installation?: InstallationDto
-    transactions?: UserInstallationPermissionDto[]
+    transactions?: TransactionDto[]
     taskSubmissions?: TaskSubmission[]
     taskActivities?: TaskActivity[]
 }
