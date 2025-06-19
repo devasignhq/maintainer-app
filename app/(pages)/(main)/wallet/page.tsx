@@ -201,8 +201,11 @@ const Wallet = () => {
         )}
         {openSwapAssetModal && (
             <SwapAssetModal 
-                toggleModal={toggleSwapAssetModal} 
                 from={swapAssetFrom}
+                xlmBalance={xlmBalance}
+                usdcBalance={usdcBalance}
+                toggleModal={toggleSwapAssetModal} 
+                reloadTransactions={reloadTransactions} 
             />
         )}
         </>
