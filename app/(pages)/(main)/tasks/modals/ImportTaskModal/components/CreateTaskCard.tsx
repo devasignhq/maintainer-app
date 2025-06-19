@@ -27,7 +27,7 @@ const createTaskSchema = object({
 
 type CreateTaskCardProps = {
     issue: IssueDto;
-    defaultSelected: boolean; 
+    defaultSelected: TaskPayload | undefined; 
     showFields: boolean; 
     onToggleCheck: (taskPayload: TaskPayload | null) => void;
     disableFields: boolean;
@@ -43,16 +43,16 @@ const CreateTaskCard = ({
     uploadStatus
 }: CreateTaskCardProps) => {
     const { activeInstallation } = useInstallationStore();
-    const [selected, setSelected] = useState(defaultSelected);
+    const [selected, setSelected] = useState(Boolean(defaultSelected));
     
-    useUpdateEffect(() => setSelected(defaultSelected), [defaultSelected]);
+    useUpdateEffect(() => setSelected(Boolean(defaultSelected)), [defaultSelected]);
         
     // TODO: Add default values from draft tasks
     const formik = useFormik({
         initialValues: {
-            bounty: "",
-            timeline: undefined,
-            timelineType: "WEEK",
+            bounty: defaultSelected?.payload.bounty || "",
+            timeline: defaultSelected?.payload.timeline || undefined,
+            timelineType: defaultSelected?.payload.timelineType || "WEEK",
         },
         validationSchema: createTaskSchema,
         validateOnMount: true,
@@ -121,7 +121,7 @@ const CreateTaskCard = ({
                     )}
                 </button>
             </div>
-            <div className="max-w-[90%] flex item-center gap-[5px]">
+            <div className="max-w-[90%] flex item-center gap-[5px] mt-1">
                 <Link 
                     href={issue.html_url || ""} 
                     target="_blank" 
@@ -141,7 +141,7 @@ const CreateTaskCard = ({
                 )}
             </div>
             {showFields && (
-                <div className="flex items-center gap-5 mt-2.5">
+                <div className="flex items-start gap-5 mt-2.5">
                     <div>
                         <div className="relative">
                             <Image 
@@ -158,7 +158,9 @@ const CreateTaskCard = ({
                                 placeholder="0.00"
                                 step={0.01}
                                 min={0.01}
-                                className="w-[115px] h-full py-[7px] pl-[36px] pr-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100"
+                                className={`w-[115px] h-[40px] py-[7px] pl-[36px] pr-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100
+                                    ${formik.touched.bounty && formik.errors.bounty && "border-indicator-500"}`
+                                }
                                 value={formik.values.bounty}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -176,7 +178,10 @@ const CreateTaskCard = ({
                                 name="timeline"
                                 type="number"
                                 placeholder="0"
-                                className="w-[66px] h-full py-[7px] px-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100"
+                                step="1"
+                                className={`w-[80px] h-[40px] py-[7px] px-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100
+                                    ${formik.touched.timeline && formik.errors.timeline && "border-indicator-500"}`
+                                }
                                 value={formik.values.timeline}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -188,7 +193,9 @@ const CreateTaskCard = ({
                         </div>
                         <div>
                             <RegularDropdown
-                                defaultName="Week(s)"
+                                defaultName={
+                                    (defaultSelected?.payload.timelineType === "DAY") ? "Day(s)" : "Week(s)"
+                                }
                                 options={[
                                     { label: "Week(s)", value: "WEEK" },
                                     { label: "Day(s)", value: "DAY" }
@@ -196,7 +203,7 @@ const CreateTaskCard = ({
                                 fieldName="label"
                                 fieldValue="value"
                                 buttonAttributes={{ 
-                                    style: { fontSize: "12px", lineHeight: "16px" },
+                                    style: { height: "40px", fontSize: "12px", lineHeight: "16px" },
                                     disabled: disableFields
                                 }}
                                 onChange={(value) => formik.setFieldValue("timelineType", value)}

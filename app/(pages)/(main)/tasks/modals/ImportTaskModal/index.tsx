@@ -31,8 +31,9 @@ import { CreateTaskDto } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
 import { openInNewTab } from "@/app/utils/helper";
-import { customBountyMessage, ROUTES } from "@/app/utils/data";
+import { customBountyMessage } from "@/app/utils/data";
 import { OctokitContext } from "../../../layout";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -49,6 +50,7 @@ type ImportTaskModalProps = {
 };
 
 // TODO: Transfer logic to custom hook
+// TODO: Disable all buttons and links when tasks are being uploaded
 const ImportTaskModal = ({ 
     installationRepos,
     loadingInstallationRepos,
@@ -56,6 +58,7 @@ const ImportTaskModal = ({
     onSuccess
 }: ImportTaskModalProps) => {
     const octokit = useContext(OctokitContext);
+    const { activeInstallation } = useInstallationStore();
     const { draftTasks, setDraftTasks } = useTaskStore();
     const [activeRepo, setActiveRepo] = useState<RepositoryDto | undefined>(installationRepos[0]);
     const [issueFilters, setIssueFilters] = useState<IssueFilters>(defaultIssueFilters);
@@ -190,7 +193,7 @@ const ImportTaskModal = ({
         });
     };
 
-    // TODO: Update toast content to 'Task for <prometheues issue #3>...'
+    // TODO: Update toast content to 'Task for <prometheues issue #3>...'. Repo-issue-number
     // TODO: Alert users when bounty label was not added to issue. They should do it manually 
     const createTasks = async () => {
         if (selectedTasks.size === 0) {
@@ -309,7 +312,7 @@ const ImportTaskModal = ({
                         text="Add Repo"
                         sideItem={<HiPlus />}
                         attributes={{
-                            onClick: () => openInNewTab(ROUTES.INSTALLATION.NEW),
+                            onClick: () => openInNewTab(activeInstallation!.htmlUrl),
                             disabled: loadingInstallationRepos
                         }}
                         extendedClassName="h-full bg-light-200 hover:bg-light-100"
@@ -428,7 +431,7 @@ const ImportTaskModal = ({
                         <CreateTaskCard 
                             key={issue.id}
                             issue={issue as IssueDto}
-                            defaultSelected={Boolean(selectedTasks.get(issue.id))}
+                            defaultSelected={selectedTasks.get(issue.id)}
                             showFields
                             onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload)}
                             uploadStatus={uploadedTasks.get(issue.id)}
@@ -441,7 +444,7 @@ const ImportTaskModal = ({
                             <CreateTaskCard 
                                 key={issue.id}
                                 issue={issue}
-                                defaultSelected={Boolean(selectedTasks.get(issue.id))}
+                                defaultSelected={selectedTasks.get(issue.id)}
                                 showFields={false}
                                 onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload)}
                                 uploadStatus={uploadedTasks.get(issue.id)}
