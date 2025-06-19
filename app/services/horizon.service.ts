@@ -305,7 +305,7 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000, pause: bool
     }, [intervalMs, pause]);
 
     return {
-        xlmPrice: priceData.xlmToUsdc.toFixed(7),
+        xlmPriceInUsdc: priceData.xlmToUsdc.toFixed(7),
         lastUpdated: priceData.lastUpdated,
         isLoading,
         error,

@@ -21,7 +21,7 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
     const [totalBountiesInXLM, setTotalBountiesInXLM] = useState("");
     const [topUpAmount, setTopUpAmount] = useState("");
     const { 
-        xlmPrice, 
+        xlmPriceInUsdc, 
         isLoading: priceLoading, 
         error: priceError 
     } = useXLMUSDCFromStellarDEX(5000, !displayTopUpAmount);
@@ -29,13 +29,13 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
     useEffect(() => {
         if (!displayTopUpAmount) return;
 
-        if (xlmPrice && Number(xlmPrice) > 0) {
-            const xlmToSend = (Number(displayTopUpAmount.totalBountiesInUSDC) / Number(xlmPrice)).toFixed(2);
+        if (xlmPriceInUsdc && Number(xlmPriceInUsdc) > 0) {
+            const xlmToSend = (Number(displayTopUpAmount.totalBountiesInUSDC) / Number(xlmPriceInUsdc)).toFixed(2);
             setTotalBountiesInXLM(xlmToSend);
         } else {
             setTotalBountiesInXLM("");
         }
-    }, [displayTopUpAmount, xlmPrice]);
+    }, [displayTopUpAmount, xlmPriceInUsdc]);
 
     useEffect(() => {
         if (!totalBountiesInXLM || !displayTopUpAmount) return;
@@ -57,7 +57,7 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
                         </span>
                         <LiaExchangeAltSolid className="text-xl text-primary-400" />
                         <span className="text-primary-400">
-                            {(priceLoading && !xlmPrice) ? (
+                            {(priceLoading && !xlmPriceInUsdc) ? (
                                 <span className="h-4 w-12 rounded bg-dark-300 animate-pulse" />
                             ) : priceError ? (
                                 <span>--</span>
@@ -69,7 +69,7 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
                     </p>
                     <div className="w-full py-2.5 px-[15px] text-light-100 border border-dark-200">
                         <p className="text-body-tiny mb-2.5">Top Up Amount (XLM)</p>
-                        {(priceLoading && !xlmPrice) ? (
+                        {(priceLoading && !xlmPriceInUsdc) ? (
                             <p className="text-display-small font-normal">-- XLM</p>
                         ) : (
                             <p>

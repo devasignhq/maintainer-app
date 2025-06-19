@@ -155,7 +155,7 @@ const CreateTaskCard = ({
                                     id: "bounty",
                                     name: "bounty",
                                     placeholder: "0.00",
-                                    className: `w-[115px] h-[40px] py-[7px] pl-[36px] pr-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100
+                                    className: `w-[115px] h-[40px] py-[7px] pl-[36px] pr-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100 
                                         ${formik.touched.bounty && formik.errors.bounty && "border-indicator-500"}`,
                                     value: formik.values.bounty,
                                     onBlur: formik.handleBlur,
@@ -177,7 +177,7 @@ const CreateTaskCard = ({
                                 type="number"
                                 placeholder="0"
                                 step="1"
-                                className={`w-[80px] h-[40px] py-[7px] px-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100
+                                className={`w-[80px] h-[40px] py-[7px] px-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100 
                                     ${formik.touched.timeline && formik.errors.timeline && "border-indicator-500"}`
                                 }
                                 value={formik.values.timeline}

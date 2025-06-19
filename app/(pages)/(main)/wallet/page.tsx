@@ -39,6 +39,7 @@ const Wallet = () => {
         loadingMore: loadingMoreTransactions,
         noMore: noMoreTransactions,
         loadMore: loadMoreTransactions,
+        reload: reloadTransactions,
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
@@ -74,9 +75,7 @@ const Wallet = () => {
         <div className="w-[80%] max-h-[calc(100dvh-123px)] mx-auto flex flex-col pb-5">
             <section className="w-full space-y-5 mt-[30px] mb-[50px]">
                 <div className="flex items-start justify-between">
-                    <h1 className="text-display-small text-light-100">
-                        {`Installation (${activeInstallation?.account.login}) Wallet`}
-                    </h1>
+                    <h1 className="text-display-small text-light-100">Project Wallet</h1>
                     <div className="flex gap-2.5">
                         <ButtonPrimary
                             format="SOLID"
@@ -192,8 +191,14 @@ const Wallet = () => {
             )}
         </div>
         
-        {openWithdrawAssetModal && <WithdrawAssetModal toggleModal={toggleWithdrawAssetModal} />}
         {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
+        {openWithdrawAssetModal && (
+            <WithdrawAssetModal 
+                xlmBalance={xlmBalance} 
+                toggleModal={toggleWithdrawAssetModal} 
+                reloadTransactions={reloadTransactions} 
+            />
+        )}
         {openSwapAssetModal && (
             <SwapAssetModal 
                 toggleModal={toggleSwapAssetModal} 
