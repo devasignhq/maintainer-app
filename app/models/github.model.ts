@@ -9,6 +9,7 @@ export type RepositoryDto = {
     private: boolean;
     description: string | null;
     url: string;
+    html_url: string;
 }
 
 export type IssueDto = {

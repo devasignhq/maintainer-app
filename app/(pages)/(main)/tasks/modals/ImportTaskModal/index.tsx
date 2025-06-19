@@ -300,7 +300,7 @@ const ImportTaskModal = ({
                                 <RepoMenuCard
                                     key={repo.id}
                                     repoName={repo.name || repo.url.split("/")[4]}
-                                    repoUrl={repo.url}
+                                    repoUrl={repo.html_url}
                                     active={activeRepo?.id === repo.id}
                                     onClick={() => setActiveRepo(repo)}
                                 />

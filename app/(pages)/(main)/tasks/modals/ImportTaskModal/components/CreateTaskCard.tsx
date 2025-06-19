@@ -13,6 +13,7 @@ import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useUpdateEffect } from "ahooks";
 import { convertGitHubApiUrlToWebUrlRegex } from "@/app/utils/helper";
 import { twMerge } from "tailwind-merge";
+import MoneyInput from "@/app/components/Input/MoneyInput";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -44,10 +45,7 @@ const CreateTaskCard = ({
 }: CreateTaskCardProps) => {
     const { activeInstallation } = useInstallationStore();
     const [selected, setSelected] = useState(Boolean(defaultSelected));
-    
-    useUpdateEffect(() => setSelected(Boolean(defaultSelected)), [defaultSelected]);
         
-    // TODO: Add default values from draft tasks
     const formik = useFormik({
         initialValues: {
             bounty: defaultSelected?.payload.bounty || "",
@@ -61,31 +59,32 @@ const CreateTaskCard = ({
     });
 
     const handleToggleCheck = (selected: boolean) => {
-        if (selected) {
-            const taskPayload: CreateTaskDto = {
-                installationId: activeInstallation!.id,
-                issue: {
-                    id: issue.id,
-                    number: issue.number,
-                    title: issue.title,
-                    body: issue.body || undefined,
-                    url: issue.html_url,
-                    html_url: issue.html_url,
-                    labels: issue.labels,
-                    locked: issue.locked,
-                    state: issue.state,
-                    repository_url: convertGitHubApiUrlToWebUrlRegex(issue.repository_url),
-                    created_at: issue.created_at,
-                    updated_at: issue.updated_at
-                },
-                bounty: formik.values.bounty,
-                timeline: formik.values.timeline,
-                timelineType: formik.values.timelineType as "DAY" | "WEEK"
-            };
-            onToggleCheck({ payload: taskPayload, valid: formik.isValid });
-        } else {
+        if (!selected) {
             onToggleCheck(null);
+            return
         }
+
+        const taskPayload: CreateTaskDto = {
+            installationId: activeInstallation!.id,
+            issue: {
+                id: issue.id,
+                number: issue.number,
+                title: issue.title,
+                body: issue.body || undefined,
+                url: issue.html_url,
+                html_url: issue.html_url,
+                labels: issue.labels,
+                locked: issue.locked,
+                state: issue.state,
+                repository_url: convertGitHubApiUrlToWebUrlRegex(issue.repository_url),
+                created_at: issue.created_at,
+                updated_at: issue.updated_at
+            },
+            bounty: formik.values.bounty,
+            timeline: formik.values.timeline,
+            timelineType: formik.values.timelineType as "DAY" | "WEEK"
+        };
+        onToggleCheck({ payload: taskPayload, valid: formik.isValid });
     };
 
     const toggleSelect = () => {
@@ -151,20 +150,19 @@ const CreateTaskCard = ({
                                 height={16}
                                 className="absolute top-1/2 -translate-y-1/2 left-2.5" 
                             />
-                            <input
-                                id="bounty"
-                                name="bounty"
-                                type="number"
-                                placeholder="0.00"
-                                step={0.01}
-                                min={0.01}
-                                className={`w-[115px] h-[40px] py-[7px] pl-[36px] pr-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100
-                                    ${formik.touched.bounty && formik.errors.bounty && "border-indicator-500"}`
-                                }
-                                value={formik.values.bounty}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                disabled={disableFields}
+                            <MoneyInput 
+                                attributes={{
+                                    id: "bounty",
+                                    name: "bounty",
+                                    placeholder: "0.00",
+                                    className: `w-[115px] h-[40px] py-[7px] pl-[36px] pr-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100
+                                        ${formik.touched.bounty && formik.errors.bounty && "border-indicator-500"}`,
+                                    value: formik.values.bounty,
+                                    onBlur: formik.handleBlur,
+                                    disabled: disableFields,
+                                }}
+                                defaultValue={defaultSelected?.payload.bounty}
+                                setValue={(value) => formik.setFieldValue("bounty", value)}
                             />
                         </div>
                         {formik.touched.bounty && formik.errors.bounty && (
