@@ -32,7 +32,7 @@ const DetailsView = () => {
                 <Link 
                     href={activeTask?.issue.url || ""} 
                     target="_blank" 
-                    className="text-light-100 hover:text-light-200"
+                    className="text-primary-400 hover:text-light-200"
                 >
                     {activeTask?.issue.url}
                 </Link>

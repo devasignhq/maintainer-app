@@ -28,17 +28,17 @@ const MarkdownFormatter = ({ body, className = "" }: ProductionMarkdownFormatter
             </h3>
         ),
         p: ({ children }: any) => (
-            <p className="mb-3 text-light-200 leading-relaxed">
+            <p className="mb-3 text-light-100 leading-relaxed">
                 {children}
             </p>
         ),
         ul: ({ children }: any) => (
-            <ul className="list-disc list-inside space-y-1 mb-4 text-light-200 ml-4">
+            <ul className="list-disc list-inside space-y-1 mb-4 text-light-100 ml-4">
                 {children}
             </ul>
         ),
         ol: ({ children }: any) => (
-            <ol className="list-decimal list-inside space-y-1 mb-4 text-light-200 ml-4">
+            <ol className="list-decimal list-inside space-y-1 mb-4 text-light-100 ml-4">
                 {children}
             </ol>
         ),
@@ -59,12 +59,12 @@ const MarkdownFormatter = ({ body, className = "" }: ProductionMarkdownFormatter
         ),
         code: ({ children, inline }: any) =>
             inline ? (
-                <code className="bg-dark-300 text-primary-300 px-1.5 py-0.5 rounded text-sm font-mono">
+                <code className="bg-dark-300 text-light-100 px-1.5 py-0.5 rounded text-sm font-mono">
                     {children}
                 </code>
             ) : (
                 <pre className="bg-dark-300 p-4 rounded-lg overflow-x-auto mb-4">
-                    <code className="text-primary-300 text-sm font-mono">
+                    <code className="text-light-100 text-sm font-mono">
                         {children}
                     </code>
                 </pre>
@@ -74,14 +74,14 @@ const MarkdownFormatter = ({ body, className = "" }: ProductionMarkdownFormatter
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-400 hover:text-primary-300 underline transition-colors duration-200"
+                className="text-primary-400 hover:text-light-200 underline transition-colors duration-200"
             >
                 {children}
             </a>
         ),
         blockquote: ({ children }: any) => (
             <blockquote className="border-l-4 border-primary-400 pl-4 py-2 mb-4 bg-dark-300 rounded-r">
-                <div className="text-light-200">
+                <div className="text-light-100">
                     {children}
                 </div>
             </blockquote>

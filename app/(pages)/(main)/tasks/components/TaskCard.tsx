@@ -47,7 +47,7 @@ const TaskCard = ({ task, active, onClick }: TaskCardProps) => {
             </p>
             <div className="flex items-end justify-between mt-[15px]">
                 <p className="text-body-tiny font-bold text-light-200 truncate">
-                    {task.issue?.url.split("/").slice(-1)[0]}
+                    {task.issue?.url.split("/").slice(-3)[0]}
                 </p>
                 {!active && (
                     <p className={`w-fit py-0.5 px-[7px] text-body-tiny font-bold ${taskStatusFormatter(task.status)[1]}`}>
