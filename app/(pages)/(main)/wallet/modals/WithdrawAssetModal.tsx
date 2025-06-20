@@ -29,7 +29,6 @@ type WithdrawAssetModalProps = {
 const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: WithdrawAssetModalProps) => {
     const { activeInstallation } = useInstallationStore();
     const [amountInUsdc, setAmountInUsdc] = useState("");
-    const { xlmPriceInUsdc, isLoading: priceLoading } = useXLMUSDCFromStellarDEX(5000);
             
     const formik = useFormik({
         initialValues: {
@@ -49,6 +48,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
             try {
                 await WalletAPI.withdrawAsset({
                     ...values,
+                    amount: values.amount.replace(/,/g, ""),
                     installationId: activeInstallation!.id,
                     assetType: "XLM"
                 });
@@ -66,6 +66,11 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
             }
         },
     });
+
+    const { 
+        xlmPriceInUsdc, 
+        isLoading: priceLoading 
+    } = useXLMUSDCFromStellarDEX(10000, formik.isSubmitting);
 
     useEffect(() => {
         if (!xlmPriceInUsdc || !formik.values.amount) return;
@@ -150,7 +155,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                 </section>
                 <ButtonPrimary
                     format="SOLID"
-                    text="Withdraw"
+                    text={formik.isSubmitting ? "Withdrawing..." : "Withdraw"}
                     sideItem={<FiArrowDownRight />}
                     attributes={{ 
                         type: "submit",

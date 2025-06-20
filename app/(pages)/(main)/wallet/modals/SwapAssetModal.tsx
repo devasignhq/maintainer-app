@@ -35,7 +35,6 @@ const SwapAssetModal = ({
     reloadTransactions
 }: SwapAssetModalProps) => {
     const { activeInstallation } = useInstallationStore();
-    const { xlmPriceInUsdc } = useXLMUSDCFromStellarDEX(5000);
             
     const formik = useFormik({
         initialValues: {
@@ -79,6 +78,8 @@ const SwapAssetModal = ({
             }
         },
     });
+    
+    const { xlmPriceInUsdc } = useXLMUSDCFromStellarDEX(10000, formik.isSubmitting);
 
     const handleAssetEquivalent = (equivalent: { field: "fromAmount" | "toAmount", value: string }) => {
         if (!xlmPriceInUsdc) return;
@@ -118,144 +119,147 @@ const SwapAssetModal = ({
                 Swap tokens across the same project wallet. USDC is used to fund 
                 task bounties, while XLM is for top-up and withdrawal.
             </p>
-            {from === "XLM" ? (
-                <div className="w-full flex items-center gap-5 my-[30px]">
-                    <div className="grow">
-                        <label htmlFor="fromAmount" className="text-body-tiny font-bold text-light-100">Swap From:</label>
-                        <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
-                            flex items-center ${formik.submitCount > 0 && formik.errors.fromAmount && "border-indicator-500"}`
-                        }>
-                            <SiStellar className="text-2xl text-dark-100 mr-3" />
-                            <span>XLM</span>
-                            <MoneyInput 
-                                attributes={{
-                                    id: "fromAmount",
-                                    name: "fromAmount",
-                                    placeholder: "0.00",
-                                    className: "h-5 w-full ml-2.5 mr-3",
-                                    value: formik.values.fromAmount,
-                                    onBlur: formik.handleBlur,
-                                    disabled: formik.isSubmitting,
-                                }}
-                                setValue={(value) => {
-                                    formik.setFieldValue("fromAmount", value);
-                                    handleAssetEquivalent({ field: "fromAmount", value });
-                                }}
-                            />
-                            <span className="text-dark-100 whitespace-nowrap">
-                                {moneyFormat(xlmBalance)}
-                            </span>
+            <form className="w-full" onSubmit={formik.handleSubmit}>
+                {from === "XLM" ? (
+                    <div className="w-full flex items-center gap-5 my-[30px]">
+                        <div className="grow">
+                            <label htmlFor="fromAmount" className="text-body-tiny font-bold text-light-100">Swap From:</label>
+                            <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
+                                flex items-center ${formik.submitCount > 0 && formik.errors.fromAmount && "border-indicator-500"}`
+                            }>
+                                <SiStellar className="text-2xl text-dark-100 mr-3" />
+                                <span>XLM</span>
+                                <MoneyInput 
+                                    attributes={{
+                                        id: "fromAmount",
+                                        name: "fromAmount",
+                                        placeholder: "0.00",
+                                        className: "h-5 w-full ml-2.5 mr-3",
+                                        value: formik.values.fromAmount,
+                                        onBlur: formik.handleBlur,
+                                        disabled: formik.isSubmitting,
+                                    }}
+                                    setValue={(value) => {
+                                        formik.setFieldValue("fromAmount", value);
+                                        handleAssetEquivalent({ field: "fromAmount", value });
+                                    }}
+                                />
+                                <span className="text-dark-100 whitespace-nowrap">
+                                    {moneyFormat(xlmBalance)}
+                                </span>
+                            </div>
+                        </div>
+                        <LiaExchangeAltSolid className="text-2xl text-primary-400 mt-[25px]" />
+                        <div className="grow">
+                            <label htmlFor="toAmount" className="text-body-tiny font-bold text-light-100">Swap To:</label>
+                            <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
+                                flex items-center ${formik.submitCount > 0 && formik.errors.toAmount && "border-indicator-500"}`
+                            }>
+                                <Image 
+                                    src="/usdc.svg" 
+                                    alt="$" 
+                                    width={31.9992}
+                                    height={31.9992}
+                                    className="mr-3" 
+                                />
+                                <span>USDC</span>
+                                <MoneyInput 
+                                    attributes={{
+                                        id: "toAmount",
+                                        name: "toAmount",
+                                        placeholder: "0.00",
+                                        className: "h-5 w-full ml-2.5 mr-3",
+                                        value: formik.values.toAmount,
+                                        onBlur: formik.handleBlur,
+                                        disabled: formik.isSubmitting,
+                                    }}
+                                    setValue={(value) => {
+                                        formik.setFieldValue("toAmount", value);
+                                        handleAssetEquivalent({ field: "toAmount", value });
+                                    }}
+                                />
+                                <span className="text-dark-100 whitespace-nowrap">
+                                    {moneyFormat(usdcBalance)}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <LiaExchangeAltSolid className="text-2xl text-primary-400 mt-[25px]" />
-                    <div className="grow">
-                        <label htmlFor="toAmount" className="text-body-tiny font-bold text-light-100">Swap To:</label>
-                        <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
-                            flex items-center ${formik.submitCount > 0 && formik.errors.toAmount && "border-indicator-500"}`
-                        }>
-                            <Image 
-                                src="/usdc.svg" 
-                                alt="$" 
-                                width={31.9992}
-                                height={31.9992}
-                                className="mr-3" 
-                            />
-                            <span>USDC</span>
-                            <MoneyInput 
-                                attributes={{
-                                    id: "toAmount",
-                                    name: "toAmount",
-                                    placeholder: "0.00",
-                                    className: "h-5 w-full ml-2.5 mr-3",
-                                    value: formik.values.toAmount,
-                                    onBlur: formik.handleBlur,
-                                    disabled: formik.isSubmitting,
-                                }}
-                                setValue={(value) => {
-                                    formik.setFieldValue("toAmount", value);
-                                    handleAssetEquivalent({ field: "toAmount", value });
-                                }}
-                            />
-                            <span className="text-dark-100 whitespace-nowrap">
-                                {moneyFormat(usdcBalance)}
-                            </span>
+                ):(
+                    <div className="w-full flex items-center gap-5 my-[30px]">
+                        <div className="grow">
+                            <label htmlFor="fromAmount" className="text-body-tiny font-bold text-light-100">Swap From:</label>
+                            <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
+                                flex items-center ${formik.submitCount > 0 && formik.errors.fromAmount && "border-indicator-500"}`
+                            }>
+                                <Image 
+                                    src="/usdc.svg" 
+                                    alt="$" 
+                                    width={31.9992}
+                                    height={31.9992}
+                                    className="mr-3" 
+                                />
+                                <span>USDC</span>
+                                <MoneyInput 
+                                    attributes={{
+                                        id: "fromAmount",
+                                        name: "fromAmount",
+                                        placeholder: "0.00",
+                                        className: "h-5 w-full ml-2.5 mr-3",
+                                        value: formik.values.fromAmount,
+                                        onBlur: formik.handleBlur,
+                                        disabled: formik.isSubmitting,
+                                    }}
+                                    setValue={(value) => {
+                                        formik.setFieldValue("fromAmount", value);
+                                        handleAssetEquivalent({ field: "fromAmount", value });
+                                    }}
+                                />
+                                <span className="text-dark-100 whitespace-nowrap">
+                                    {moneyFormat(usdcBalance)}
+                                </span>
+                            </div>
+                        </div>
+                        <LiaExchangeAltSolid className="text-2xl text-primary-400 mt-[25px]" />
+                        <div className="grow">
+                            <label htmlFor="toAmount" className="text-body-tiny font-bold text-light-100">Swap To:</label>
+                            <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
+                                flex items-center ${formik.submitCount > 0 && formik.errors.toAmount && "border-indicator-500"}`
+                            }>
+                                <SiStellar className="text-2xl text-dark-100 mr-3" />
+                                <span>XLM</span>
+                                <MoneyInput 
+                                    attributes={{
+                                        id: "toAmount",
+                                        name: "toAmount",
+                                        placeholder: "0.00",
+                                        className: "h-5 w-full ml-2.5 mr-3",
+                                        value: formik.values.toAmount,
+                                        onBlur: formik.handleBlur,
+                                        disabled: formik.isSubmitting,
+                                    }}
+                                    setValue={(value) => {
+                                        formik.setFieldValue("toAmount", value);
+                                        handleAssetEquivalent({ field: "toAmount", value });
+                                    }}
+                                />
+                                <span className="text-dark-100 whitespace-nowrap">
+                                    {moneyFormat(xlmBalance)}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ):(
-                <div className="w-full flex items-center gap-5 my-[30px]">
-                    <div className="grow">
-                        <label htmlFor="fromAmount" className="text-body-tiny font-bold text-light-100">Swap From:</label>
-                        <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
-                            flex items-center ${formik.submitCount > 0 && formik.errors.fromAmount && "border-indicator-500"}`
-                        }>
-                            <Image 
-                                src="/usdc.svg" 
-                                alt="$" 
-                                width={31.9992}
-                                height={31.9992}
-                                className="mr-3" 
-                            />
-                            <span>USDC</span>
-                            <MoneyInput 
-                                attributes={{
-                                    id: "fromAmount",
-                                    name: "fromAmount",
-                                    placeholder: "0.00",
-                                    className: "h-5 w-full ml-2.5 mr-3",
-                                    value: formik.values.fromAmount,
-                                    onBlur: formik.handleBlur,
-                                    disabled: formik.isSubmitting,
-                                }}
-                                setValue={(value) => {
-                                    formik.setFieldValue("fromAmount", value);
-                                    handleAssetEquivalent({ field: "fromAmount", value });
-                                }}
-                            />
-                            <span className="text-dark-100 whitespace-nowrap">
-                                {moneyFormat(usdcBalance)}
-                            </span>
-                        </div>
-                    </div>
-                    <LiaExchangeAltSolid className="text-2xl text-primary-400 mt-[25px]" />
-                    <div className="grow">
-                        <label htmlFor="toAmount" className="text-body-tiny font-bold text-light-100">Swap To:</label>
-                        <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
-                            flex items-center ${formik.submitCount > 0 && formik.errors.toAmount && "border-indicator-500"}`
-                        }>
-                            <SiStellar className="text-2xl text-dark-100 mr-3" />
-                            <span>XLM</span>
-                            <MoneyInput 
-                                attributes={{
-                                    id: "toAmount",
-                                    name: "toAmount",
-                                    placeholder: "0.00",
-                                    className: "h-5 w-full ml-2.5 mr-3",
-                                    value: formik.values.toAmount,
-                                    onBlur: formik.handleBlur,
-                                    disabled: formik.isSubmitting,
-                                }}
-                                setValue={(value) => {
-                                    formik.setFieldValue("toAmount", value);
-                                    handleAssetEquivalent({ field: "toAmount", value });
-                                }}
-                            />
-                            <span className="text-dark-100 whitespace-nowrap">
-                                {moneyFormat(xlmBalance)}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            )}
-            <ButtonPrimary
-                format="SOLID"
-                text="Swap Asset"
-                sideItem={<LiaExchangeAltSolid />}
-                attributes={{
-                    onClick: () => {},
-                }}
-                extendedClassName="w-fit"
-            />
+                )}
+                <ButtonPrimary
+                    format="SOLID"
+                    text={formik.isSubmitting ? "Swapping Asset..." : "Swap Asset"}
+                    sideItem={<LiaExchangeAltSolid />}
+                    attributes={{
+                        type: "submit",
+                        disabled: formik.isSubmitting,
+                    }}
+                    extendedClassName="w-fit"
+                />
+            </form>
         </PopupModalLayout>
     );
 }
