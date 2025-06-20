@@ -37,20 +37,23 @@ export default function MainLayout({
     } = useInstallationStore();
     const [octokit, setOctokit] = useState<InstallationOctokit | null>(null);
 
-    const { loading: fetchingInstallations } = useRequest(
+    const { loading: fetchingInstallations, runAsync: fetchInstallations } = useRequest(
         useLockFn(() => InstallationAPI.getInstallations()), 
         {
+            manual: true,
             retryCount: 2,
             cacheKey: "installation-list",
-            onSuccess: (response) => {
-                if (response) {
-                    setInstallationList(response.data);
-                    if (!activeInstallation) setActiveInstallation(response.data[0]);
-                }
-            },
-            onError: () => {}
         }
     );
+
+    useAsyncEffect(useLockFn(async () => {
+        const installations = await fetchInstallations();
+
+        if (!installations) return;
+
+        setInstallationList(installations.data);
+        if (!activeInstallation) setActiveInstallation(installations.data[0]);
+    }), [activeInstallation]);
 
     useAsyncEffect(async () => {
         if (!activeInstallation) {
