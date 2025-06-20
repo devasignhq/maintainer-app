@@ -34,8 +34,8 @@ const WithdrawalTable = ({
                         className="py-3.5 border-b border-dark-300 text-table-content text-light-100 flex items-center gap-5"
                     >
                         <td className="w-[45%] text-light-200">{transaction.destinationAddress}</td>
-                        <td className="w-[10.5%]">{transaction.asset}</td>
-                        <td className="w-[17%] text-indicator-100">{moneyFormat(transaction.amount)}</td>
+                        <td className="w-[10.5%]">{transaction.asset || "XLM"}</td>
+                        <td className="w-[17%] text-indicator-500">{moneyFormat(transaction.amount)}</td>
                         <td className="w-[22.5%]">{formatDateTime(transaction.doneAt)}</td>
                     </tr>
                 ))}

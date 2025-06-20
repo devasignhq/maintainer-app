@@ -144,7 +144,7 @@ const Wallet = () => {
             </section>
             {activeTab.enum === "ALL" && (
                 <AllTable 
-                    data={projectTransactions?.list || []}
+                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                     loading={loadingTransactions}
                     loadingMore={loadingMoreTransactions}
                     noMore={noMoreTransactions}
@@ -153,7 +153,7 @@ const Wallet = () => {
             )}
             {activeTab.enum === "BOUNTY" && (
                 <BountyTable 
-                    data={projectTransactions?.list || []}
+                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                     loading={loadingTransactions}
                     loadingMore={loadingMoreTransactions}
                     noMore={noMoreTransactions}
@@ -162,7 +162,7 @@ const Wallet = () => {
             )}
             {activeTab.enum === "TOP_UP" && (
                 <TopUpTable 
-                    data={projectTransactions?.list || []}
+                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                     loading={loadingTransactions}
                     loadingMore={loadingMoreTransactions}
                     noMore={noMoreTransactions}
@@ -171,7 +171,7 @@ const Wallet = () => {
             )}
             {activeTab.enum === "SWAP" && (
                 <SwapTable 
-                    data={projectTransactions?.list || []}
+                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                     loading={loadingTransactions}
                     loadingMore={loadingMoreTransactions}
                     noMore={noMoreTransactions}
@@ -180,7 +180,7 @@ const Wallet = () => {
             )}
             {activeTab.enum === "WITHDRAWAL" && (
                 <WithdrawalTable 
-                    data={projectTransactions?.list || []}
+                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                     loading={loadingTransactions}
                     loadingMore={loadingMoreTransactions}
                     noMore={noMoreTransactions}

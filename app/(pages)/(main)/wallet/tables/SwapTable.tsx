@@ -33,10 +33,10 @@ const SwapTable = ({
                         className="py-3.5 border-b border-dark-300 text-table-content text-light-100 flex items-center gap-5"
                     >
                         <td className="w-[33%] text-indicator-400">
-                            {moneyFormat(transaction.amount)} {transaction.assetFrom}
+                            {moneyFormat(transaction.fromAmount || "")} {transaction.assetFrom}
                         </td>
-                        <td className="w-[33%] text-indicator-400">
-                            {moneyFormat(transaction.amount)} {transaction.assetTo}
+                        <td className="w-[33%] text-primary-100">
+                            {moneyFormat(transaction.toAmount || "")} {transaction.assetTo}
                         </td>
                         <td className="w-[31%]">{formatDateTime(transaction.doneAt)}</td>
                     </tr>

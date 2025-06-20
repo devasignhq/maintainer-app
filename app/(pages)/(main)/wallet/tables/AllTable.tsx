@@ -33,9 +33,19 @@ const AllTable = ({
                         className="py-3.5 border-b border-dark-300 text-table-content text-light-100 grid grid-cols-10 gap-5"
                     >
                         <td className="col-span-4">{formatCategory(transaction.category)}</td>
-                        <td className="col-span-3 text-indicator-500">
-                            {moneyFormat(transaction.amount)} {transaction.assetFrom || transaction.asset}
-                        </td>
+                        {(transaction.category === "SWAP_USDC" || transaction.category === "SWAP_XLM") ? (
+                            <td className="col-span-3">
+                                {moneyFormat(transaction.fromAmount || "")} {transaction.assetFrom} to {moneyFormat(transaction.toAmount || "")} {transaction.assetTo}
+                            </td>
+                        ):(transaction.category === "TOP_UP") ? (
+                            <td className="col-span-3 text-indicator-100">
+                                {moneyFormat(transaction.amount)} {transaction.asset}
+                            </td>
+                        ):(
+                            <td className="col-span-3 text-indicator-500">
+                                {moneyFormat(transaction.amount)} {transaction.asset}
+                            </td>
+                        )}
                         <td className="col-span-3">{formatDateTime(transaction.doneAt)}</td>
                     </tr>
                 ))}
