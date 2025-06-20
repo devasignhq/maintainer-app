@@ -54,6 +54,7 @@ export const TRANSACTION_CATEGORY = {
 export type TransactionCategory = keyof typeof TRANSACTION_CATEGORY;
 
 export type QueryTransactionDto = {
+    installationId: string
     categories?: string
     page?: number
     limit?: number
