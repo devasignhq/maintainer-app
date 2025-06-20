@@ -61,8 +61,9 @@ const SwapAssetModal = ({
             try {
                 await WalletAPI.swapAsset({
                     installationId: activeInstallation!.id,
+                    toAssetType: from === "XLM" ? "USDC" : "XLM",
                     amount: values.fromAmount.replace(/,/g, ""),
-                    toAssetType: from === "XLM" ? "USDC" : "XLM"
+                    equivalentAmount: values.toAmount.replace(/,/g, ""),
                 });
 
                 toast.success("Asset swapped successfully.");
@@ -78,7 +79,7 @@ const SwapAssetModal = ({
             }
         },
     });
-    
+
     const { xlmPriceInUsdc } = useXLMUSDCFromStellarDEX(10000, formik.isSubmitting);
 
     const handleAssetEquivalent = (equivalent: { field: "fromAmount" | "toAmount", value: string }) => {
