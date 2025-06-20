@@ -1,6 +1,6 @@
 "use client";
 import FilterDropdown from "@/app/components/Dropdown/Filter";
-import InputField from "@/app/components/InputField";
+import InputField from "@/app/components/Input/InputField";
 import { useContext, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";

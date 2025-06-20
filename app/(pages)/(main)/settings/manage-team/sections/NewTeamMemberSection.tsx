@@ -1,6 +1,6 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
-import InputField from "@/app/components/InputField";
+import InputField from "@/app/components/Input/InputField";
 import { useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoIosCheckbox, IoMdClose } from "react-icons/io";

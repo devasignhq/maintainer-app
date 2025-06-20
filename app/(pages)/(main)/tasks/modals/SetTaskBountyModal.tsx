@@ -1,6 +1,6 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
-import InputField from "@/app/components/InputField";
+import InputField from "@/app/components/Input/InputField";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { FiArrowRight } from "react-icons/fi";
 

@@ -1,5 +1,5 @@
 "use client";
-import InputField from "@/app/components/InputField";
+import InputField from "@/app/components/Input/InputField";
 import { useToggle } from "ahooks";
 import { FiEdit3, FiSearch } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
