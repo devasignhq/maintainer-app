@@ -8,6 +8,7 @@ export type CommentDto = {
     message: string;
     metadata?: CommentMetadata;
     attachments: string[];
+    read: boolean;
     createdAt: string;
     updatedAt: string;
 }
@@ -23,9 +24,11 @@ export enum CommentType {
     TIMELINE_MODIFICATION
 }
 
-export type AddCommentDto = {
+export type CreateCommentDto = {
+    userId: string;
+    taskId: string;
+    type: CommentType;
     message: string;
+    metadata?: CommentMetadata;
     attachments?: string[];
 }
-
-export type UpdateCommentDto = Partial<AddCommentDto>;

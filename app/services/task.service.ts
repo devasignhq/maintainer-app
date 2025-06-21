@@ -13,7 +13,6 @@ import {
     TimelineExtensionResponse,
     UpdateTaskBountyDto,
 } from "../models/task.model";
-import { AddCommentDto, CommentDto, UpdateCommentDto } from "../models/comment.model";
 import { MessageResponse, MessageWithDataResponse, PaginatedResponse } from "../models/_global";
 
 export class TaskAPI {
@@ -69,17 +68,17 @@ export class TaskAPI {
             .replace("{taskId}", taskId), data);
     }
 
-    static async addTaskComment(taskId: string, data: AddCommentDto) {
-        return HttpClient.post<CommentDto>(ENDPOINTS.TASK.ADD_COMMENT.replace("{taskId}", taskId), data);
-    }
+    // static async addTaskComment(taskId: string, data: AddCommentDto) {
+    //     return HttpClient.post<CommentDto>(ENDPOINTS.TASK.ADD_COMMENT.replace("{taskId}", taskId), data);
+    // }
 
-    static async updateTaskComment(taskId: string, commentId: string, data: UpdateCommentDto) {
-        return HttpClient.patch<CommentDto>(ENDPOINTS.TASK.UPDATE_COMMENT
-                .replace("{taskId}", taskId)
-                .replace("{commentId}", commentId), 
-                data
-        );
-    }
+    // static async updateTaskComment(taskId: string, commentId: string, data: UpdateCommentDto) {
+    //     return HttpClient.patch<CommentDto>(ENDPOINTS.TASK.UPDATE_COMMENT
+    //             .replace("{taskId}", taskId)
+    //             .replace("{commentId}", commentId), 
+    //             data
+    //     );
+    // }
 
     static async deleteTask(taskId: string) {
         return HttpClient.delete<MessageWithDataResponse<"refunded", string>>(
