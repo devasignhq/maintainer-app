@@ -9,7 +9,7 @@ const TaskDetailSection = () => {
     
     return (
         <section className="grow pt-5 border-x border-dark-200 flex flex-col">
-            {(activeTask && activeTask.status === "OPEN") ? <DetailsView /> : <ConversationView />}
+            {(activeTask && activeTask.status === "OPEN") ? <ConversationView /> : <DetailsView />}
         </section>
     );
 }

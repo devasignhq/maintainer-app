@@ -20,7 +20,9 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                 : "bg-dark-300 float-right"}`
         }>
             <p className="text-body-medium text-light-100">{message.body}</p>
-            <small className="text-body-tiny font-bold text-dark-200">{formatTime(message.createdAt.toString())}</small>
+            <small className="text-body-tiny font-bold text-dark-200">
+                {formatTime(message.createdAt.toDate().toISOString())}
+            </small>
         </div>
     ):(
         <>
@@ -29,7 +31,9 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                     {message.metadata?.reason && (
                         <div className="max-w-full p-[15px] space-y-2.5 bg-primary-300">
                             <p className="text-body-medium text-light-100">{message.metadata?.reason}</p>
-                            <small className="text-body-tiny font-bold text-dark-200">{formatTime(message.createdAt.toString())}</small>
+                            <small className="text-body-tiny font-bold text-dark-200">
+                                {formatTime(message.createdAt.toDate().toISOString())}
+                            </small>
                         </div>
                     )}
                     <div className="max-w-full p-[15px] bg-dark-400 border border-dark-300 space-y-5">
@@ -51,7 +55,9 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                             />
                         </div>
                         {!message.metadata?.reason && (
-                            <small className="text-body-tiny font-bold text-dark-200">{formatTime(message.createdAt.toString())}</small>
+                            <small className="text-body-tiny font-bold text-dark-200">
+                                {formatTime(message.createdAt.toDate().toISOString())}
+                            </small>
                         )}
                     </div>
                 </div>

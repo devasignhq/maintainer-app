@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 import { TimelineType } from "./task.model";
 
 export type MessageDto = {
@@ -9,8 +10,8 @@ export type MessageDto = {
     metadata?: MessageMetadata;
     attachments: string[];
     read: boolean;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
 }
 
 export type MessageMetadata = {

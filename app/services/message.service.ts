@@ -74,8 +74,8 @@ export const createMessage = async ({
         metadata,
         attachments,
         read: false,
-        createdAt: Timestamp.now() as unknown as string,
-        updatedAt: Timestamp.now() as unknown as string
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
     };
 
     await setDoc(messageRef, messageData);

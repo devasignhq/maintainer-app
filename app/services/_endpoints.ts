@@ -40,8 +40,8 @@ export const ENDPOINTS = {
         REQUEST_TIMELINE_MODIFICATION: preset.TASK + "/{taskId}/timeline",
         REPLY_TIMELINE_MODIFICATION: preset.TASK + "/{taskId}/timeline/reply",
         
-        ADD_COMMENT: preset.TASK + "/{taskId}/comments",
-        UPDATE_COMMENT: preset.TASK + "/{taskId}/comments/{commentId}",
+        ADD_COMMENT: preset.TASK + "/{taskId}/messages",
+        UPDATE_COMMENT: preset.TASK + "/{taskId}/messages/{messageId}",
     },
     WALLET: {
         GET_WALLET: preset.WALLET + "/account",

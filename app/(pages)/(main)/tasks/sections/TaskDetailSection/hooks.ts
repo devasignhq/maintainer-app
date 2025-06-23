@@ -34,7 +34,7 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                 unsubscribe = listenToTaskMessages(
                     taskId, 
                     contributorId, 
-                    getLastContributorMessage(messages, contributorId)?.createdAt || "", 
+                    (getLastContributorMessage(messages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
                     (updatedMessages) => setMessages(prev => [...prev, ...updatedMessages])
                 );
             } catch (error) {
@@ -118,7 +118,7 @@ export const groupMessagesByDay = (messages: MessageDto[]): GroupedMessages => {
   
     messages.forEach(message => {
         // Handle both ISO string and Timestamp formats
-        const messageDate = new Date(message.createdAt);
+        const messageDate = message.createdAt.toDate();
         
         const dateLabel = formatDateLabel(messageDate);
         
@@ -143,8 +143,8 @@ export const getOrderedDateLabels = (groupedMessages: GroupedMessages): string[]
         
         if (!messagesA.length || !messagesB.length) return 0;
         
-        const dateA = new Date(messagesA[0].createdAt);
-        const dateB = new Date(messagesB[0].createdAt);
+        const dateA = messagesA[0].createdAt.toDate();
+        const dateB = messagesB[0].createdAt.toDate();
         
         // Sort newest first (descending)
         return dateB.getTime() - dateA.getTime();
