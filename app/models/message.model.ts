@@ -5,7 +5,7 @@ export type MessageDto = {
     userId: string;
     taskId: string;
     type: MessageType;
-    message: string;
+    body: string;
     metadata?: MessageMetadata;
     attachments: string[];
     read: boolean;
@@ -28,7 +28,7 @@ export type CreateMessageDto = {
     userId: string;
     taskId: string;
     type: MessageType;
-    message: string;
+    body: string;
     metadata?: MessageMetadata;
     attachments?: string[];
 }

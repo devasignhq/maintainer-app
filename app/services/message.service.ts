@@ -42,7 +42,7 @@ export const createMessage = async ({
     userId,
     taskId,
     type = MessageType.GENERAL,
-    message,
+    body,
     metadata = {} as any,
     attachments = []
 }: CreateMessageDto) => {
@@ -54,7 +54,7 @@ export const createMessage = async ({
         userId,
         taskId,
         type,
-        message,
+        body,
         metadata,
         attachments,
         read: false,

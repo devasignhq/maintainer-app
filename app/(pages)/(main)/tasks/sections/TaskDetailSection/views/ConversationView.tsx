@@ -51,7 +51,7 @@ const ConversationView = () => {
                                             : "bg-dark-300 float-right"}`
                                     }
                                 >
-                                    <p className="text-body-medium text-light-100">{message.message}</p>
+                                    <p className="text-body-medium text-light-100">{message.body}</p>
                                     <small className="text-body-tiny font-bold text-dark-200">3:45 PM</small>
                                 </div>
                             ):(
@@ -60,7 +60,7 @@ const ConversationView = () => {
                                         key={message.id} 
                                         className="max-w-full p-[15px] bg-dark-400 border border-dark-300 float-left space-y-5"
                                     >
-                                        <p className="text-body-medium text-light-100">{message.message}</p>
+                                        <p className="text-body-medium text-light-100">{message.body}</p>
                                         <div className="flex gap-2.5">
                                             <ButtonPrimary
                                                 format="OUTLINE"
