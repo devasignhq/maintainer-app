@@ -1,34 +1,34 @@
 import { TimelineType } from "./task.model";
 
-export type CommentDto = {
+export type MessageDto = {
     id: string;
     userId: string;
     taskId: string;
-    type: CommentType;
+    type: MessageType;
     message: string;
-    metadata?: CommentMetadata;
+    metadata?: MessageMetadata;
     attachments: string[];
     read: boolean;
     createdAt: string;
     updatedAt: string;
 }
 
-export type CommentMetadata = {
+export type MessageMetadata = {
     requestedTimeline: number;
     timelineType: TimelineType;
     reason?: string
 }
 
-export enum CommentType {
+export enum MessageType {
     GENERAL,
     TIMELINE_MODIFICATION
 }
 
-export type CreateCommentDto = {
+export type CreateMessageDto = {
     userId: string;
     taskId: string;
-    type: CommentType;
+    type: MessageType;
     message: string;
-    metadata?: CommentMetadata;
+    metadata?: MessageMetadata;
     attachments?: string[];
 }

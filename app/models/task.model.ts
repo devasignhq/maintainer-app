@@ -1,4 +1,4 @@
-import { CommentDto } from "./comment.model"
+import { CommentDto } from "./message.model"
 import { IssueDto } from "./github.model"
 import { InstallationDto } from "./installation.model"
 import { UserDto } from "./user.model"
