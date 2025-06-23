@@ -20,20 +20,37 @@ export const getTaskMessages = async (taskId: string) => {
     const q = query(
         messagesCollection,
         where("taskId", "==", taskId),
-        orderBy("createdAt", "desc")
+        orderBy("createdAt", "asc")
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as MessageDto[];
 };
 
-export const listenToTaskMessages = (taskId: string, callback: (messages: MessageDto[]) => void) => {
-    const q = query(
-        messagesCollection,
+export const listenToTaskMessages = (
+    taskId: string, 
+    userId: string, 
+    startDate: string,
+    callback: (messages: MessageDto[]) => void
+) => {
+    const constraints: any[] = [
         where("taskId", "==", taskId),
-        orderBy("createdAt", "desc")
-    );
+        where("userId", "==", userId)
+    ];
+
+    if (startDate && startDate.trim()) {
+        const startTimestamp = Timestamp.fromDate(new Date(startDate));
+        constraints.push(where("createdAt", ">", startTimestamp));
+    }
+    
+    constraints.push(orderBy("createdAt", "asc"));
+
+    const q = query(messagesCollection, ...constraints);
+    
     return onSnapshot(q, (snapshot) => {
-        const messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MessageDto));
+        const messages = snapshot.docs.map(doc => ({ 
+            id: doc.id, 
+            ...doc.data() 
+        } as MessageDto));
         callback(messages);
     });
 };
@@ -47,9 +64,8 @@ export const createMessage = async ({
     attachments = []
 }: CreateMessageDto) => {
     const messageRef = doc(messagesCollection);
-    const timestamp = new Date().toISOString();
 
-    const messageData = {
+    const messageData: MessageDto = {
         id: messageRef.id,
         userId,
         taskId,
@@ -58,8 +74,8 @@ export const createMessage = async ({
         metadata,
         attachments,
         read: false,
-        createdAt: timestamp,
-        updatedAt: timestamp
+        createdAt: Timestamp.now() as unknown as string,
+        updatedAt: Timestamp.now() as unknown as string
     };
 
     await setDoc(messageRef, messageData);
