@@ -21,6 +21,15 @@ export function formatDate(isoString: string): string {
     });
 }
 
+export function formatTime(isoString: string): string {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString('en-GB', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    });
+}
+
 /** ie Converts `ELAPSED_CONTRACT` to `Elapsed Contract` */
 export const enumToStringConverter = (value: string) => {
 	if (!value) return value;
