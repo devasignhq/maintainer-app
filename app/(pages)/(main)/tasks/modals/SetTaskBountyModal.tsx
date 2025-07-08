@@ -1,16 +1,41 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
-import InputField from "@/app/components/Input/InputField";
+import MoneyInput from "@/app/components/Input/MoneyInput";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
+import { useContext, useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
+import { ActiveTaskContext } from "../page";
+import Image from "next/image";
+import { TaskAPI } from "@/app/services/task.service";
+import { handleApiError } from "@/app/utils/helper";
+import { toast } from "react-toastify";
 
 type SetTaskBountyModalProps = {
     toggleModal: () => void;
 };
 
-// TODO: Integrate money input
-
 const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
+    const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
+    const [newBounty, setNewBounty] = useState("");
+    const [loading, setLoading] = useState(false);
+    
+    const updateBounty = async () => {
+        setLoading(true);
+
+        try {
+            const updatedTask = await TaskAPI.updateTaskBounty(
+                activeTask!.id, { newBounty }
+            );
+
+            setActiveTask({ ...activeTask!, ...updatedTask });
+            toast.success("Bounty updated successfully.");
+            toggleModal();
+        } catch (error) {
+            handleApiError(error, "Failed to update task bounty.");
+        } finally {
+            setLoading(false);
+        }
+    };
     
     return (
         <PopupModalLayout title="Set Task Bounty" toggleModal={toggleModal}>
@@ -24,22 +49,34 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
                     Remove hardcoded model name check and replace with configurable param
                 </p>
             </div>
-            <InputField 
-                imageSrc="/usdc.svg"
-                imageAlt="$"
-                attributes={{
-                    placeholder: "Enter value",
-                    name: "",
-                    defaultValue: "123"
-                }}
-                extendedContainerClassName=""
-            />
+            <div className="relative">
+                <Image 
+                    src="/usdc.svg" 
+                    alt="$" 
+                    width={16}
+                    height={16}
+                    className="absolute top-1/2 -translate-y-1/2 left-2.5" 
+                />
+                <MoneyInput 
+                    attributes={{
+                        id: "bounty",
+                        name: "bounty",
+                        placeholder: "0.00",
+                        className: "w-full p-2.5 pl-[42px] bg-dark-400 border border-dark-100 text-body-small text-light-100",
+                        value: newBounty,
+                        disabled: loading,
+                    }}
+                    defaultValue={activeTask?.bounty}
+                    setValue={(value) => setNewBounty(value)}
+                />
+            </div>
             <ButtonPrimary
                 format="SOLID"
                 text="Update Bounty"
                 sideItem={<FiArrowRight />}
                 attributes={{
-                    onClick: () => {},
+                    onClick: updateBounty,
+                    disabled: Boolean(newBounty === activeTask?.bounty.toString() || !newBounty.trim()) || loading,
                 }}
                 extendedClassName="w-fit mt-5"
             />

@@ -10,6 +10,7 @@ import { ErrorResponse } from "@/app/models/_global";
 import useUserStore from "@/app/state-management/useUserStore";
 import { auth } from "@/lib/firebase";
 import { GithubAuthProvider, signInWithPopup, getAdditionalUserInfo } from "@firebase/auth";
+import { handleApiError } from "@/app/utils/helper";
 
 export const githubProvider = new GithubAuthProvider();
 
@@ -37,13 +38,8 @@ const Account = () => {
                 getInstallation();
                 router.push(ROUTES.ONBOARDING);
             },
-            onError: (err) => {
-                const error = err as unknown as ErrorResponse;
-                if (error.error.message) {
-                    toast.error(error.error.message);
-                    return
-                }
-                toast.error("Failed to create user.");
+            onError: (error) => {
+                handleApiError(error, "Failed to create user.");
             }
         }
     );

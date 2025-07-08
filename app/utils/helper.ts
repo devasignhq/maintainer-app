@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+import { ErrorResponse } from "../models/_global";
 import { TaskStatus } from "../models/task.model";
 
 export function formatDateTime(isoString: string): string {
@@ -115,3 +117,12 @@ export function taskStatusFormatter(status: TaskStatus) {
 export const openInNewTab = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
 };
+
+export const handleApiError = (err: any, altMessage: string) => {
+    const error = err as unknown as ErrorResponse;
+    if (error.error.message) {
+        toast.error(error.error.message);
+        return
+    }
+    toast.error(altMessage);
+}

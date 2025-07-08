@@ -68,12 +68,12 @@ export class TaskAPI {
             .replace("{taskId}", taskId), data);
     }
 
-    // static async addTaskComment(taskId: string, data: AddCommentDto) {
-    //     return HttpClient.post<CommentDto>(ENDPOINTS.TASK.ADD_COMMENT.replace("{taskId}", taskId), data);
+    // static async addTaskComment(taskId: string, data: AddMessageDto) {
+    //     return HttpClient.post<MessageDto>(ENDPOINTS.TASK.ADD_COMMENT.replace("{taskId}", taskId), data);
     // }
 
-    // static async updateTaskComment(taskId: string, commentId: string, data: UpdateCommentDto) {
-    //     return HttpClient.patch<CommentDto>(ENDPOINTS.TASK.UPDATE_COMMENT
+    // static async updateTaskComment(taskId: string, commentId: string, data: UpdateMessageDto) {
+    //     return HttpClient.patch<MessageDto>(ENDPOINTS.TASK.UPDATE_COMMENT
     //             .replace("{taskId}", taskId)
     //             .replace("{commentId}", commentId), 
     //             data

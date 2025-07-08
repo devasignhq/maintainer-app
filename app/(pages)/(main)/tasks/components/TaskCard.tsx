@@ -8,6 +8,7 @@ type TaskCardProps = {
     onClick?: () => void;
 };
 
+// TODO: Place issue number beside repo name
 const TaskCard = ({ task, active, onClick }: TaskCardProps) => {
     return (
         <div 
