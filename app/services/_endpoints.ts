@@ -30,6 +30,7 @@ export const ENDPOINTS = {
         CREATE: preset.TASK + "",
         CREATE_MANY: preset.TASK + "/batch",
         UPDATE_TASK_BOUNTY: preset.TASK + "/{taskId}/bounty",
+        UPDATE_TASK_TIMELINE: preset.TASK + "/{taskId}/timeline",
         DELETE: preset.TASK + "/{taskId}",
         
         SUBMIT_APPLICATION: preset.TASK + "/{taskId}/apply",

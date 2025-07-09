@@ -12,6 +12,7 @@ import {
     TaskDto,
     TimelineExtensionResponse,
     UpdateTaskBountyDto,
+    UpdateTaskTimelineDto,
 } from "../models/task.model";
 import { MessageResponse, MessageWithDataResponse, PaginatedResponse } from "../models/_global";
 
@@ -36,6 +37,11 @@ export class TaskAPI {
     static async updateTaskBounty(taskId: string, data: UpdateTaskBountyDto) {
         return HttpClient.patch<Pick<TaskDto, "bounty" | "updatedAt">>(
             ENDPOINTS.TASK.UPDATE_TASK_BOUNTY.replace("{taskId}", taskId), data);
+    }
+
+    static async updateTaskTimeline(taskId: string, data: UpdateTaskTimelineDto) {
+        return HttpClient.patch<Pick<TaskDto, "timeline" | "timelineType" | "updatedAt">>(
+            ENDPOINTS.TASK.UPDATE_TASK_TIMELINE.replace("{taskId}", taskId), data);
     }
 
     static async submitTaskApplication(taskId: string) {

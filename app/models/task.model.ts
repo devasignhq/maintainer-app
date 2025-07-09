@@ -91,6 +91,11 @@ export type UpdateTaskBountyDto = {
     newBounty: string
 }
 
+export type UpdateTaskTimelineDto = {
+    newTimeline: number
+    newTimelineType: TimelineType
+}
+
 export type RequestTimelineExtensionDto = {
     requestedTimeline: number 
     timelineType: TimelineType
