@@ -9,12 +9,17 @@ import Image from "next/image";
 import { TaskAPI } from "@/app/services/task.service";
 import { handleApiError } from "@/app/utils/helper";
 import { toast } from "react-toastify";
+import { OctokitContext } from "../../layout";
+import { updateIssueComment } from "@/app/services/github.service";
+import { customBountyMessage } from "@/app/utils/data";
 
 type SetTaskBountyModalProps = {
     toggleModal: () => void;
 };
 
+// TODO: Ensure bountyCommentId is valid. If not, get comment id from issue comments
 const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
+    const octokit = useContext(OctokitContext);
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
     const [newBounty, setNewBounty] = useState("");
     const [loading, setLoading] = useState(false);
@@ -27,9 +32,24 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
                 activeTask!.id, { newBounty }
             );
 
-            setActiveTask({ ...activeTask!, ...updatedTask });
-            toast.success("Bounty updated successfully.");
-            toggleModal();
+            // Update bounty comment body on GitHub
+            try {
+                await updateIssueComment(
+                    activeTask!.issue.repository_url,
+                    octokit!,
+                    activeTask!.issue.bountyCommentId!,
+                    customBountyMessage(newBounty, activeTask!.id)
+                );
+
+                setActiveTask({ ...activeTask!, ...updatedTask });
+                toast.success("Bounty updated successfully.");
+                toggleModal();
+            } catch (error) {
+                console.log(error);
+                setActiveTask({ ...activeTask!, ...updatedTask });
+                toast.info("Bounty updated, but failed to update GitHub comment.");
+                toggleModal();
+            }
         } catch (error) {
             handleApiError(error, "Failed to update task bounty.");
         } finally {
