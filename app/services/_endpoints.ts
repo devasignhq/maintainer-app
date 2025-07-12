@@ -29,6 +29,7 @@ export const ENDPOINTS = {
         GET_ACTIVITIES: preset.TASK + "/activities/{taskId}",
         CREATE: preset.TASK + "",
         CREATE_MANY: preset.TASK + "/batch",
+        ADD_BOUNTY_COMMENT_ID: preset.TASK + "/{taskId}/issue-comment",
         UPDATE_TASK_BOUNTY: preset.TASK + "/{taskId}/bounty",
         UPDATE_TASK_TIMELINE: preset.TASK + "/{taskId}/timeline",
         DELETE: preset.TASK + "/{taskId}",

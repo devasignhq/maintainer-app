@@ -1,6 +1,7 @@
 import { HttpClient } from "@/lib/axiosInstance";
 import { ENDPOINTS } from "./_endpoints";
 import { 
+    AddBountyCommentId,
     CreateTaskDto,
     FilterTasks,
     MarkAsCompleteDto,
@@ -32,6 +33,11 @@ export class TaskAPI {
 
     static async createTask(data: { payload: CreateTaskDto }) {
         return HttpClient.post<TaskDto>(ENDPOINTS.TASK.CREATE, data);
+    }
+
+    static async addBountyCommentId(taskId: string, data: AddBountyCommentId) {
+        return HttpClient.patch<Pick<TaskDto, "id">>(
+            ENDPOINTS.TASK.ADD_BOUNTY_COMMENT_ID.replace("{taskId}", taskId), data);
     }
 
     static async updateTaskBounty(taskId: string, data: UpdateTaskBountyDto) {
