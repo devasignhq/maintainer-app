@@ -172,6 +172,40 @@ export async function getBountyLabel(repoUrl: string, octokit: InstallationOctok
     return response.data;
 };
 
+export async function addBountyLabelToIssue(
+    repoUrl: string,
+    octokit: InstallationOctokit,
+    issueNumber: number
+) {
+    const [owner, repo] = getOwnerAndRepo(repoUrl);
+
+    const response = await octokit.rest.issues.addLabels({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        labels: ["💵 Bounty"],
+    });
+
+    return response.data;
+}
+
+export async function removeBountyLabelFromIssue(
+    repoUrl: string,
+    octokit: InstallationOctokit,
+    issueNumber: number
+) {
+    const [owner, repo] = getOwnerAndRepo(repoUrl);
+
+    const response = await octokit.rest.issues.removeLabel({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        name: "💵 Bounty",
+    });
+
+    return response.data;
+}
+
 export async function getRepoMilestones(repoUrl: string, octokit: InstallationOctokit) {
     const [owner, repo] = getOwnerAndRepo(repoUrl);
 
@@ -185,4 +219,56 @@ export async function getRepoMilestones(repoUrl: string, octokit: InstallationOc
     });
 
     return response.data;
+}
+
+export async function createIssueComment(
+    repoUrl: string,
+    octokit: InstallationOctokit,
+    issueNumber: number,
+    body: string
+) {
+    const [owner, repo] = getOwnerAndRepo(repoUrl);
+
+    const response = await octokit.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: issueNumber,
+        body,
+    });
+
+    return response.data;
+}
+
+export async function updateIssueComment(
+    repoUrl: string,
+    octokit: InstallationOctokit,
+    commentId: number,
+    body: string
+) {
+    const [owner, repo] = getOwnerAndRepo(repoUrl);
+
+    const response = await octokit.rest.issues.updateComment({
+        owner,
+        repo,
+        comment_id: commentId,
+        body,
+    });
+
+    return response.data;
+}
+
+export async function deleteIssueComment(
+    repoUrl: string,
+    octokit: InstallationOctokit,
+    commentId: number
+) {
+    const [owner, repo] = getOwnerAndRepo(repoUrl);
+
+    await octokit.rest.issues.deleteComment({
+        owner,
+        repo,
+        comment_id: commentId,
+    });
+
+    return true;
 }
