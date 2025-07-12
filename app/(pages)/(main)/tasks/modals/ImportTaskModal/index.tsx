@@ -12,12 +12,13 @@ import { useAsyncEffect, useInfiniteScroll, useRequest } from "ahooks";
 import useTaskStore from "@/app/state-management/useTaskStore";
 import { PiEyeBold, PiEyeSlashBold } from "react-icons/pi";
 import {
+    addBountyLabelToIssue,
     createBountyLabel,
+    createIssueComment,
     getBountyLabel,
     getRepoIssues,
     getRepoLabels,
-    getRepoMilestones,
-    updateRepoIssue
+    getRepoMilestones
 } from "@/app/services/github.service";
 import { 
     IssueDto, 
@@ -38,6 +39,11 @@ import useInstallationStore from "@/app/state-management/useInstallationStore";
 type TaskPayload = {
     payload: CreateTaskDto;
     valid: boolean;
+}
+
+type TaskBountyCommentId = {
+    taskId: string;
+    commentId: number;
 }
 
 type UploadStatus = "PENDING" | "CREATED" | "FAILED";
@@ -67,6 +73,7 @@ const ImportTaskModal = ({
     const [uploadingTasks, setUploadingTasks] = useState(false);
     const [validBountyLabel, setValidBountyLabel] = useState<Map<string, boolean>>(new Map());
     // const [totalBounties, setTotalBounties] = useState(false);
+    const [taskBountyCommentIds, setTaskBountyCommentIds] = useState<TaskBountyCommentId[]>([]);
     const [uploadedTasks, setUploadedTasks] = useState<Map<number, UploadStatus>>(new Map());
     const [selectedTasks, setSelectedTasks] = useState<Map<number, TaskPayload>>(() => {
         const initialMap = new Map();
@@ -112,6 +119,18 @@ const ImportTaskModal = ({
             } catch {}
         }
     }, [activeRepo, octokit])
+
+    // Add bounty comment id for tasks created
+    useAsyncEffect(async () => {
+        if (taskBountyCommentIds.length === 0) return;
+
+        const latestItem = taskBountyCommentIds[taskBountyCommentIds.length - 1];
+
+        await TaskAPI.addBountyCommentId(
+            latestItem.taskId,
+            { bountyCommentId: latestItem.commentId }
+        )
+    }, [taskBountyCommentIds.length])
     
     const {
         data: repoIssues,
@@ -225,25 +244,27 @@ const ImportTaskModal = ({
                 const createdTask = await TaskAPI.createTask({ payload: task.payload });
                 
                 try {
-                    let issueLabels = task.payload.issue.labels.reduce<string[]>((acc, label) => [...acc, label.name], []);
-                    issueLabels = [...issueLabels, "💵 Bounty"];
+                    await addBountyLabelToIssue(
+                        task.payload.issue.repository_url,
+                        octokit!,
+                        task.payload.issue.number
+                    );
 
-                    await updateRepoIssue(
-                        task.payload.issue.repository_url, 
-                        octokit!, 
+                    const bountyComment = await createIssueComment(
+                        task.payload.issue.repository_url,
+                        octokit!,
                         task.payload.issue.number,
-                        // task.payload.issue.title + ` (${moneyFormat(task.payload.bounty)} USDC)`,
-                        task.payload.issue.body + customBountyMessage(task.payload.bounty, createdTask.id),
-                        issueLabels as unknown as string[]
-                    )
+                        customBountyMessage(task.payload.bounty, createdTask.id)
+                    );
 
+                    setTaskBountyCommentIds(prev => ([...prev, { taskId: createdTask.id, commentId: bountyComment.id} ]));
                     toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
                     setUploadedTasks(prev => {
                         prev.set(task.payload.issue.id, "CREATED");
                         return prev;
                     });
                 } catch (error) {
-                    toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to update issue.`);
+                    toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to create bounty comment or add bounty label.`);
                     setUploadedTasks(prev => {
                         prev.set(task.payload.issue.id, "CREATED");
                         return prev;
