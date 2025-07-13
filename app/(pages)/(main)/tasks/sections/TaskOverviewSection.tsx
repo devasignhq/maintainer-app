@@ -85,7 +85,7 @@ const TaskOverviewSection = () => {
                         <p className="text-body-tiny text-light-100">Timeline</p>
                         <div className="flex items-center gap-1">
                             <p className="text-body-large text-light-200">
-                                {activeTask.timeline} {activeTask.timelineType?.toLowerCase()}(s)
+                                {formatTimeline(activeTask!)}
                             </p>
                             <button onClick={toggleSetTaskTimelineModal}>
                                 <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
@@ -154,6 +154,16 @@ const TaskOverviewSection = () => {
 }
  
 export default TaskOverviewSection;
+
+function formatTimeline(task: TaskDto) {
+    if (!Number.isInteger(task.timeline!)) {
+        const [weeks, days] = task.timeline!.toString().split(".");
+        const totalDays = (Number(weeks) * 7) + Number(days);
+        return formatTimeLeft(totalDays);
+    }
+
+    return `${task.timeline} ${task.timelineType?.toLowerCase()}(s)`;
+}
 
 /**
  * Calculates the time left for a task based on its timeline, timelineType, and acceptedAt date
