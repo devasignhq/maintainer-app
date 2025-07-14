@@ -75,22 +75,10 @@ export class TaskAPI {
             .replace("{taskId}", taskId), data);
     }
 
-    static async replyTimelineModification(taskId: string, data: ReplyTimelineExtensionRequestDto) {
-        return HttpClient.post<TimelineExtensionResponse>(ENDPOINTS.TASK.REPLY_TIMELINE_MODIFICATION
+    static async replyTimelineModificationRequest(taskId: string, data: ReplyTimelineExtensionRequestDto) {
+        return HttpClient.post<TimelineExtensionResponse>(ENDPOINTS.TASK.REPLY_TIMELINE_MODIFICATION_REQUEST
             .replace("{taskId}", taskId), data);
     }
-
-    // static async addTaskComment(taskId: string, data: AddMessageDto) {
-    //     return HttpClient.post<MessageDto>(ENDPOINTS.TASK.ADD_COMMENT.replace("{taskId}", taskId), data);
-    // }
-
-    // static async updateTaskComment(taskId: string, commentId: string, data: UpdateMessageDto) {
-    //     return HttpClient.patch<MessageDto>(ENDPOINTS.TASK.UPDATE_COMMENT
-    //             .replace("{taskId}", taskId)
-    //             .replace("{commentId}", commentId), 
-    //             data
-    //     );
-    // }
 
     static async deleteTask(taskId: string) {
         return HttpClient.delete<MessageWithDataResponse<"refunded", string>>(

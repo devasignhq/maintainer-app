@@ -1,9 +1,16 @@
+"use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
+import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { MessageDto, MessageType } from "@/app/models/message.model";
+import { TaskAPI } from "@/app/services/task.service";
 import useUserStore from "@/app/state-management/useUserStore";
-import { formatTime } from "@/app/utils/helper";
-import { FiCheckCircle } from "react-icons/fi";
+import { formatTime, handleApiError } from "@/app/utils/helper";
+import { useToggle } from "ahooks";
+import { useContext, useState } from "react";
+import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
+import { toast } from "react-toastify";
+import { ActiveTaskContext } from "../../../page";
 
 type MessageBlockProps = {
     message: MessageDto;
@@ -12,6 +19,31 @@ type MessageBlockProps = {
 
 const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
     const { currentUser } = useUserStore();
+    const { activeTask } = useContext(ActiveTaskContext);
+    const [openReplyModal, { toggle: toggleReplyModal }] = useToggle(false);
+    const [replyMode, setReplyMode] = useState<"approve" | "reject">("approve");
+    const [replying, setReplying] = useState(false);
+
+    const replyExtensionRequest = async () => {
+        setReplying(true);
+
+        try {
+            await TaskAPI.replyTimelineModificationRequest(
+                activeTask!.id,
+                {
+                    accept: replyMode === "approve",
+                    requestedTimeline: message.metadata!.requestedTimeline!,
+                    timelineType: message.metadata!.timelineType!,
+                }
+            );
+            
+            toast.success("Request sent successfully.");
+        } catch (error) {
+            handleApiError(error, "Failed to submit task. Please try again.");
+        } finally {
+            setReplying(false);
+        }
+    }
 
     return message.type === MessageType.GENERAL ? (
         <div className={`max-w-[78%] p-[15px] space-y-2.5 ${largeMargin ? "mb-[30px]" : "mb-2.5"} 
@@ -28,14 +60,6 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
         <>
             {message.userId !== currentUser?.userId && (
                 <div className={`max-w-[78%] float-left space-y-2.5 ${largeMargin ? "mb-[30px]" : "mb-2.5"}`}>
-                    {message.metadata?.reason && (
-                        <div className="max-w-full p-[15px] space-y-2.5 bg-primary-300">
-                            <p className="text-body-medium text-light-100">{message.metadata?.reason}</p>
-                            <small className="text-body-tiny font-bold text-dark-200">
-                                {formatTime(message.createdAt.toDate().toISOString())}
-                            </small>
-                        </div>
-                    )}
                     <div className="max-w-full p-[15px] bg-dark-400 border border-dark-300 space-y-5">
                         <p className="text-body-medium text-light-100">{message.body}</p>
                         <div className="flex gap-2.5">
@@ -43,14 +67,20 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                                 format="OUTLINE"
                                 text="Reject"
                                 attributes={{
-                                    onClick: () => {},
+                                    onClick: () => {
+                                        setReplyMode("reject");
+                                        toggleReplyModal();
+                                    },
                                 }}
                             />
                             <ButtonPrimary
                                 format="SOLID"
                                 text="Approve"
                                 attributes={{
-                                    onClick: () => {},
+                                    onClick: () => {
+                                        setReplyMode("approve");
+                                        toggleReplyModal();
+                                    },
                                 }}
                             />
                         </div>
@@ -60,6 +90,14 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                             </small>
                         )}
                     </div>
+                    {message.metadata?.reason && (
+                        <div className="max-w-full p-[15px] bg-dark-400 border border-dark-300 space-y-2.5">
+                            <p className="text-body-medium text-light-100">{message.metadata?.reason}</p>
+                            <small className="text-body-tiny font-bold text-dark-200">
+                                {formatTime(message.createdAt.toDate().toISOString())}
+                            </small>
+                        </div>
+                    )}
                 </div>
             )}
             {message.userId === currentUser?.userId && (
@@ -73,6 +111,35 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                     )}
                     <p className="text-body-medium text-dark-100">{message.body}</p>
                 </div>
+            )}
+            
+            {openReplyModal && (
+                <PopupModalLayout 
+                    title={(replyMode === "approve" ? "Approve" : "Reject") + " Extension Request"}
+                    toggleModal={toggleReplyModal}
+                >
+                    <p className="mt-2.5 mb-5 text-body-medium text-dark-100">
+                        {replyMode === "approve"
+                            ? "Are you sure you want to approve this extension request?"
+                            : "Are you sure you want to reject this extension request?"
+                        }
+                    </p>
+                    <ButtonPrimary
+                        format="SOLID"
+                        text={
+                            replyMode === "approve"
+                                ? replying ? "Approving..." : "Yes, Approve"
+                                : replying ? "Rejecting..." : "Yes, Reject"
+                        }
+                        sideItem={<FiArrowRight />}
+                        attributes={{
+                            onClick: replyExtensionRequest,
+                            disabled: replying
+                        }}
+                        extendedSideItemClassName="text-xl"
+                        extendedClassName="w-fit"
+                    />
+                </PopupModalLayout> 
             )}
         </>
     );

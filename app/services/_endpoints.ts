@@ -40,7 +40,7 @@ export const ENDPOINTS = {
         VALIDATE_COMPLETION: preset.TASK + "/{taskId}/validate",
 
         REQUEST_TIMELINE_MODIFICATION: preset.TASK + "/{taskId}/timeline",
-        REPLY_TIMELINE_MODIFICATION: preset.TASK + "/{taskId}/timeline/reply",
+        REPLY_TIMELINE_MODIFICATION_REQUEST: preset.TASK + "/{taskId}/timeline/reply",
         
         ADD_COMMENT: preset.TASK + "/{taskId}/messages",
         UPDATE_COMMENT: preset.TASK + "/{taskId}/messages/{messageId}",
