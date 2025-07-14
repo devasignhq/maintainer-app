@@ -32,7 +32,7 @@ const TaskCard = ({ task, active, onClick }: TaskCardProps) => {
                             .join('')}
                     </p>
                 )}
-                <p className="text-body-medium text-primary-400 font-bold ml-auto">{moneyFormat(task.bounty)} USDC</p>
+                <p className="text-body-medium text-primary-400 font-bold ml-auto whitespace-nowrap">{moneyFormat(task.bounty)} USDC</p>
             </div>
             <p 
                 className="text-body-medium text-light-100 overflow-hidden leading-5"

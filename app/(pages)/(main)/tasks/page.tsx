@@ -43,7 +43,9 @@ const Tasks = () => {
                 <TaskListSection />
                 {!activeTask && !loadingTask && (
                     <section className="grow border-l border-dark-200 grid place-content-center">
-                        <p className="text-body-medium text-light-100">No task selected</p>
+                        <p className="text-body-medium text-light-100">
+                            {searchParams.get("taskId") ? "Task not found" : "No task selected"}
+                        </p>
                     </section>
                 )}
                 {loadingTask && (

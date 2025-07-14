@@ -11,8 +11,8 @@ export function useCustomSearchParams() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const updateSearchParams = (params: Record<string, string | number | boolean>) => {
-        const currentSearchParams = new URLSearchParams(searchParams);
+    const updateSearchParams = (params: Record<string, string | number | boolean>, override = false) => {
+        const currentSearchParams = override ? new URLSearchParams() : new URLSearchParams(searchParams);
 
         if (Object.keys(params).length === 0) {
             return router.push(pathname);

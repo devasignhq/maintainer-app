@@ -48,7 +48,7 @@ const TaskListSection = () => {
             );
 
             if (!searchParams.get("taskId") && !activeTask && response.data.length > 0) {
-                updateSearchParams({ taskId: response.data[0].id });
+                updateSearchParams({ taskId: response.data[0].id }, true);
             }
 
             return { 
@@ -57,7 +57,11 @@ const TaskListSection = () => {
             };
         }, {
             isNoMore: (data) => !data?.pagination.hasMore,
-            reloadDeps: [activeInstallation?.id, ...(taskFilters ? Object.values(taskFilters) : [])]
+            reloadDeps: [
+                activeInstallation?.id, 
+                ...(taskFilters ? Object.values(taskFilters) : []), 
+                searchParams.get("refresh")
+            ]
         }
     );
 

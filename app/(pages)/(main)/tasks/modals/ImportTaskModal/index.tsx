@@ -264,7 +264,7 @@ const ImportTaskModal = ({
                         return prev;
                     });
                 } catch (error) {
-                    toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to create bounty comment or add bounty label.`);
+                    toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to either create bounty comment or add bounty label.`);
                     setUploadedTasks(prev => {
                         prev.set(task.payload.issue.id, "CREATED");
                         return prev;
