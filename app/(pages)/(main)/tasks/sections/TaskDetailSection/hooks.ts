@@ -1,5 +1,6 @@
 import { MessageDto } from "@/app/models/message.model";
-import { getTaskMessages, listenToTaskMessages } from "@/app/services/message.service";
+import { getTaskMessages, listenToExtensionReplies, listenToTaskMessages } from "@/app/services/message.service";
+import useUserStore from "@/app/state-management/useUserStore";
 import { useState, useEffect, useMemo, useRef } from "react";
 
 export interface GroupedMessages {
@@ -7,6 +8,7 @@ export interface GroupedMessages {
 }
 
 export const useManageMessages = (taskId: string, contributorId: string) => {
+    const { currentUser } = useUserStore();
     const messageBoxRef = useRef<HTMLDivElement>(null);
     const [messages, setMessages] = useState<MessageDto[]>([]);
     const [loading, setLoading] = useState(true);
@@ -21,7 +23,8 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
     useEffect(() => {
         if (!taskId) return;
 
-        let unsubscribe: (() => void) | null = null;
+        let unsubscribeFromTaskMessages: (() => void) | null = null;
+        let unsubscribeFromExtensionReplies: (() => void) | null = null;
         
         const initializeMessages = async () => {
             try {
@@ -31,10 +34,15 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
 
                 if (!contributorId) return;
 
-                unsubscribe = listenToTaskMessages(
+                unsubscribeFromTaskMessages = listenToTaskMessages(
                     taskId, 
                     contributorId, 
                     (getLastContributorMessage(messages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
+                    (updatedMessages) => setMessages(prev => [...prev, ...updatedMessages])
+                );
+                unsubscribeFromExtensionReplies = listenToExtensionReplies(
+                    taskId, 
+                    currentUser!.userId, 
                     (updatedMessages) => setMessages(prev => [...prev, ...updatedMessages])
                 );
             } catch (error) {
@@ -46,9 +54,8 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
         initializeMessages();
 
         return () => {
-            if (unsubscribe) {
-                unsubscribe();
-            }
+            if (unsubscribeFromTaskMessages) unsubscribeFromTaskMessages();
+            if (unsubscribeFromExtensionReplies) unsubscribeFromExtensionReplies();
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contributorId, taskId]);

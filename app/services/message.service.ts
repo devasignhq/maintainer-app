@@ -144,3 +144,25 @@ export const listenToUnreadMessagesCount = (
         callback(snapshot.size);
     });
 };
+
+export const listenToExtensionReplies = (
+    taskId: string, 
+    userId: string, 
+    callback: (messages: MessageDto[]) => void
+) => {
+    const q = query(
+        messagesCollection,
+        where("taskId", "==", taskId),
+        where("userId", "==", userId),
+        where("type", "==", MessageType.TIMELINE_MODIFICATION),
+        orderBy("createdAt", "desc")
+    );
+    
+    return onSnapshot(q, (snapshot) => {
+        const messages = snapshot.docs.map(doc => ({ 
+            id: doc.id, 
+            ...doc.data() 
+        } as MessageDto));
+        callback(messages);
+    });
+};
