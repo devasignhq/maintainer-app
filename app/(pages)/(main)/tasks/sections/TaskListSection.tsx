@@ -27,8 +27,9 @@ const TaskListSection = () => {
         loading: loadingInstallationRepos 
     } = useGetInstallationRepositories(OctokitContext);
     
+    // TODO: Implement caching
     const {
-        data: projectTasks,
+        data: installationTasks,
         loading: loadingTasks,
         loadingMore: loadingMoreTasks,
         noMore: noMoreTasks,
@@ -165,7 +166,7 @@ const TaskListSection = () => {
                 </div>
             </div>
             <div className="grow pr-5 pb-5 overflow-y-auto space-y-[15px]">
-                {projectTasks?.list?.map((task) => (
+                {installationTasks?.list?.map((task) => (
                     <TaskCard
                         key={task.id}
                         task={task}
@@ -173,12 +174,12 @@ const TaskListSection = () => {
                         onClick={() => updateSearchParams({ taskId: task.id })}
                     />
                 ))}
-                {(projectTasks?.list && projectTasks.list.length < 1 && !loadingTasks) && (
+                {(installationTasks?.list && installationTasks.list.length < 1 && !loadingTasks) && (
                     <div className="flex justify-center py-4">
                         <span className="text-body-medium text-light-100">No tasks found</span>
                     </div>
                 )}
-                {(loadingTasks && projectTasks?.list && projectTasks.list.length < 1) && (
+                {(loadingTasks && installationTasks?.list && installationTasks.list.length < 1) && (
                     <div className="flex justify-center py-4">
                         <span className="text-body-medium text-light-100">Loading tasks...</span>
                     </div>
