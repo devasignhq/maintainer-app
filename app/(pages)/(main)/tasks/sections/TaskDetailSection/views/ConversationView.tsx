@@ -9,8 +9,10 @@ import { useManageMessages } from "../hooks";
 import { createMessage } from "@/app/services/message.service";
 import { MessageType } from "@/app/models/message.model";
 import { toast } from "react-toastify";
+import useUserStore from "@/app/state-management/useUserStore";
 
 const ConversationView = () => {
+    const { currentUser } = useUserStore();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const { activeTask } = useContext(ActiveTaskContext);
     const [body, setBody] = useState("");
@@ -18,6 +20,7 @@ const ConversationView = () => {
     const [sendingMessage, setSendingMessage] = useState(false);
 
     const {
+        messageBoxRef,
         groupedMessages,
         orderedDateLabels,
         loadingInitialMessages,
@@ -36,7 +39,7 @@ const ConversationView = () => {
 
         try {
             const newMessage = await createMessage({
-                userId: activeTask!.creator!.userId,
+                userId: currentUser!.userId,
                 taskId: activeTask!.id,
                 type: MessageType.GENERAL,
                 body,
@@ -59,7 +62,10 @@ const ConversationView = () => {
                     <p>Loading Messages...</p>
                 </div>
             ):(
-                <div className={`grow px-5 mb-[30px] overflow-y-auto ${orderedDateLabels.length < 1 ? "grid place-content-center" : ""}`}>
+                <div 
+                    ref={messageBoxRef} 
+                    className={`px-5 mb-[30px] overflow-y-auto ${orderedDateLabels.length < 1 ? "grow grid place-content-center" : "h-fit mt-auto"}`}
+                >
                     {orderedDateLabels.length < 1 ? (
                         <div className="space-y-2.5 text-center">
                             <Image 
@@ -78,16 +84,18 @@ const ConversationView = () => {
                     ):(
                         orderedDateLabels.map((dateLabel) => (
                             <div key={dateLabel} className="w-full">
-                                <div className="w-fit px-[15px] py-[3px] my-5 mx-auto border border-primary-200 text-body-medium text-light-200">
+                                <div className="w-fit sticky top-2.5 px-[15px] py-[3px] my-5 mx-auto bg-dark-500 border border-primary-200 text-body-medium text-light-200">
                                     {dateLabel}
                                 </div>
-                                {groupedMessages[dateLabel].map((message, index) => (
-                                    <MessageBlock
-                                        key={message.id}
-                                        message={message}
-                                        largeMargin={groupedMessages[dateLabel][index + 1]?.userId !== message.userId}
-                                    />
-                                ))}
+                                <div className="w-full flex flex-col">
+                                    {groupedMessages[dateLabel].map((message, index) => (
+                                        <MessageBlock
+                                            key={message.id}
+                                            message={message}
+                                            largeMargin={groupedMessages[dateLabel][index + 1]?.userId !== message.userId}
+                                        />
+                                    ))}
+                                </div>
                             </div>
                         ))
                     )}
