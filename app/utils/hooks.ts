@@ -1,6 +1,14 @@
 import { useToggle, useClickAway, useAsyncEffect, useLockFn } from "ahooks";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Context, useContext, useRef, useState } from "react";
+import {
+    Context,
+    useContext,
+    useRef,
+    useState,
+    useEffect,
+    EffectCallback,
+    DependencyList
+} from "react";
 import useUserStore from "../state-management/useUserStore";
 import useInstallationStore from "../state-management/useInstallationStore";
 import useTaskStore from "../state-management/useTaskStore";
@@ -78,3 +86,14 @@ export function useGetInstallationRepositories(OctokitContext: Context<Installat
 
     return { repositories, loading }
 }
+
+export function useEffectOnce(effect: EffectCallback, deps?: DependencyList) {
+    const hasRun = useRef(false);
+
+    useEffect(() => {
+        if (hasRun.current) return;
+        hasRun.current = true;
+        effect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, deps);
+};

@@ -2,6 +2,7 @@ import { MessageDto } from "@/app/models/message.model";
 import { getTaskMessages, listenToExtensionReplies, listenToTaskMessages } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useEffectOnce } from "@/app/utils/hooks";
 
 export interface GroupedMessages {
     [dateLabel: string]: MessageDto[];
@@ -20,8 +21,8 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
         return getOrderedDateLabels(groupedMessages)
     }, [groupedMessages]);
 
-    useEffect(() => {
-        if (!taskId) return;
+    useEffectOnce(() => {
+        if (!taskId || !contributorId || !currentUser) return;
 
         let unsubscribeFromTaskMessages: (() => void) | null = null;
         let unsubscribeFromExtensionReplies: (() => void) | null = null;
@@ -32,18 +33,25 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                 setMessages(initialMessages);
                 setLoading(false);
 
-                if (!contributorId) return;
-
                 unsubscribeFromTaskMessages = listenToTaskMessages(
                     taskId, 
                     contributorId, 
-                    (getLastContributorMessage(messages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
-                    (updatedMessages) => setMessages(prev => [...prev, ...updatedMessages])
+                    (getLastUserMessage(messages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
+                    (updatedMessages) => {
+                        if (updatedMessages.length > 0) {
+                            setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
+                        }
+                    }
                 );
                 unsubscribeFromExtensionReplies = listenToExtensionReplies(
                     taskId, 
-                    currentUser!.userId, 
-                    (updatedMessages) => setMessages(prev => [...prev, ...updatedMessages])
+                    currentUser.userId, 
+                    (getLastUserMessage(initialMessages, currentUser.userId)?.createdAt)?.toDate().toISOString() || "",
+                    (updatedMessages) => {
+                        if (updatedMessages.length > 0) {
+                            setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
+                        }
+                    }
                 );
             } catch (error) {
                 console.error('Failed to load messages:', error);
@@ -57,16 +65,16 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
             if (unsubscribeFromTaskMessages) unsubscribeFromTaskMessages();
             if (unsubscribeFromExtensionReplies) unsubscribeFromExtensionReplies();
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [contributorId, taskId]);
+    }, [contributorId, currentUser, taskId]);
 
     useEffect(() => {
         if (messageBoxRef.current) {
             messageBoxRef.current.scrollTop = messageBoxRef.current.scrollHeight;
         }
-    }, [orderedDateLabels]);
+    }, [groupedMessages.length, messages.length]);
 
     return {
+        messageBoxRef,
         messages,
         groupedMessages,
         orderedDateLabels,
@@ -158,9 +166,9 @@ export const getOrderedDateLabels = (groupedMessages: GroupedMessages): string[]
     });
 };
 
-const getLastContributorMessage = (messages: MessageDto[], contributorId: string) => {
+const getLastUserMessage = (messages: MessageDto[], userId: string) => {
     for (let i = messages.length - 1; i >= 0; i--) {
-        if (messages[i].userId === contributorId) {
+        if (messages[i].userId === userId) {
             return messages[i];
         }
     }
