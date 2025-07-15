@@ -148,15 +148,23 @@ export const listenToUnreadMessagesCount = (
 export const listenToExtensionReplies = (
     taskId: string, 
     userId: string, 
+    startDate: string,
     callback: (messages: MessageDto[]) => void
 ) => {
-    const q = query(
-        messagesCollection,
+    const constraints: any[] = [
         where("taskId", "==", taskId),
         where("userId", "==", userId),
-        where("type", "==", MessageType.TIMELINE_MODIFICATION),
-        orderBy("createdAt", "desc")
-    );
+        where("type", "==", "TIMELINE_MODIFICATION"),
+    ];
+
+    if (startDate && startDate.trim()) {
+        const startTimestamp = Timestamp.fromDate(new Date(startDate));
+        constraints.push(where("createdAt", ">", startTimestamp));
+    }
+    
+    constraints.push(orderBy("createdAt", "asc"));
+
+    const q = query(messagesCollection, ...constraints);
     
     return onSnapshot(q, (snapshot) => {
         const messages = snapshot.docs.map(doc => ({ 
