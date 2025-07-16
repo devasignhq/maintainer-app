@@ -36,7 +36,7 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                 unsubscribeFromTaskMessages = listenToTaskMessages(
                     taskId, 
                     contributorId, 
-                    (getLastUserMessage(messages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
+                    (getLastUserMessage(initialMessages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
                     (updatedMessages) => {
                         if (updatedMessages.length > 0) {
                             setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
@@ -162,7 +162,7 @@ export const getOrderedDateLabels = (groupedMessages: GroupedMessages): string[]
         const dateB = messagesB[0].createdAt.toDate();
         
         // Sort newest first (descending)
-        return dateB.getTime() - dateA.getTime();
+        return dateA.getTime() - dateB.getTime();
     });
 };
 
