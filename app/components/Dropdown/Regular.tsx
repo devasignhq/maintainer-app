@@ -46,6 +46,7 @@ const RegularDropdown = ({
     return (
         <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
             <button 
+                type="button"
                 ref={menuButtonRef}
                 className={twMerge("py-[5px] pl-[15px] pr-2.5 border border-dark-200 text-body-tiny text-light-100 flex items-center gap-[5px]", extendedButtonClassName)}
                 onClick={toggleMenu}
@@ -76,6 +77,7 @@ const RegularDropdown = ({
                                     <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
                                 )}
                                 <button 
+                                    type="button"
                                     className="text-body-small text-light-100 whitespace-nowrap"
                                     onClick={() => selectItem(option)}
                                 >

@@ -96,6 +96,7 @@ const FilterDropdown = ({
     return (
         <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
             <button 
+                type="button"
                 ref={menuButtonRef}
                 className={twMerge(
                     "p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]", 
@@ -119,6 +120,7 @@ const FilterDropdown = ({
                 >
                     <div className="w-full pb-3 pt-[15px] bg-dark-400 sticky top-0">
                         <button 
+                            type="button"
                             className="w-fit text-body-tiny text-light-200 font-bold hover:text-primary-100"
                             onClick={clearSelection}
                             disabled={options.length === 0}
@@ -142,6 +144,7 @@ const FilterDropdown = ({
                                     <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
                                 )}
                                 <button 
+                                    type="button"
                                     className="text-body-small text-light-100"
                                     onClick={() => toggleItems(`${index}`)} 
                                 >
@@ -152,6 +155,7 @@ const FilterDropdown = ({
                     </ul>
                     <div className="w-full pt-3 pb-[15px] bg-dark-400 sticky bottom-0">
                         <button 
+                            type="button"
                             className="group w-fit flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold"
                             onClick={applySelection}
                             disabled={options.length === 0}
