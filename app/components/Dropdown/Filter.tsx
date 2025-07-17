@@ -71,7 +71,7 @@ const FilterDropdown = ({
                 const index = parseInt(key);
                 if (typeof options[0] === "object") {
                     const option = options[index] as Record<string, any>;
-                    return option[(otherProps as any).fieldName];
+                    return option[(otherProps as any).fieldValue];
                 } else {
                     return options[index];
                 }
