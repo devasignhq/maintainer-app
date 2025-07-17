@@ -4,14 +4,13 @@ import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import Image from 'next/image';
 import Link from "next/link";
 import RegularDropdown from "../../../../../../components/Dropdown/Regular";
-import { IssueDto } from "@/app/models/github.model";
+import { GraphqlIssueDto } from "@/app/models/github.model";
 import { CreateTaskDto } from "@/app/models/task.model";
 import { useState } from "react";
 import { object, string, number } from 'yup';
 import { useFormik } from "formik";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useUpdateEffect } from "ahooks";
-import { convertGitHubApiUrlToWebUrlRegex } from "@/app/utils/helper";
 import { twMerge } from "tailwind-merge";
 import MoneyInput from "@/app/components/Input/MoneyInput";
 
@@ -27,7 +26,7 @@ const createTaskSchema = object({
 });
 
 type CreateTaskCardProps = {
-    issue: IssueDto;
+    issue: GraphqlIssueDto;
     defaultSelected: TaskPayload | undefined; 
     showFields: boolean; 
     onToggleCheck: (taskPayload: TaskPayload | null) => void;
@@ -71,15 +70,16 @@ const CreateTaskCard = ({
                 number: issue.number,
                 title: issue.title,
                 body: issue.body || undefined,
-                url: issue.html_url,
-                html_url: issue.html_url,
-                labels: issue.labels,
+                url: issue.url,
+                html_url: issue.url,
+                labels: issue.labels.nodes,
                 locked: issue.locked,
                 state: issue.state,
-                repository_url: convertGitHubApiUrlToWebUrlRegex(issue.repository_url),
-                created_at: issue.created_at,
-                updated_at: issue.updated_at
+                repository_url: issue.repository.url,
+                created_at: issue.createdAt,
+                updated_at: issue.updatedAt
             },
+            ogIssue: issue,
             bounty: formik.values.bounty,
             timeline: formik.values.timeline,
             timelineType: formik.values.timelineType as "DAY" | "WEEK"
@@ -122,15 +122,15 @@ const CreateTaskCard = ({
             </div>
             <div className="max-w-[90%] flex item-center gap-[5px] mt-1">
                 <Link 
-                    href={issue.html_url || ""} 
+                    href={issue.url || ""} 
                     target="_blank" 
                     className="text-body-micro text-light-200 mt-[5px] max-w-[50%] truncate"
                 >
-                    {issue.html_url || ""}
+                    {issue.url || ""}
                 </Link>
-                {issue.labels?.length > 0 && (
+                {issue.labels?.nodes?.length > 0 && (
                     <p className="py-0.5 px-[7px] bg-primary-300 text-primary-100 text-body-tiny font-bold max-w-[50%] truncate">
-                        {issue.labels
+                        {issue.labels.nodes
                             .map(label => label.name)
                             .map((name, index, array) => 
                                 index === array.length - 1 ? name : `${name}, `

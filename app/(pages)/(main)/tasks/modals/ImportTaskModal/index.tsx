@@ -16,12 +16,11 @@ import {
     createBountyLabel,
     createIssueComment,
     getBountyLabel,
-    getRepoIssues,
+    getRepoIssuesWithSearch,
     getRepoLabels,
     getRepoMilestones
 } from "@/app/services/github.service";
 import { 
-    IssueDto, 
     IssueFilters,
     IssueLabel,
     IssueMilestone,
@@ -86,7 +85,7 @@ const ImportTaskModal = ({
         return initialMap;
     });
     const selectedIssues = useMemo(() => 
-        Array.from(selectedTasks.values()).map(task => task.payload.issue), 
+        Array.from(selectedTasks.values()).map(task => task.payload.ogIssue!), 
         [selectedTasks]
     );
     const validPayload = useMemo(() => {
@@ -147,7 +146,7 @@ const ImportTaskModal = ({
                 return { list: [], hasMore: false };
             }
 
-            const issues = await getRepoIssues(
+            const { issues, hasMore } = await getRepoIssuesWithSearch(
                 activeRepo.url,
                 octokit,
                 issueFilters || {},
@@ -156,14 +155,17 @@ const ImportTaskModal = ({
             
             setCurrentPage(pageToLoad);
 
-            return { 
-                list: issues as unknown as IssueDto[],
-                hasMore: issues.length === 30,
-            };
+            return { list: issues, hasMore };
+            
+            // return { 
+            //     list: issues as unknown as IssueDto[],
+            //     hasMore: issues.length === 30,
+            // };
         }, {
             // target: taskSectionRef,
             isNoMore: (data) => !data?.hasMore,
-            reloadDeps: [activeRepo, ...(issueFilters ? Object.values(issueFilters) : [])],
+            reloadDeps: [activeRepo, issueFilters],
+            // reloadDeps: [activeRepo, ...(issueFilters ? Object.values(issueFilters) : [])],
         }
     );
 
@@ -212,7 +214,6 @@ const ImportTaskModal = ({
         });
     };
 
-    // TODO: Update toast content to 'Task for <prometheues issue #3>...'. Repo-issue-number
     // TODO: Alert users when bounty label was not added to issue. They should do it manually 
     const createTasks = async () => {
         if (selectedTasks.size === 0) {
@@ -234,14 +235,17 @@ const ImportTaskModal = ({
         let hasErrors = false;
 
         for (const task of Array.from(selectedTasks.values())) {
-            toast.info(`Creating task for issue #${task.payload.issue.number}...`, { autoClose: 2000 }); // ? Use toast.promise here
+            // ? Use toast.promise here
+            toast.info(`Creating task for issue #${task.payload.issue.number}...`, { autoClose: 2000 });
             setUploadedTasks(prev => {
                 prev.set(task.payload.issue.id, "PENDING");
                 return prev;
             });
 
             try {
-                const createdTask = await TaskAPI.createTask({ payload: task.payload });
+                const payload = task.payload;
+                delete payload.ogIssue;
+                const createdTask = await TaskAPI.createTask({ payload });
                 
                 try {
                     await addBountyLabelToIssue(
@@ -323,7 +327,10 @@ const ImportTaskModal = ({
                                     repoName={repo.name || repo.url.split("/")[4]}
                                     repoUrl={repo.html_url}
                                     active={activeRepo?.id === repo.id}
-                                    onClick={() => setActiveRepo(repo)}
+                                    onClick={() => {
+                                        setIssueFilters(defaultIssueFilters);
+                                        setActiveRepo(repo);
+                                    }}
                                 />
                             ))}
                         </div>
@@ -369,8 +376,8 @@ const ImportTaskModal = ({
                 <FilterDropdown 
                     title="Milestones"
                     options={repoMilestones || []}
-                    fieldName="name"
-                    fieldValue="name"
+                    fieldName="title"
+                    fieldValue="number"
                     setField={(value) => setIssueFilters((prev) => ({
                         ...prev,
                         milestone: value as string
@@ -451,7 +458,7 @@ const ImportTaskModal = ({
                     selectedIssues.map((issue) => (
                         <CreateTaskCard 
                             key={issue.id}
-                            issue={issue as IssueDto}
+                            issue={issue}
                             defaultSelected={selectedTasks.get(issue.id)}
                             showFields
                             onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload)}

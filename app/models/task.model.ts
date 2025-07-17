@@ -1,5 +1,5 @@
 import { MessageDto } from "./message.model"
-import { IssueDto } from "./github.model"
+import { GraphqlIssueDto, IssueDto } from "./github.model"
 import { InstallationDto } from "./installation.model"
 import { UserDto } from "./user.model"
 import { TransactionDto } from "./wallet.model"
@@ -83,6 +83,7 @@ export type TaskActivity = {
 export type CreateTaskDto = {
     installationId: string
     issue: TaskIssue
+    ogIssue?: GraphqlIssueDto
     timeline?: number
     timelineType?: TimelineType
     bounty: string

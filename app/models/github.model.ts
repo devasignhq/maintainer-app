@@ -38,6 +38,20 @@ export type IssueDto = {
     updated_at: string;
 }
 
+export type GraphqlIssueDto = {
+    id: number;
+    number: number;
+    title: string;
+    body?: string | null;
+    url: string;
+    state: string;
+    labels: { nodes: IssueLabel[] };
+    locked: boolean;
+    repository: Pick<RepositoryDto, "url">;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export type IssueLabel = {
     id: number;
     node_id: string;
