@@ -1,5 +1,5 @@
 import { App } from "octokit";
-import { IssueFilters, InstallationOctokit } from "../models/github.model";
+import { IssueFilters, InstallationOctokit, GraphqlIssueDto } from "../models/github.model";
 
 export const githubApp = new App({
     appId: process.env.NEXT_PUBLIC_GITHUB_APP_ID!,
@@ -59,38 +59,78 @@ export async function getRepoIssues(
     return issues;
 };
 
-// TODO: Update later as this method will be removed by September 4th, 2025
+
 export async function getRepoIssuesWithSearch(
     repoUrl: string,
     octokit: InstallationOctokit,
     filters?: IssueFilters,
-    page: number = 1,
-    perPage: number = 30,
+    page = 1,
+    perPage = 30,
 ) {
     const [owner, repo] = getOwnerAndRepo(repoUrl);
     
-    let query = `repo:${owner}/${repo} is:issue is:open`;
+    let queryString = `repo:${owner}/${repo} is:issue is:open`;
     
     if (filters?.labels?.length) {
-        query += ` ${filters.labels.map(label => `label:"${label}"`).join(' ')}`;
+        queryString += ` ${filters.labels.map(label => `label:"${label}"`).join(' ')}`;
     }
     
     if (filters?.milestone) {
-        query += ` milestone:"${filters.milestone}"`;
+        queryString += ` milestone:"${filters.milestone}"`;
     }
     
-    query += ` -label:"💵 Bounty"`;
+    queryString += ` -label:"💵 Bounty"`;
 
-    const response = await octokit.rest.search.issuesAndPullRequests({
-        q: query,
-        sort: filters?.sort || 'created',
-        order: filters?.direction || 'desc',
-        per_page: perPage,
-        page,
-        advanced_search: "true",
-    });
+    const after = page > 1 ? `after: "${btoa(`cursor:${(page - 1) * perPage}`)}",` : '';
 
-    return response.data.items;
+    const query = `
+        query($queryString: String!) {
+            search(
+                query: $queryString,
+                type: ISSUE,
+                first: ${perPage},
+                ${after}
+            ) {
+                nodes {
+                    ... on Issue {
+                        id
+                        number
+                        title
+                        body
+                        url
+                        locked
+                        state
+                        createdAt
+                        updatedAt
+                        labels(first: 20) {
+                            nodes {
+                                id
+                                name
+                                color
+                                description
+                            }
+                        }
+                        repository {
+                            url
+                        }
+                    }
+                }
+                pageInfo {
+                    hasNextPage
+                    hasPreviousPage
+                    startCursor
+                    endCursor
+                }
+                issueCount
+            }
+        }
+    `;
+
+    const response = await octokit.graphql(query, { queryString });
+    return {
+        issues: (response as any)?.search?.nodes as GraphqlIssueDto[],
+        hasMore: (response as any)?.search?.pageInfo?.hasNextPage as boolean
+    }
 }
 
 export async function getRepoIssue(
