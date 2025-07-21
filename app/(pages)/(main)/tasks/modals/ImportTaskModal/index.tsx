@@ -156,19 +156,13 @@ const ImportTaskModal = ({
             setCurrentPage(pageToLoad);
 
             return { list: issues, hasMore };
-            
-            // return { 
-            //     list: issues as unknown as IssueDto[],
-            //     hasMore: issues.length === 30,
-            // };
         }, {
-            // target: taskSectionRef,
             isNoMore: (data) => !data?.hasMore,
             reloadDeps: [activeRepo, issueFilters],
-            // reloadDeps: [activeRepo, ...(issueFilters ? Object.values(issueFilters) : [])],
         }
     );
 
+    // TODO: Use graphql to exclude 'Bounty' label
     const { loading: loadingLabels, data: repoLabels } = useRequest<IssueLabel[], any>(
         () => {
             if (!activeRepo || !octokit) {

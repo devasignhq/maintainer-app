@@ -61,6 +61,7 @@ const FilterDropdown = ({
                 [key]: false
             }), {})
         );
+        setField(undefined as any);
         toggleMenu();
     };
 
