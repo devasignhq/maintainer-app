@@ -25,7 +25,9 @@ export const ENDPOINTS = {
     },
     TASK: {
         GET_ALL: preset.TASK + "",
+        GET_INSTALLATION_TASKS: preset.TASK + "/installation/{installationId}",
         GET_BY_ID: preset.TASK + "/{taskId}",
+        GET_INSTALLATION_TASK_BY_ID: preset.TASK + "/installation/{taskId}",
         GET_ACTIVITIES: preset.TASK + "/activities/{taskId}",
         CREATE: preset.TASK + "",
         CREATE_MANY: preset.TASK + "/batch",

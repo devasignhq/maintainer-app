@@ -37,11 +37,15 @@ const TaskListSection = () => {
         reload: reloadTasks,
     } = useInfiniteScroll<Data>(
         async (currentData) => {
+            if (!activeInstallation) {
+                return { list: [], pagination: null }
+            }
+            
             const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
             
-            const response = await TaskAPI.getTasks(
+            const response = await TaskAPI.getInstallationTasks(
+                activeInstallation.id,
                 { 
-                    installationId: activeInstallation?.id, 
                     page: pageToLoad,
                     limit: 30,
                 },

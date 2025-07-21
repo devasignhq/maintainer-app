@@ -15,15 +15,28 @@ import {
     UpdateTaskBountyDto,
     UpdateTaskTimelineDto,
 } from "../models/task.model";
-import { MessageResponse, MessageWithDataResponse, PaginatedResponse } from "../models/_global";
+import { MessageResponse, MessageWithDataResponse, PaginatedResponse, PartialSuccessResponse } from "../models/_global";
 
 export class TaskAPI {
     static async getTasks(query?: QueryTaskDto, filter?: FilterTasks) {
-        return HttpClient.get<PaginatedResponse<TaskDto>>(ENDPOINTS.TASK.GET_ALL, { data: filter, params: query });
+        return HttpClient.get<PaginatedResponse<TaskDto>>(ENDPOINTS.TASK.GET_ALL, { data: { filter }, params: query });
+    }
+
+    static async getInstallationTasks(
+        installationId: string, 
+        query?: Omit<QueryTaskDto, "installationId">, 
+        filter?: FilterTasks
+    ) {
+        return HttpClient.get<PaginatedResponse<TaskDto>>(ENDPOINTS.TASK.GET_INSTALLATION_TASKS
+            .replace("{installationId}", installationId), { data: { filter }, params: query });
     }
 
     static async getTaskById(taskId: string) {
         return HttpClient.get<TaskDto>(ENDPOINTS.TASK.GET_BY_ID.replace("{taskId}", taskId));
+    }
+
+    static async getInstallationTaskById(taskId: string) {
+        return HttpClient.get<TaskDto>(ENDPOINTS.TASK.GET_INSTALLATION_TASK_BY_ID.replace("{taskId}", taskId));
     }
 
     static async getTaskActivities(taskId: string, query?: QueryTaskActivityDto) {
@@ -66,7 +79,7 @@ export class TaskAPI {
     }
 
     static async validateCompletion(taskId: string) {
-        return HttpClient.post<Pick<TaskDto, "status" | "completedAt" | "settled" | "updatedAt">>(
+        return HttpClient.post<Pick<TaskDto, "status" | "completedAt" | "settled" | "updatedAt"> | PartialSuccessResponse<"task", Pick<TaskDto, "status" | "completedAt" | "settled" | "updatedAt">>>(
             ENDPOINTS.TASK.VALIDATE_COMPLETION.replace("{taskId}", taskId), {});
     }
 

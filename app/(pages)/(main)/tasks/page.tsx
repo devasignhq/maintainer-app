@@ -29,7 +29,7 @@ const Tasks = () => {
         setLoadingTask(true);
 
         try {
-            const task = await TaskAPI.getTaskById(taskId);
+            const task = await TaskAPI.getInstallationTaskById(taskId);
             setActiveTask(task);
         } catch {
             setActiveTask(null);
