@@ -7,7 +7,7 @@ import FilterDropdown from "../../../../../components/Dropdown/Filter";
 import CreateTaskCard from "./components/CreateTaskCard";
 import { HiPlus } from "react-icons/hi";
 import RepoMenuCard from "./components/RepoMenuCard";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useAsyncEffect, useInfiniteScroll, useRequest } from "ahooks";
 import useTaskStore from "@/app/state-management/useTaskStore";
 import { PiEyeBold, PiEyeSlashBold } from "react-icons/pi";
@@ -65,6 +65,7 @@ const ImportTaskModal = ({
     const octokit = useContext(OctokitContext);
     const { activeInstallation } = useInstallationStore();
     const { draftTasks, setDraftTasks } = useTaskStore();
+    const taskBoxRef = useRef<HTMLDivElement>(null);
     const [activeRepo, setActiveRepo] = useState<RepositoryDto | undefined>(installationRepos[0]);
     const [issueFilters, setIssueFilters] = useState<IssueFilters>(defaultIssueFilters);
     const [currentPage, setCurrentPage] = useState(1);
@@ -224,6 +225,7 @@ const ImportTaskModal = ({
         //     .reduce((total, task) => total + Number(task.payload.bounty), 0);
 
         setUploadingTasks(true);
+        taskBoxRef!.current!.scrollTop = 0;
 
         const draftTasks: CreateTaskDto[] = [];
         let hasErrors = false;
@@ -447,7 +449,10 @@ const ImportTaskModal = ({
                     Clear Selection
                 </button>
             </section>
-            <section className="grow my-[30px] flex flex-col gap-2.5 overflow-y-auto">
+            <section 
+                ref={taskBoxRef} 
+                className="grow my-[30px] flex flex-col gap-2.5 overflow-y-auto"
+            >
                 {(showSelectedTasks && selectedIssues.length > 0) ? (
                     selectedIssues.map((issue) => (
                         <CreateTaskCard 
