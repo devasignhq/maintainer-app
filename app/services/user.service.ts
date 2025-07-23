@@ -6,6 +6,7 @@ import {
     UserDto,
     UserPayloadDto 
 } from "../models/user.model";
+import { PartialSuccessResponse } from "../models/_global";
 
 export class UserAPI {
     static async getUser(query?: QueryUserDto) {
@@ -13,7 +14,7 @@ export class UserAPI {
     }
 
     static async createUser(data: UserPayloadDto) {
-        return HttpClient.post<UserDto>(ENDPOINTS.USER.CREATE, data);
+        return HttpClient.post<UserDto | PartialSuccessResponse<"user", UserDto>>(ENDPOINTS.USER.CREATE, data);
     }
 
     static async updateUsername(data: UserPayloadDto) {

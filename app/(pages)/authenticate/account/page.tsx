@@ -27,14 +27,20 @@ const Account = () => {
     };
 
     const { loading: creatingUser, run: createUser } = useRequest(
-        useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })), 
+        useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })),
         {
             manual: true,
             onSuccess: (data, params) => {
                 toast.success("User created successfully.");
-                if (data) {
+
+                if (data && "userId" in data) {
                     setCurrentUser({ ...data, username: params[0] });
                 }
+                if (data && "user" in data) {
+                    setCurrentUser({ ...data.user, username: params[0] });
+                    toast.warn(data.message);
+                }
+                
                 getInstallation();
                 router.push(ROUTES.ONBOARDING);
             },
@@ -46,7 +52,7 @@ const Account = () => {
 
     const { loading: fetchingUser, run: getUser } = useRequest(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        useLockFn((gitHubUsername: string) => UserAPI.getUser({ view: "basic" })), 
+        useLockFn((gitHubUsername: string) => UserAPI.getUser({ view: "basic" })),
         {
             manual: true,
             onSuccess: (data, params) => {
@@ -55,7 +61,7 @@ const Account = () => {
                 }
 
                 getInstallation();
-                
+
                 if (data?._count && data._count?.installations > 0) {
                     router.push(ROUTES.TASKS);
                     return
@@ -82,7 +88,7 @@ const Account = () => {
             const result = await signInWithPopup(auth, githubProvider);
             const additionalInfo = getAdditionalUserInfo(result);
             // const credential = GithubAuthProvider.credentialFromResult(result);
-            
+
             getUser(additionalInfo!.username!);
         } catch (error) {
             toast.error("GitHub sign-in failed. Please try again.");
@@ -103,20 +109,20 @@ const Account = () => {
                 format="SOLID"
                 text={
                     creatingUser
-                        ? "Saving User..." 
+                        ? "Saving User..."
                         : fetchingUser
                             ? "Loading User..."
                             : "Continue with GitHub"
                 }
                 sideItem={<FaGithub />}
-                attributes={{ 
+                attributes={{
                     onClick: handleGitHubAuth,
-                    disabled: creatingUser || fetchingUser, 
+                    disabled: creatingUser || fetchingUser,
                 }}
                 extendedClassName="w-[264px]"
             />
         </div>
     );
 }
- 
+
 export default Account;

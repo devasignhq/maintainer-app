@@ -209,7 +209,6 @@ const ImportTaskModal = ({
         });
     };
 
-    // TODO: Alert users when bounty label was not added to issue. They should do it manually 
     const createTasks = async () => {
         if (selectedTasks.size === 0) {
             toast.error("Please select at least one issue to import.");

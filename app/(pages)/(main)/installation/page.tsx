@@ -85,7 +85,7 @@ const Installation = () => {
         }
 
         try {
-            const installation = await InstallationAPI.createInstallation({
+            const response = await InstallationAPI.createInstallation({
                 installationId,
                 htmlUrl: githubInstallation.data.html_url,
                 targetId: githubInstallation.data.target_id,
@@ -99,9 +99,19 @@ const Installation = () => {
             });
 
             const noInstallations = !activeInstallation && installationList.length === 0;
-            setActiveInstallation(installation);
-            setInstallationList([ ...installationList, installation ]);
-            toast.success("Installation validated successfully.");
+            
+            toast.success("Installation saved successfully.");
+
+            if (response && "account" in response) {
+                setActiveInstallation(response);
+                setInstallationList([ ...installationList, response ]);
+            }
+            if (response && "error" in response) {
+                setActiveInstallation(response.installation);
+                setInstallationList([ ...installationList, response.installation ]);
+                toast.warn(response.message);
+            }
+
 
             if (noInstallations) {
                 router.push(ROUTES.ONBOARDING + "?newInstallation=true");

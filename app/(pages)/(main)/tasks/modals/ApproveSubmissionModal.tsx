@@ -26,9 +26,15 @@ const ApproveSubmissionModal = ({ taskActivity, toggleModal, onSuccess }: Approv
             manual: true,
             onSuccess: (data) => {
                 toast.success("Submission approved successfully! Bounty disbursed to contributor.");
-                if (data) {
-                    setActiveTask({ ...activeTask!, ...data})
+                
+                if (data && "status" in data) {
+                    setActiveTask({ ...activeTask!, ...data});
                 }
+                if (data && "task" in data) {
+                    setActiveTask({ ...activeTask!, ...data.task});
+                    toast.warn(data.message);
+                }
+                
                 toggleModal();
                 onSuccess();
             },

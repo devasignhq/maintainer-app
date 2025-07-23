@@ -9,7 +9,7 @@ import {
     UpdateInstallationDto,
     UpdateTeamMemberDto
 } from "../models/installation.model";
-import { MessageResponse, MessageWithDataResponse } from "../models/_global";
+import { MessageResponse, MessageWithDataResponse, PartialSuccessResponse } from "../models/_global";
 import { PaginatedResponse } from "../models/_global";
 
 export class InstallationAPI {
@@ -22,7 +22,8 @@ export class InstallationAPI {
     }
 
     static async createInstallation(installation: CreateInstallationDto) {
-        return HttpClient.post<InstallationDto>(ENDPOINTS.INSTALLATION.CREATE, installation);
+        return HttpClient.post<InstallationDto | PartialSuccessResponse<"installation", InstallationDto>>(
+            ENDPOINTS.INSTALLATION.CREATE, installation);
     }
 
     static async updateInstallation(installationId: string, data: UpdateInstallationDto) {
