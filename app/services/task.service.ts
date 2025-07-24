@@ -15,7 +15,12 @@ import {
     UpdateTaskBountyDto,
     UpdateTaskTimelineDto,
 } from "../models/task.model";
-import { MessageResponse, MessageWithDataResponse, PaginatedResponse, PartialSuccessResponse } from "../models/_global";
+import {
+    MessageResponse,
+    MessageWithDataResponse,
+    PaginatedResponse,
+    PartialSuccessResponse 
+} from "../models/_global";
 
 export class TaskAPI {
     static async getTasks(query?: QueryTaskDto, filter?: FilterTasks) {
@@ -44,8 +49,8 @@ export class TaskAPI {
             ENDPOINTS.TASK.GET_ACTIVITIES.replace("{taskId}", taskId), { params: query });
     }
 
-    static async createTask(data: { payload: CreateTaskDto }) {
-        return HttpClient.post<TaskDto>(ENDPOINTS.TASK.CREATE, data);
+    static async createTask(data: { payload: CreateTaskDto & { bountyLabelId: number } }) {
+        return HttpClient.post<TaskDto | PartialSuccessResponse<"task", TaskDto>>(ENDPOINTS.TASK.CREATE, data);
     }
 
     static async addBountyCommentId(taskId: string, data: AddBountyCommentId) {
@@ -54,7 +59,7 @@ export class TaskAPI {
     }
 
     static async updateTaskBounty(taskId: string, data: UpdateTaskBountyDto) {
-        return HttpClient.patch<Pick<TaskDto, "bounty" | "updatedAt">>(
+        return HttpClient.patch<Pick<TaskDto, "bounty" | "updatedAt"> | PartialSuccessResponse<"task", Pick<TaskDto, "bounty" | "updatedAt">>>(
             ENDPOINTS.TASK.UPDATE_TASK_BOUNTY.replace("{taskId}", taskId), data);
     }
 
@@ -94,7 +99,7 @@ export class TaskAPI {
     }
 
     static async deleteTask(taskId: string) {
-        return HttpClient.delete<MessageWithDataResponse<"refunded", string>>(
+        return HttpClient.delete<MessageWithDataResponse<"refunded", string> | PartialSuccessResponse<"data", MessageWithDataResponse<"refunded", string>>>(
             ENDPOINTS.TASK.DELETE.replace("{taskId}", taskId));
     }
 }

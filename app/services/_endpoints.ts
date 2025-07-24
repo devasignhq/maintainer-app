@@ -3,6 +3,7 @@ const preset = {
     INSTALLATION: "/installations",
     TASK: "/tasks",
     WALLET: "/wallet",
+    GITHUB: "/github",
 };
 
 export const ENDPOINTS = {
@@ -52,5 +53,11 @@ export const ENDPOINTS = {
         WITHDRAW: preset.WALLET + "/withdraw",
         SWAP: preset.WALLET + "/swap",
         TRANSACTIONS: preset.WALLET + "/transactions",
+    },
+    GITHUB: {
+        GET_INSTALLATION_REPOSITORIES: preset.GITHUB + "/installations/{installationId}/repositories",
+        GET_REPOSITORY_ISSUES: preset.GITHUB + "/installations/{installationId}/issues",
+        GET_REPOSITORY_RESOURCES: preset.GITHUB + "/installations/{installationId}/resources",
+        SET_BOUNTY_LABEL: preset.GITHUB + "/installations/{installationId}/set-bounty-label",
     },
 };

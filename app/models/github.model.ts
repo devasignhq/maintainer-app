@@ -1,5 +1,3 @@
-import { Octokit } from "octokit";
-
 export type RepositoryDto = {
     id: number;
     node_id: string;
@@ -113,17 +111,28 @@ export type GitHubUser = {
     starred_at?: string | undefined;
 }
 
-export class IssueFilters {
+export type GetRepositoryIssuesResponse = {
+    issues: GraphqlIssueDto[];
+    hasMore: boolean;
+    pagination: { page: number, perPage: number };
+}
+
+export type GetRepositoryResourcesResponse = {
+    labels: IssueLabel[];
+    milestones: IssueMilestone[];
+}
+
+export type SetBountyLabelResponse = {
+    valid: boolean;
+    bountyLabel: IssueLabel;
+}
+
+export class QueryRepositoryIssues {
+    title?: string;
     labels?: string[];
     milestone?: string | "none" | "*";
     sort?: "created" | "updated" | "comments" = "created";
     direction?: "asc" | "desc" = "desc";
-}
-
-export type InstallationOctokit = Octokit & {
-    paginate: import("@octokit/plugin-paginate-rest").PaginateInterface;
-} & import("@octokit/plugin-paginate-graphql").paginateGraphQLInterface & import("@octokit/plugin-rest-endpoint-methods").Api & {
-    retry: {
-        retryRequest: (error: import("@octokit/request-error").RequestError, retries: number, retryAfter: number) => import("@octokit/request-error").RequestError;
-    };
+    page?: number;
+    perPage?: number;
 }
