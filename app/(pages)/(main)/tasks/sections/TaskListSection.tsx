@@ -13,7 +13,6 @@ import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import { ActiveTaskContext } from "../page";
 import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/utils/hooks";
-import { OctokitContext } from "../../layout";
 
 const TaskListSection = () => {
     const { activeInstallation } = useInstallationStore();
@@ -25,7 +24,7 @@ const TaskListSection = () => {
     const { 
         repositories: installationRepos, 
         loading: loadingInstallationRepos 
-    } = useGetInstallationRepositories(OctokitContext);
+    } = useGetInstallationRepositories();
     
     // TODO: Implement caching
     const {
@@ -61,7 +60,7 @@ const TaskListSection = () => {
                 pagination: response.pagination,
             };
         }, {
-            isNoMore: (data) => !data?.pagination.hasMore,
+            isNoMore: (data) => !data?.pagination?.hasMore,
             reloadDeps: [
                 activeInstallation?.id, 
                 ...(taskFilters ? Object.values(taskFilters) : []), 

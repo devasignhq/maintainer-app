@@ -14,7 +14,6 @@ import { moneyFormat, openInNewTab } from '@/app/utils/helper';
 import { useRouter, useSearchParams } from "next/navigation";
 import { ROUTES } from '@/app/utils/data';
 import { useEffect } from 'react';
-import { OctokitContext } from '../layout';
 import { useGetInstallationRepositories } from '@/app/utils/hooks';
 
 const Onboarding = () => {
@@ -30,7 +29,7 @@ const Onboarding = () => {
     const { 
         repositories: installationRepos, 
         loading: loadingInstallationRepos 
-    } = useGetInstallationRepositories(OctokitContext);
+    } = useGetInstallationRepositories();
 
     useEffect(() => {
         if (searchParams.get("newInstallation") === "true") {

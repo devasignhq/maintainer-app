@@ -1,8 +1,6 @@
 import { useToggle, useClickAway, useAsyncEffect, useLockFn } from "ahooks";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import {
-    Context,
-    useContext,
     useRef,
     useState,
     useEffect,
@@ -12,7 +10,8 @@ import {
 import useUserStore from "../state-management/useUserStore";
 import useInstallationStore from "../state-management/useInstallationStore";
 import useTaskStore from "../state-management/useTaskStore";
-import { InstallationOctokit, RepositoryDto } from "../models/github.model";
+import { RepositoryDto } from "../models/github.model";
+import { GitHubAPI } from "../services/github.service";
 
 export function useCustomSearchParams() {
     const router = useRouter();
@@ -69,20 +68,23 @@ export function useClearStores() {
     };
 }
 
-export function useGetInstallationRepositories(OctokitContext: Context<InstallationOctokit | null>) {
-    const octokit = useContext(OctokitContext);
+export function useGetInstallationRepositories() {
+    const { activeInstallation } = useInstallationStore();
     const [repositories, setRepositories] = useState<RepositoryDto[]>([]);
     const [loading, setLoading] = useState(false);
 
     useAsyncEffect(useLockFn(async () => {
-        if (!octokit) return;
+        if (!activeInstallation) return;
+
         setLoading(true);
 
-        const response = await octokit.request("GET /installation/repositories");
+        const response = await GitHubAPI.getInstallationRepositories(
+            activeInstallation.id
+        );
 
-        setRepositories(response.data.repositories);
+        setRepositories(response);
         setLoading(false);
-    }), [octokit]);
+    }), [activeInstallation]);
 
     return { repositories, loading }
 }

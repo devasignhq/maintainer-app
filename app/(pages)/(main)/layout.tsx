@@ -12,13 +12,8 @@ import { InstallationAPI } from "@/app/services/installation.service";
 import { useRequest, useLockFn, useAsyncEffect } from "ahooks";
 import { TbLogout } from "react-icons/tb";
 import { useLogoutUser } from "@/lib/firebase";
-import { createContext, useState } from "react";
-import { githubApp } from "@/app/services/github.service";
-import { InstallationOctokit } from "@/app/models/github.model";
 import { FiSettings } from "react-icons/fi";
 import { openInNewTab } from "@/app/utils/helper";
-
-export const OctokitContext = createContext<InstallationOctokit | null>(null);
 
 export default function MainLayout({
     children,
@@ -35,7 +30,6 @@ export default function MainLayout({
         setInstallationList,
         setActiveInstallation
     } = useInstallationStore();
-    const [octokit, setOctokit] = useState<InstallationOctokit | null>(null);
 
     const { loading: fetchingInstallations, runAsync: fetchInstallations } = useRequest(
         useLockFn(() => InstallationAPI.getInstallations()), 
@@ -54,16 +48,6 @@ export default function MainLayout({
         setInstallationList(installations.data);
         if (!activeInstallation) setActiveInstallation(installations.data[0]);
     }), [activeInstallation]);
-
-    useAsyncEffect(async () => {
-        if (!activeInstallation) {
-            setOctokit(null);
-            return
-        }
-
-        const octokit = await githubApp.getInstallationOctokit(Number(activeInstallation.id));
-        setOctokit(octokit);
-    }, [activeInstallation]);
 
     return (
         <main className="h-full w-full px-[6.75%] flex flex-col">
@@ -184,9 +168,7 @@ export default function MainLayout({
                 </nav>
             )}
               
-            <OctokitContext.Provider value={octokit}>
-                {children}
-            </OctokitContext.Provider>
+            {children}
         </main>
     );
 }
