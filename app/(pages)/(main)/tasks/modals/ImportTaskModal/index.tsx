@@ -7,43 +7,29 @@ import FilterDropdown from "../../../../../components/Dropdown/Filter";
 import CreateTaskCard from "./components/CreateTaskCard";
 import { HiPlus } from "react-icons/hi";
 import RepoMenuCard from "./components/RepoMenuCard";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAsyncEffect, useInfiniteScroll, useRequest } from "ahooks";
 import useTaskStore from "@/app/state-management/useTaskStore";
 import { PiEyeBold, PiEyeSlashBold } from "react-icons/pi";
 import {
-    addBountyLabelToIssue,
-    createBountyLabel,
-    createIssueComment,
-    getBountyLabel,
-    getRepoIssuesWithSearch,
-    getRepoLabels,
-    getRepoMilestones
-} from "@/app/services/github.service";
-import { 
-    IssueFilters,
-    IssueLabel,
-    IssueMilestone,
-    RepositoryDto 
+    QueryRepositoryIssues,
+    RepositoryDto,
+    GetRepositoryResourcesResponse
 } from "@/app/models/github.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { CreateTaskDto } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
 import { openInNewTab } from "@/app/utils/helper";
-import { customBountyMessage } from "@/app/utils/data";
-import { OctokitContext } from "../../../layout";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
+import { GitHubAPI } from "@/app/services/github.service";
 
 type TaskPayload = {
     payload: CreateTaskDto;
     valid: boolean;
 }
 
-type TaskBountyCommentId = {
-    taskId: string;
-    commentId: number;
-}
+type IssueFilters = Pick<QueryRepositoryIssues, "title" | "labels" | "milestone" | "sort" | "direction" | "perPage">;
 
 type UploadStatus = "PENDING" | "CREATED" | "FAILED";
 
@@ -56,13 +42,12 @@ type ImportTaskModalProps = {
 
 // TODO: Transfer logic to custom hook
 // TODO: Disable all buttons and links when tasks are being uploaded
-const ImportTaskModal = ({ 
+const ImportTaskModal = ({
     installationRepos,
     loadingInstallationRepos,
     toggleModal,
     onSuccess
 }: ImportTaskModalProps) => {
-    const octokit = useContext(OctokitContext);
     const { activeInstallation } = useInstallationStore();
     const { draftTasks, setDraftTasks } = useTaskStore();
     const taskBoxRef = useRef<HTMLDivElement>(null);
@@ -72,8 +57,8 @@ const ImportTaskModal = ({
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
     const [uploadingTasks, setUploadingTasks] = useState(false);
     const [validBountyLabel, setValidBountyLabel] = useState<Map<string, boolean>>(new Map());
+    const [bountyLabelId, setBountyLabelId] = useState<number>();
     // const [totalBounties, setTotalBounties] = useState(false);
-    const [taskBountyCommentIds, setTaskBountyCommentIds] = useState<TaskBountyCommentId[]>([]);
     const [uploadedTasks, setUploadedTasks] = useState<Map<number, UploadStatus>>(new Map());
     const [selectedTasks, setSelectedTasks] = useState<Map<number, TaskPayload>>(() => {
         const initialMap = new Map();
@@ -85,13 +70,13 @@ const ImportTaskModal = ({
         });
         return initialMap;
     });
-    const selectedIssues = useMemo(() => 
-        Array.from(selectedTasks.values()).map(task => task.payload.ogIssue!), 
+    const selectedIssues = useMemo(() =>
+        Array.from(selectedTasks.values()).map(task => task.payload.ogIssue!),
         [selectedTasks]
     );
     const validPayload = useMemo(() => {
         if (selectedTasks.size === 0) return false;
-        
+
         return Array.from(selectedTasks.values()).every(task => task.valid);
     }, [selectedTasks]);
 
@@ -103,35 +88,20 @@ const ImportTaskModal = ({
 
     // Check if repo has bounty label
     useAsyncEffect(async () => {
-        if (!activeRepo || !octokit) return;
+        if (!activeRepo) return;
         if (validBountyLabel.get(activeRepo.url)) return;
-        
-        let bountyLabel;
+
         try {
-            bountyLabel = await getBountyLabel(activeRepo.url, octokit);
+            const response = await GitHubAPI.setBountyLabel(
+                activeInstallation!.id,
+                activeRepo.url
+            );
+
             setValidBountyLabel(validBountyLabel.set(activeRepo.url, true));
-        } catch {}
+            setBountyLabelId(response.bountyLabel.id);
+        } catch { }
+    }, [activeRepo])
 
-        if (!bountyLabel) {
-            try {
-                await createBountyLabel(activeRepo.url, octokit);
-                setValidBountyLabel(validBountyLabel.set(activeRepo.url, true));
-            } catch {}
-        }
-    }, [activeRepo, octokit])
-
-    // Add bounty comment id for tasks created
-    useAsyncEffect(async () => {
-        if (taskBountyCommentIds.length === 0) return;
-
-        const latestItem = taskBountyCommentIds[taskBountyCommentIds.length - 1];
-
-        await TaskAPI.addBountyCommentId(
-            latestItem.taskId,
-            { bountyCommentId: latestItem.commentId }
-        )
-    }, [taskBountyCommentIds.length])
-    
     const {
         data: repoIssues,
         loading: loadingIssues,
@@ -143,17 +113,19 @@ const ImportTaskModal = ({
         async (currentData) => {
             const pageToLoad = currentData ? currentPage + 1 : 1;
 
-            if (!activeRepo || !octokit) {
+            if (!activeRepo || !activeInstallation) {
                 return { list: [], hasMore: false };
             }
 
-            const { issues, hasMore } = await getRepoIssuesWithSearch(
-                activeRepo.url,
-                octokit,
-                issueFilters || {},
-                pageToLoad
+            const { issues, hasMore } = await GitHubAPI.getRepositoryIssues(
+                activeInstallation.id,
+                { 
+                    repoUrl: activeRepo.url,
+                    page: pageToLoad,
+                    ...issueFilters, 
+                }
             );
-            
+
             setCurrentPage(pageToLoad);
 
             return { list: issues, hasMore };
@@ -163,36 +135,24 @@ const ImportTaskModal = ({
         }
     );
 
-    // TODO: Use graphql to exclude 'Bounty' label
-    const { loading: loadingLabels, data: repoLabels } = useRequest<IssueLabel[], any>(
+    const { loading: loadingResources, data: repoResources } = useRequest<GetRepositoryResourcesResponse, any>(
         () => {
-            if (!activeRepo || !octokit) {
-                return delayedArray();
-            } 
-            return getRepoLabels(activeRepo.url, octokit) as Promise<IssueLabel[]>;
-        }, 
+            if (!activeRepo || !activeInstallation) {
+                return delayedEmptyResources();
+            }
+            return GitHubAPI.getRepositoryResources(
+                activeInstallation.id,
+                activeRepo.url
+            ) as Promise<GetRepositoryResourcesResponse>;
+        },
         {
             retryCount: 1,
-            cacheKey: `${activeRepo?.id}-labels`,
+            cacheKey: `${activeRepo?.id}-resources`,
             refreshDeps: [activeRepo]
         }
     );
 
-    const { loading: loadingMilestones, data: repoMilestones } = useRequest<IssueMilestone[], any>(
-        () => {
-            if (!activeRepo || !octokit) {
-                return delayedArray();
-            } 
-            return getRepoMilestones(activeRepo.url, octokit) as Promise<IssueMilestone[]>;
-        }, 
-        {
-            retryCount: 1,
-            cacheKey: `${activeRepo?.id}-milestones`,
-            refreshDeps: [activeRepo]
-        }
-    );
-
-    const disableFilters = loadingInstallationRepos  || loadingIssues || loadingMoreIssues;
+    const disableFilters = loadingInstallationRepos || loadingIssues || loadingMoreIssues;
 
     const handleToggleCheck = (issueId: number, taskPayload: TaskPayload | null) => {
         setSelectedTasks(prev => {
@@ -240,35 +200,19 @@ const ImportTaskModal = ({
             try {
                 const payload = task.payload;
                 delete payload.ogIssue;
-                const createdTask = await TaskAPI.createTask({ payload });
-                
-                try {
-                    await addBountyLabelToIssue(
-                        task.payload.issue.repository_url,
-                        octokit!,
-                        task.payload.issue.number
-                    );
 
-                    const bountyComment = await createIssueComment(
-                        task.payload.issue.repository_url,
-                        octokit!,
-                        task.payload.issue.number,
-                        customBountyMessage(task.payload.bounty, createdTask.id)
-                    );
+                const response = await TaskAPI.createTask({
+                    payload: { ...payload, bountyLabelId: bountyLabelId! }
+                });
 
-                    setTaskBountyCommentIds(prev => ([...prev, { taskId: createdTask.id, commentId: bountyComment.id} ]));
-                    toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
-                    setUploadedTasks(prev => {
-                        prev.set(task.payload.issue.id, "CREATED");
-                        return prev;
-                    });
-                } catch (error) {
-                    toast.info(`Task for issue #${task.payload.issue.number} created successfully but failed to either create bounty comment or add bounty label.`);
-                    setUploadedTasks(prev => {
-                        prev.set(task.payload.issue.id, "CREATED");
-                        return prev;
-                    });
-                    console.error(`Error updating issue #${task.payload.issue.number}:`, error);
+                toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
+                setUploadedTasks(prev => {
+                    prev.set(task.payload.issue.id, "CREATED");
+                    return prev;
+                });
+
+                if (response && "message" in response) {
+                    toast.warn(response.message);
                 }
             } catch (error) {
                 toast.error(`Task for issue #${task.payload.issue.number} failed to create.`);
@@ -314,7 +258,7 @@ const ImportTaskModal = ({
                 <div className="flex items-end justify-between gap-2.5">
                     {loadingInstallationRepos ? (
                         <p className="text-body-medium text-light-100">Fetching repositories...</p>
-                    ):(
+                    ) : (
                         <div className="w-full border-b border-dark-200 flex gap-[15px] overflow-x-auto">
                             {installationRepos?.map((repo) => (
                                 <RepoMenuCard
@@ -357,30 +301,30 @@ const ImportTaskModal = ({
 
                     </button>
                 </div> */}
-                <FilterDropdown 
+                <FilterDropdown
                     title="Labels"
-                    options={repoLabels || []}
+                    options={repoResources?.labels || []}
                     fieldName="name"
                     fieldValue="name"
                     setField={(value) => setIssueFilters((prev) => ({
                         ...prev,
                         labels: value as string[]
                     }))}
-                    buttonAttributes={{ disabled: loadingLabels || disableFilters }}
+                    buttonAttributes={{ disabled: loadingResources || disableFilters }}
                 />
-                <FilterDropdown 
+                <FilterDropdown
                     title="Milestones"
-                    options={repoMilestones || []}
+                    options={repoResources?.milestones || []}
                     fieldName="title"
                     fieldValue="number"
                     setField={(value) => setIssueFilters((prev) => ({
                         ...prev,
                         milestone: value as string
                     }))}
-                    buttonAttributes={{ disabled: loadingMilestones || disableFilters }}
+                    buttonAttributes={{ disabled: loadingResources || disableFilters }}
                     noMultiSelect
                 />
-                <FilterDropdown 
+                <FilterDropdown
                     title="Sort By"
                     options={[
                         { label: "Date Created", value: "created" },
@@ -396,7 +340,7 @@ const ImportTaskModal = ({
                     buttonAttributes={{ disabled: disableFilters }}
                     noMultiSelect
                 />
-                <FilterDropdown 
+                <FilterDropdown
                     title="Order"
                     options={[
                         { label: "Ascending", value: "asc" },
@@ -416,7 +360,7 @@ const ImportTaskModal = ({
                 <div>
                     <p className="flex items-center gap-[5px] text-title-large text-light-100">
                         <span>Issues Selected</span>
-                        <button 
+                        <button
                             onClick={() => {
                                 if (selectedIssues.length > 0) {
                                     setShowSelectedTasks(prev => !prev);
@@ -431,30 +375,30 @@ const ImportTaskModal = ({
                             {(selectedIssues.length > 0) ? (
                                 showSelectedTasks ? (
                                     <PiEyeSlashBold className="text-base" />
-                                ):(
+                                ) : (
                                     <PiEyeBold className="text-base" />
                                 )
-                            ): null}
+                            ) : null}
                         </button>
                     </p>
                     <p className="text-body-medium text-dark-200 mt-[5px]">
                         Select issues you’d like to import and add bounties to.
                     </p>
                 </div>
-                <button 
+                <button
                     className="text-body-medium text-light-200 font-bold hover:text-light-100"
                     onClick={clearSelection}
                 >
                     Clear Selection
                 </button>
             </section>
-            <section 
-                ref={taskBoxRef} 
+            <section
+                ref={taskBoxRef}
                 className="grow my-[30px] flex flex-col gap-2.5 overflow-y-auto"
             >
                 {(showSelectedTasks && selectedIssues.length > 0) ? (
                     selectedIssues.map((issue) => (
-                        <CreateTaskCard 
+                        <CreateTaskCard
                             key={issue.id}
                             issue={issue}
                             defaultSelected={selectedTasks.get(issue.id)}
@@ -464,10 +408,10 @@ const ImportTaskModal = ({
                             disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id))}
                         />
                     ))
-                ):(
+                ) : (
                     <>
                         {repoIssues?.list?.map((issue) => (
-                            <CreateTaskCard 
+                            <CreateTaskCard
                                 key={issue.id}
                                 issue={issue}
                                 defaultSelected={selectedTasks.get(issue.id)}
@@ -493,7 +437,7 @@ const ImportTaskModal = ({
                             </div>
                         )}
                         {(!loadingMoreIssues && !noMoreIssues) && (
-                            <button 
+                            <button
                                 className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
                                 onClick={loadMoreIssues}
                             >
@@ -507,10 +451,10 @@ const ImportTaskModal = ({
                 <ButtonPrimary
                     format="SOLID"
                     text={
-                        showSelectedTasks 
+                        showSelectedTasks
                             ? uploadingTasks
                                 ? "Uploading..."
-                                : "Upload" 
+                                : "Upload"
                             : "Proceed"
                     }
                     sideItem={<FiArrowRight />}
@@ -531,20 +475,22 @@ const ImportTaskModal = ({
         </PopupModalLayout>
     );
 }
- 
+
 export default ImportTaskModal;
 
-const delayedArray = (): Promise<any[]> => {
+const delayedEmptyResources = (): Promise<GetRepositoryResourcesResponse> => {
     return new Promise((resolve) => {
         setTimeout(() => {
-            resolve([]);
+            resolve({ labels: [], milestones: [] });
         }, 1000);
     });
 };
 
 const defaultIssueFilters: IssueFilters = {
+    title: undefined,
     labels: undefined,
     milestone: undefined,
     sort: undefined,
     direction: undefined,
+    perPage: 30,
 }

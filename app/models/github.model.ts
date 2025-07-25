@@ -127,12 +127,13 @@ export type SetBountyLabelResponse = {
     bountyLabel: IssueLabel;
 }
 
-export class QueryRepositoryIssues {
+export type QueryRepositoryIssues = {
+    repoUrl: string;
     title?: string;
     labels?: string[];
     milestone?: string | "none" | "*";
-    sort?: "created" | "updated" | "comments" = "created";
-    direction?: "asc" | "desc" = "desc";
-    page?: number;
-    perPage?: number;
+    sort?: "created" | "updated" | "comments";
+    direction?: "asc" | "desc";
+    page: number;
+    perPage: number;
 }
