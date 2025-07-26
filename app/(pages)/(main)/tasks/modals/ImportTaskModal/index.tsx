@@ -56,11 +56,10 @@ const ImportTaskModal = ({
     const [currentPage, setCurrentPage] = useState(1);
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
     const [uploadingTasks, setUploadingTasks] = useState(false);
-    const [validBountyLabel, setValidBountyLabel] = useState<Map<string, boolean>>(new Map());
-    const [bountyLabelId, setBountyLabelId] = useState<number>();
+    const [validBountyLabel, setValidBountyLabel] = useState<Map<string, string>>(new Map());
     // const [totalBounties, setTotalBounties] = useState(false);
-    const [uploadedTasks, setUploadedTasks] = useState<Map<number, UploadStatus>>(new Map());
-    const [selectedTasks, setSelectedTasks] = useState<Map<number, TaskPayload>>(() => {
+    const [uploadedTasks, setUploadedTasks] = useState<Map<string, UploadStatus>>(new Map());
+    const [selectedTasks, setSelectedTasks] = useState<Map<string, TaskPayload>>(() => {
         const initialMap = new Map();
         draftTasks.forEach(draft => {
             initialMap.set(draft.issue.id, {
@@ -71,7 +70,10 @@ const ImportTaskModal = ({
         return initialMap;
     });
     const selectedIssues = useMemo(() =>
-        Array.from(selectedTasks.values()).map(task => task.payload.ogIssue!),
+        Array.from(selectedTasks.values()).map(task => ({
+            ...task.payload.issue,
+            labels: { nodes: task.payload.issue.labels }
+        })),
         [selectedTasks]
     );
     const validPayload = useMemo(() => {
@@ -86,21 +88,35 @@ const ImportTaskModal = ({
         setActiveRepo(installationRepos[0]);
     }, [installationRepos.length]);
 
-    // Check if repo has bounty label
+    // Preload bounty labels for all repositories
     useAsyncEffect(async () => {
-        if (!activeRepo) return;
-        if (validBountyLabel.get(activeRepo.url)) return;
+        if (!activeInstallation || installationRepos.length === 0) return;
 
-        try {
-            const response = await GitHubAPI.setBountyLabel(
-                activeInstallation!.id,
-                activeRepo.url
-            );
+        const promises = installationRepos.map(async (repo) => {
+            if (validBountyLabel.get(repo.id)) return;
 
-            setValidBountyLabel(validBountyLabel.set(activeRepo.url, true));
-            setBountyLabelId(response.bountyLabel.id);
-        } catch { }
-    }, [activeRepo])
+            try {
+                const response = await GitHubAPI.getOrCreateBountyLabel(
+                    activeInstallation.id,
+                    repo.id
+                );
+                return { repoId: repo.id, labelId: response.bountyLabel.id };
+            } catch {
+                return null;
+            }
+        });
+
+        const results = await Promise.all(promises);
+        const newLabels = new Map(validBountyLabel);
+
+        results.forEach(result => {
+            if (result) {
+                newLabels.set(result.repoId, result.labelId);
+            }
+        });
+
+        setValidBountyLabel(newLabels);
+    }, [installationRepos, activeInstallation]);
 
     const {
         data: repoIssues,
@@ -119,10 +135,10 @@ const ImportTaskModal = ({
 
             const { issues, hasMore } = await GitHubAPI.getRepositoryIssues(
                 activeInstallation.id,
-                { 
+                {
                     repoUrl: activeRepo.url,
                     page: pageToLoad,
-                    ...issueFilters, 
+                    ...issueFilters,
                 }
             );
 
@@ -130,9 +146,9 @@ const ImportTaskModal = ({
 
             return { list: issues, hasMore };
         }, {
-            isNoMore: (data) => !data?.hasMore,
-            reloadDeps: [activeRepo, issueFilters],
-        }
+        isNoMore: (data) => !data?.hasMore,
+        reloadDeps: [activeRepo, ...Object.values(issueFilters)],
+    }
     );
 
     const { loading: loadingResources, data: repoResources } = useRequest<GetRepositoryResourcesResponse, any>(
@@ -154,11 +170,20 @@ const ImportTaskModal = ({
 
     const disableFilters = loadingInstallationRepos || loadingIssues || loadingMoreIssues;
 
-    const handleToggleCheck = (issueId: number, taskPayload: TaskPayload | null) => {
+    const handleToggleCheck = (issueId: string, taskPayload: TaskPayload | null, repoId: string) => {
         setSelectedTasks(prev => {
             const newMap = new Map(prev);
             if (taskPayload) {
-                newMap.set(issueId, taskPayload);
+                // Store the repo ID with the task payload for later bounty label lookup
+                const enhancedPayload = {
+                    ...taskPayload,
+                    payload: {
+                        ...taskPayload.payload,
+                        bountyLabelId: validBountyLabel.get(repoId) || "",
+                        repoId // Store the repo ID for later lookup
+                    }
+                };
+                newMap.set(issueId, enhancedPayload);
             } else {
                 newMap.delete(issueId);
             }
@@ -192,34 +217,21 @@ const ImportTaskModal = ({
         for (const task of Array.from(selectedTasks.values())) {
             // ? Use toast.promise here
             toast.info(`Creating task for issue #${task.payload.issue.number}...`, { autoClose: 2000 });
-            setUploadedTasks(prev => {
-                prev.set(task.payload.issue.id, "PENDING");
-                return prev;
-            });
+            setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "PENDING"));
 
             try {
-                const payload = task.payload;
-                delete payload.ogIssue;
-
-                const response = await TaskAPI.createTask({
-                    payload: { ...payload, bountyLabelId: bountyLabelId! }
-                });
+                delete task.payload.repoId;
+                const response = await TaskAPI.createTask({ payload: task.payload });
 
                 toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
-                setUploadedTasks(prev => {
-                    prev.set(task.payload.issue.id, "CREATED");
-                    return prev;
-                });
+                setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "CREATED"));
 
                 if (response && "message" in response) {
                     toast.warn(response.message);
                 }
             } catch (error) {
                 toast.error(`Task for issue #${task.payload.issue.number} failed to create.`);
-                setUploadedTasks(prev => {
-                    prev.set(task.payload.issue.id, "FAILED");
-                    return prev;
-                });
+                setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "FAILED"));
                 hasErrors = true;
                 draftTasks.push(task.payload);
                 console.error(`Error creating task #${task.payload.issue.number}:`, error);
@@ -235,7 +247,7 @@ const ImportTaskModal = ({
         }
 
         reloadIssues();
-        setDraftTasks(draftTasks);
+        setDraftTasks(draftTasks.length > 0 ? draftTasks : []);
         setUploadingTasks(false);
     };
 
@@ -264,7 +276,7 @@ const ImportTaskModal = ({
                                 <RepoMenuCard
                                     key={repo.id}
                                     repoName={repo.name || repo.url.split("/")[4]}
-                                    repoUrl={repo.html_url}
+                                    repoUrl={repo.url}
                                     active={activeRepo?.id === repo.id}
                                     onClick={() => {
                                         setIssueFilters(defaultIssueFilters);
@@ -316,7 +328,7 @@ const ImportTaskModal = ({
                     title="Milestones"
                     options={repoResources?.milestones || []}
                     fieldName="title"
-                    fieldValue="number"
+                    fieldValue="title"
                     setField={(value) => setIssueFilters((prev) => ({
                         ...prev,
                         milestone: value as string
@@ -333,6 +345,7 @@ const ImportTaskModal = ({
                     ]}
                     fieldName="label"
                     fieldValue="value"
+                    defaultValue="created"
                     setField={(value) => setIssueFilters((prev) => ({
                         ...prev,
                         sort: value as "created" | "updated" | "comments"
@@ -348,6 +361,7 @@ const ImportTaskModal = ({
                     ]}
                     fieldName="label"
                     fieldValue="value"
+                    defaultValue="desc"
                     setField={(value) => setIssueFilters((prev) => ({
                         ...prev,
                         direction: value as "asc" | "desc"
@@ -397,38 +411,48 @@ const ImportTaskModal = ({
                 className="grow my-[30px] flex flex-col gap-2.5 overflow-y-auto"
             >
                 {(showSelectedTasks && selectedIssues.length > 0) ? (
-                    selectedIssues.map((issue) => (
-                        <CreateTaskCard
-                            key={issue.id}
-                            issue={issue}
-                            defaultSelected={selectedTasks.get(issue.id)}
-                            showFields
-                            onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload)}
-                            uploadStatus={uploadedTasks.get(issue.id)}
-                            disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id))}
-                        />
-                    ))
-                ) : (
-                    <>
-                        {repoIssues?.list?.map((issue) => (
+                    selectedIssues.map((issue) => {
+                        // Find the repo ID for this issue from the selected tasks
+                        const selectedTask = selectedTasks.get(issue.id);
+                        const repoId = selectedTask?.payload.repoId ||
+                            installationRepos.find(repo => repo.url === issue.repository.url)?.id || "";
+
+                        return (
                             <CreateTaskCard
                                 key={issue.id}
                                 issue={issue}
+                                bountyLabelId={validBountyLabel.get(repoId) || ""}
                                 defaultSelected={selectedTasks.get(issue.id)}
-                                showFields={false}
-                                onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload)}
+                                showFields
+                                onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload, repoId)}
                                 uploadStatus={uploadedTasks.get(issue.id)}
                                 disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id))}
                             />
-                        ))}
+                        );
+                    })
+                ) : (
+                    <>
+                        {loadingIssues ? (
+                            <div className="flex justify-center py-4">
+                                <span className="text-body-medium text-light-100">Fetching issues...</span>
+                            </div>
+                        ) : (
+                            repoIssues?.list?.map((issue) => (
+                                <CreateTaskCard
+                                    key={issue.id}
+                                    issue={issue}
+                                    bountyLabelId={validBountyLabel.get(activeRepo?.id || "") || ""}
+                                    defaultSelected={selectedTasks.get(issue.id)}
+                                    showFields={false}
+                                    onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload, activeRepo?.id || "")}
+                                    uploadStatus={uploadedTasks.get(issue.id)}
+                                    disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id))}
+                                />
+                            ))
+                        )}
                         {(repoIssues?.list && repoIssues.list.length < 1 && !loadingIssues) && (
                             <div className="flex justify-center py-4">
                                 <span className="text-body-medium text-light-100">No issues found</span>
-                            </div>
-                        )}
-                        {(loadingIssues && repoIssues?.list && repoIssues.list.length < 1) && (
-                            <div className="flex justify-center py-4">
-                                <span className="text-body-medium text-light-100">Fetching issues...</span>
                             </div>
                         )}
                         {loadingMoreIssues && (
@@ -436,7 +460,7 @@ const ImportTaskModal = ({
                                 <span className="text-body-medium text-light-100">Fetching more issues...</span>
                             </div>
                         )}
-                        {(!loadingMoreIssues && !noMoreIssues) && (
+                        {(!loadingIssues && !loadingMoreIssues && !noMoreIssues) && (
                             <button
                                 className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
                                 onClick={loadMoreIssues}
@@ -490,7 +514,7 @@ const defaultIssueFilters: IssueFilters = {
     title: undefined,
     labels: undefined,
     milestone: undefined,
-    sort: undefined,
-    direction: undefined,
+    sort: "created",
+    direction: "desc",
     perPage: 30,
 }

@@ -85,7 +85,8 @@ export type CreateTaskDto = {
     timeline?: number
     timelineType?: TimelineType
     bounty: string
-    bountyLabelId: string 
+    bountyLabelId: string
+    repoId?: string // For internal tracking during task creation
 }
 
 export type AddBountyCommentId = {

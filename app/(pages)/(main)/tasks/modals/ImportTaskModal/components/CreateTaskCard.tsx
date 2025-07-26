@@ -4,7 +4,7 @@ import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import Image from 'next/image';
 import Link from "next/link";
 import RegularDropdown from "../../../../../../components/Dropdown/Regular";
-import { GraphqlIssueDto } from "@/app/models/github.model";
+import { IssueDto } from "@/app/models/github.model";
 import { CreateTaskDto } from "@/app/models/task.model";
 import { useState } from "react";
 import { object, string, number } from 'yup';
@@ -26,7 +26,8 @@ const createTaskSchema = object({
 });
 
 type CreateTaskCardProps = {
-    issue: GraphqlIssueDto;
+    issue: IssueDto;
+    bountyLabelId: string;
     defaultSelected: TaskPayload | undefined; 
     showFields: boolean; 
     onToggleCheck: (taskPayload: TaskPayload | null) => void;
@@ -36,6 +37,7 @@ type CreateTaskCardProps = {
 
 const CreateTaskCard = ({
     issue,
+    bountyLabelId,
     defaultSelected,
     showFields,
     onToggleCheck,
@@ -66,23 +68,13 @@ const CreateTaskCard = ({
         const taskPayload: CreateTaskDto = {
             installationId: activeInstallation!.id,
             issue: {
-                id: issue.id,
-                number: issue.number,
-                title: issue.title,
-                body: issue.body || undefined,
-                url: issue.url,
-                html_url: issue.url,
+                ...issue,
                 labels: issue.labels.nodes,
-                locked: issue.locked,
-                state: issue.state,
-                repository_url: issue.repository.url,
-                created_at: issue.createdAt,
-                updated_at: issue.updatedAt
             },
-            ogIssue: issue,
             bounty: formik.values.bounty,
             timeline: formik.values.timeline,
-            timelineType: formik.values.timelineType as "DAY" | "WEEK"
+            timelineType: formik.values.timelineType as "DAY" | "WEEK",
+            bountyLabelId
         };
         onToggleCheck({ payload: taskPayload, valid: formik.isValid });
     };
