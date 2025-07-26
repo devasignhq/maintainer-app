@@ -58,6 +58,7 @@ const Installation = () => {
             const response = await InstallationAPI.createInstallation({ installationId });
             
             toast.success("Installation saved successfully.");
+            const noCurrentInstallations = !activeInstallation && installationList.length === 0;
 
             if (response && "account" in response) {
                 setActiveInstallation(response);
@@ -69,9 +70,7 @@ const Installation = () => {
                 toast.warn(response.message);
             }
 
-            const noInstallations = !activeInstallation && installationList.length === 0;
-
-            if (noInstallations) {
+            if (noCurrentInstallations) {
                 router.push(ROUTES.ONBOARDING + "?newInstallation=true");
             } else {
                 router.push(ROUTES.TASKS);
