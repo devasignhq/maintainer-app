@@ -7,17 +7,13 @@ import { ActiveTaskContext } from "../page";
 import { handleApiError, moneyFormat } from "@/app/utils/helper";
 import { TaskAPI } from "@/app/services/task.service";
 import { toast } from "react-toastify";
-import { OctokitContext } from "../../layout";
-import { removeBountyLabelFromIssue, deleteIssueComment } from "@/app/services/github.service";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type DeleteTaskModalProps = {
     toggleModal: () => void;
 };
 
-// TODO: Ensure bountyCommentId is valid. If not, get comment id from issue comments
 const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
-    const octokit = useContext(OctokitContext);
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
     const { updateSearchParams } = useCustomSearchParams();
     const [loading, setLoading] = useState(false);
@@ -28,32 +24,19 @@ const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
         try {
             const response = await TaskAPI.deleteTask(activeTask!.id);
 
-            // Delete bounty comment and label on GitHub issue
-            try {
-                await removeBountyLabelFromIssue(
-                    activeTask!.issue.repository_url,
-                    octokit!,
-                    activeTask!.issue.number
-                );
-                await deleteIssueComment(
-                    activeTask!.issue.repository_url,
-                    octokit!,
-                    activeTask!.issue.bountyCommentId!,
-                );
-                
-                setActiveTask(null);
-                toast.success("Task deleted successfully.");
+            setActiveTask(null);
+            toast.success("Task deleted successfully.");
+            
+            if (response && "refunded" in response) {
                 toast.info(response.refunded + " refunded.");
-                updateSearchParams({ refresh: true }, true);
-                toggleModal();
-            } catch (error) {
-                console.log(error);
-                setActiveTask(null);
-                toast.success("Task deleted successfully but failed to either delete bounty comment or bounty label.");
-                toast.info(response.refunded + " refunded.");
-                updateSearchParams({ refresh: true }, true);
-                toggleModal();
             }
+            if (response && "data" in response) {
+                toast.info(response.data.refunded + " refunded.");
+                toast.warn(response.message);
+            }
+
+            updateSearchParams({ refresh: true }, true);
+            toggleModal();
         } catch (error) {
             handleApiError(error, "Failed to update task timeline.");
         } finally {
