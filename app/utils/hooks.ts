@@ -38,7 +38,24 @@ export function useCustomSearchParams() {
         router.push(newUrl);
     };
 
-    return { searchParams, updateSearchParams };
+    const removeSearchParams = (keys: string | string[]) => {
+        const currentSearchParams = new URLSearchParams(searchParams);
+        const keysToRemove = Array.isArray(keys) ? keys : [keys];
+
+        keysToRemove.forEach(key => {
+            currentSearchParams.delete(key);
+        });
+
+        let queryString = "";
+        if (currentSearchParams.size !== 0) {
+            queryString = `?${currentSearchParams.toString()}`;
+        }
+        const newUrl = `${pathname}${queryString}`;
+
+        router.push(newUrl);
+    };
+
+    return { searchParams, updateSearchParams, removeSearchParams };
 }
 
 export function usePopup() {

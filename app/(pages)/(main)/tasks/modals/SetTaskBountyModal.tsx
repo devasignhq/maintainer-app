@@ -9,6 +9,7 @@ import Image from "next/image";
 import { TaskAPI } from "@/app/services/task.service";
 import { handleApiError } from "@/app/utils/helper";
 import { toast } from "react-toastify";
+import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type SetTaskBountyModalProps = {
     toggleModal: () => void;
@@ -16,6 +17,7 @@ type SetTaskBountyModalProps = {
 
 const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
+    const { updateSearchParams } = useCustomSearchParams();
     const [newBounty, setNewBounty] = useState("");
     const [loading, setLoading] = useState(false);
     
@@ -35,6 +37,7 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
                 setActiveTask({ ...activeTask!, ...response.task });
                 toast.warn(response.message);
             }
+            updateSearchParams({ refresh: true });
             toggleModal();
         } catch (error) {
             handleApiError(error, "Failed to update task bounty.");

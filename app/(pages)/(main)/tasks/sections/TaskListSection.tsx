@@ -17,9 +17,13 @@ import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/uti
 const TaskListSection = () => {
     const { activeInstallation } = useInstallationStore();
     const { activeTask } = useContext(ActiveTaskContext);
-    const { searchParams, updateSearchParams } = useCustomSearchParams();
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [taskFilters, setTaskFilters] = useState(defaultTaskFilters);
+    const { 
+        searchParams, 
+        updateSearchParams,
+        removeSearchParams
+    } = useCustomSearchParams();
     const installationChange = searchParams.get("installationChange");
     const refresh = searchParams.get("refresh");
 
@@ -55,6 +59,10 @@ const TaskListSection = () => {
 
             if (!searchParams.get("taskId") && !activeTask && response.data.length > 0) {
                 updateSearchParams({ taskId: response.data[0].id }, true);
+            } else {
+                if (refresh === "true") {
+                    removeSearchParams("refresh");
+                }
             }
 
             return {
@@ -205,7 +213,7 @@ const TaskListSection = () => {
                             <span className="text-body-medium text-light-100">Loading more tasks...</span>
                         </div>
                     )}
-                    {(!loadingMoreTasks && !noMoreTasks) && (
+                    {(!loadingTasks && !loadingMoreTasks && !noMoreTasks) && (
                         <button
                             className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
                             onClick={loadMoreTasks}

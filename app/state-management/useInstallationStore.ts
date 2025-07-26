@@ -10,8 +10,8 @@ type InstallationStore = {
     clearInstallationStore: () => void,
 }
 
-const useInstallationStore = create(
-    persist<InstallationStore>(
+const useInstallationStore = create<InstallationStore>()(
+    persist(
         (set) => ({
             activeInstallation: null,
             installationList: [],

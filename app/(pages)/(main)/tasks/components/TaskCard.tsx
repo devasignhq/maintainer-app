@@ -1,6 +1,8 @@
 "use client";
 import { TaskDto } from "@/app/models/task.model";
 import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
+import { useContext, useMemo } from "react";
+import { ActiveTaskContext } from "../page";
 
 type TaskCardProps = {
     task: TaskDto;
@@ -8,8 +10,17 @@ type TaskCardProps = {
     onClick?: () => void;
 };
 
-// TODO: Place issue number beside repo name
-const TaskCard = ({ task, active, onClick }: TaskCardProps) => {
+// ? Place issue number beside repo name
+const TaskCard = ({ task: defaultTask, active, onClick }: TaskCardProps) => {
+    const { activeTask } = useContext(ActiveTaskContext);
+    const task = useMemo(() => {
+        if (activeTask && active) {
+            return activeTask;
+        } else {
+            return defaultTask;
+        }
+    }, [active, activeTask, defaultTask])
+    
     return (
         <div 
             onClick={onClick}

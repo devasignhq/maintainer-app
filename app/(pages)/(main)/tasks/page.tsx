@@ -16,13 +16,13 @@ export const ActiveTaskContext = createContext<{
 
 const Tasks = () => {
     const searchParams = useSearchParams();
+    const taskId = searchParams.get("taskId");
     const { activeInstallation } = useInstallationStore();
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
     const [loadingTask, setLoadingTask] = useState(false);
 
     // TODO: Implement caching
     useAsyncEffect((async () => {
-        const taskId = searchParams.get("taskId");
         if (!taskId || !activeInstallation) {
             setActiveTask(null);
             return;
@@ -38,7 +38,7 @@ const Tasks = () => {
         } finally {
             setLoadingTask(false);
         }
-    }), [searchParams, activeInstallation]);
+    }), [taskId, activeInstallation]);
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">
