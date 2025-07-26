@@ -5,8 +5,9 @@ import TaskOverviewSection from "./sections/TaskOverviewSection";
 import { TaskDto } from "@/app/models/task.model";
 import { createContext, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useAsyncEffect, useLockFn } from "ahooks";
+import { useAsyncEffect } from "ahooks";
 import { TaskAPI } from "@/app/services/task.service";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 
 export const ActiveTaskContext = createContext<{
     activeTask: TaskDto | null;
@@ -15,13 +16,14 @@ export const ActiveTaskContext = createContext<{
 
 const Tasks = () => {
     const searchParams = useSearchParams();
+    const { activeInstallation } = useInstallationStore();
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
     const [loadingTask, setLoadingTask] = useState(false);
 
     // TODO: Implement caching
-    useAsyncEffect(useLockFn(async () => {
+    useAsyncEffect((async () => {
         const taskId = searchParams.get("taskId");
-        if (!taskId) {
+        if (!taskId || !activeInstallation) {
             setActiveTask(null);
             return;
         }
@@ -29,14 +31,14 @@ const Tasks = () => {
         setLoadingTask(true);
 
         try {
-            const task = await TaskAPI.getInstallationTaskById(taskId);
+            const task = await TaskAPI.getInstallationTaskById(activeInstallation.id, taskId);
             setActiveTask(task);
         } catch {
             setActiveTask(null);
         } finally {
             setLoadingTask(false);
         }
-    }), [searchParams]);
+    }), [searchParams, activeInstallation]);
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">

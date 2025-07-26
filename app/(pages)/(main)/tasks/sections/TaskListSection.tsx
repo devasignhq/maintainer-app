@@ -1,7 +1,7 @@
 "use client";
 import FilterDropdown from "@/app/components/Dropdown/Filter";
 import InputField from "@/app/components/Input/InputField";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
 import TaskCard from "../components/TaskCard";
@@ -19,13 +19,15 @@ const TaskListSection = () => {
     const { activeTask } = useContext(ActiveTaskContext);
     const { searchParams, updateSearchParams } = useCustomSearchParams();
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
-    const [taskFilters, setTaskFilters] = useState<FilterTasks>();
-    
-    const { 
-        repositories: installationRepos, 
-        loading: loadingInstallationRepos 
+    const [taskFilters, setTaskFilters] = useState(defaultTaskFilters);
+    const installationChange = searchParams.get("installationChange");
+    const refresh = searchParams.get("refresh");
+
+    const {
+        repositories: installationRepos,
+        loading: loadingInstallationRepos
     } = useGetInstallationRepositories();
-    
+
     // TODO: Implement caching
     const {
         data: installationTasks,
@@ -39,12 +41,12 @@ const TaskListSection = () => {
             if (!activeInstallation) {
                 return { list: [], pagination: null }
             }
-            
+
             const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
-            
+
             const response = await TaskAPI.getInstallationTasks(
                 activeInstallation.id,
-                { 
+                {
                     page: pageToLoad,
                     limit: 30,
                 },
@@ -55,19 +57,30 @@ const TaskListSection = () => {
                 updateSearchParams({ taskId: response.data[0].id }, true);
             }
 
-            return { 
+            return {
                 list: response.data,
                 pagination: response.pagination,
             };
         }, {
             isNoMore: (data) => !data?.pagination?.hasMore,
-            reloadDeps: [
-                activeInstallation?.id, 
-                ...(taskFilters ? Object.values(taskFilters) : []), 
-                searchParams.get("refresh")
-            ]
+            reloadDeps: [activeInstallation?.id, ...Object.values(taskFilters)]
         }
     );
+
+    useEffect(() => {
+        if (refresh === "true") {
+            reloadTasks();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [refresh]);
+
+    useEffect(() => {
+        if (installationChange === "true") {
+            setTaskFilters(defaultTaskFilters);
+            reloadTasks();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [installationChange]);
 
     // const { loading: loadingLabels, data: repoLabels } = useRequest(
     //     () => getRepoLabels(
@@ -78,9 +91,9 @@ const TaskListSection = () => {
     //         retryCount: 1,
     //         cacheKey: `${activeRepo}-labels`,
     //         refreshDeps: [activeRepo],,
-            // onError: () => {
-            //     if (!githubToken) reAuthenticate();
-            // }
+    // onError: () => {
+    //     if (!githubToken) reAuthenticate();
+    // }
     //     }
     // );
 
@@ -100,119 +113,126 @@ const TaskListSection = () => {
 
     return (
         <>
-        <section className="min-w-[366px] w-[12%] h-full pt-[30px] flex flex-col">
-            <div className="pr-5 flex items-center justify-between">
-                <h6 className="text-headline-small text-light-100">Project Tasks</h6>
-                <button 
-                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                    onClick={toggleImportTaskModal}
-                >
-                    <span>Import Tasks</span>
-                    <HiPlus className="text-2xl" />
-                </button>
-            </div>
-            <div className="space-y-2.5 pr-5 my-[30px]">
-                <InputField 
-                    Icon={FiSearch}
-                    attributes={{
-                        placeholder: "Search Tasks or Tasks",
-                        name: "search",
-                        style: { fontSize: "12px", height: "40px" },
-                    }}
-                    extendedContainerClassName="w-full"
-                    extendedInputClassName="text-body-tiny text-light-100"
-                />
-                <div className="flex items-center gap-2.5">
-                    <FilterDropdown
-                        title="Code Repo"
-                        options={[]}
-                        extendedContainerClassName="w-full"
-                        extendedButtonClassName="w-full py-[5px]"
-                        buttonAttributes={{ 
-                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }
-                        }}
-                        setField={(value) => setTaskFilters((prev) => ({
-                            ...prev,
-                            repoUrl: value as string
-                        }))}
-                        noMultiSelect
-                    />
-                    <FilterDropdown
-                        title="Labels"
-                        options={["bug", "feature", "enhancement", "question"]}
-                        extendedContainerClassName="w-full"
-                        extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
-                        buttonAttributes={{ 
-                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
-                            disabled: true
-                        }}
-                        setField={(value) => setTaskFilters((prev) => ({
-                            ...prev,
-                            issueLabels: value as string[]
-                        }))}
-                    />
-                    <FilterDropdown
-                        title="Milestone"
-                        options={["Stage One", "Planning", "Documentation", "Testing"]}
-                        extendedContainerClassName="w-full"
-                        extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
-                        buttonAttributes={{ 
-                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
-                            disabled: true
-                        }}
-                        setField={(value) => setTaskFilters((prev) => ({
-                            ...prev,
-                            issueMilestone: value as string
-                        }))}
-                        noMultiSelect
-                    />
-                </div>
-            </div>
-            <div className="grow pr-5 pb-5 overflow-y-auto space-y-[15px]">
-                {installationTasks?.list?.map((task) => (
-                    <TaskCard
-                        key={task.id}
-                        task={task}
-                        active={(activeTask?.id || searchParams.get("taskId")) === task.id}
-                        onClick={() => updateSearchParams({ taskId: task.id })}
-                    />
-                ))}
-                {(installationTasks?.list && installationTasks.list.length < 1 && !loadingTasks) && (
-                    <div className="flex justify-center py-4">
-                        <span className="text-body-medium text-light-100">No tasks found</span>
-                    </div>
-                )}
-                {(loadingTasks) && (
-                    <div className="flex justify-center py-4">
-                        <span className="text-body-medium text-light-100">Loading tasks...</span>
-                    </div>
-                )}
-                {loadingMoreTasks && (
-                    <div className="flex justify-center pt-2.5">
-                        <span className="text-body-medium text-light-100">Loading more tasks...</span>
-                    </div>
-                )}
-                {(!loadingMoreTasks && !noMoreTasks) && (
-                    <button 
-                        className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
-                        onClick={loadMoreTasks}
+            <section className="min-w-[366px] w-[12%] h-full pt-[30px] flex flex-col">
+                <div className="pr-5 flex items-center justify-between">
+                    <h6 className="text-headline-small text-light-100">Project Tasks</h6>
+                    <button
+                        className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                        onClick={toggleImportTaskModal}
                     >
-                        Load More
+                        <span>Import Tasks</span>
+                        <HiPlus className="text-2xl" />
                     </button>
-                )}
-            </div>
-        </section>
-        
-        {openImportTaskModal && (
-            <ImportTaskModal 
-                installationRepos={installationRepos}
-                loadingInstallationRepos={loadingInstallationRepos}
-                toggleModal={toggleImportTaskModal} 
-                onSuccess={reloadTasks} 
-            />
-        )}
+                </div>
+                <div className="space-y-2.5 pr-5 my-[30px]">
+                    <InputField
+                        Icon={FiSearch}
+                        attributes={{
+                            placeholder: "Search Tasks or Tasks",
+                            name: "search",
+                            style: { fontSize: "12px", height: "40px" },
+                        }}
+                        extendedContainerClassName="w-full"
+                        extendedInputClassName="text-body-tiny text-light-100"
+                    />
+                    <div className="flex items-center gap-2.5">
+                        <FilterDropdown
+                            title="Code Repo"
+                            options={[]}
+                            extendedContainerClassName="w-full"
+                            extendedButtonClassName="w-full py-[5px]"
+                            buttonAttributes={{
+                                style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }
+                            }}
+                            setField={(value) => setTaskFilters((prev) => ({
+                                ...prev,
+                                repoUrl: value as string
+                            }))}
+                            noMultiSelect
+                        />
+                        <FilterDropdown
+                            title="Labels"
+                            options={["bug", "feature", "enhancement", "question"]}
+                            extendedContainerClassName="w-full"
+                            extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
+                            buttonAttributes={{
+                                style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                                disabled: true
+                            }}
+                            setField={(value) => setTaskFilters((prev) => ({
+                                ...prev,
+                                issueLabels: value as string[]
+                            }))}
+                        />
+                        <FilterDropdown
+                            title="Milestone"
+                            options={["Stage One", "Planning", "Documentation", "Testing"]}
+                            extendedContainerClassName="w-full"
+                            extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
+                            buttonAttributes={{
+                                style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                                disabled: true
+                            }}
+                            setField={(value) => setTaskFilters((prev) => ({
+                                ...prev,
+                                issueMilestone: value as string
+                            }))}
+                            noMultiSelect
+                        />
+                    </div>
+                </div>
+                <div className="grow pr-5 pb-5 overflow-y-auto space-y-[15px]">
+                    {installationTasks?.list?.map((task) => (
+                        <TaskCard
+                            key={task.id}
+                            task={task}
+                            active={(activeTask?.id || searchParams.get("taskId")) === task.id}
+                            onClick={() => updateSearchParams({ taskId: task.id })}
+                        />
+                    ))}
+                    {(installationTasks?.list && installationTasks.list.length < 1 && !loadingTasks) && (
+                        <div className="flex justify-center py-4">
+                            <span className="text-body-medium text-light-100">No tasks found</span>
+                        </div>
+                    )}
+                    {(loadingTasks && installationTasks?.list && installationTasks.list.length === 0) && (
+                        <div className="flex justify-center py-4">
+                            <span className="text-body-medium text-light-100">Loading tasks...</span>
+                        </div>
+                    )}
+                    {loadingMoreTasks && (
+                        <div className="flex justify-center pt-2.5">
+                            <span className="text-body-medium text-light-100">Loading more tasks...</span>
+                        </div>
+                    )}
+                    {(!loadingMoreTasks && !noMoreTasks) && (
+                        <button
+                            className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
+                            onClick={loadMoreTasks}
+                        >
+                            Load More
+                        </button>
+                    )}
+                </div>
+            </section>
+
+            {openImportTaskModal && (
+                <ImportTaskModal
+                    installationRepos={installationRepos}
+                    loadingInstallationRepos={loadingInstallationRepos}
+                    toggleModal={toggleImportTaskModal}
+                    onSuccess={reloadTasks}
+                />
+            )}
         </>
     );
 }
- 
+
 export default TaskListSection;
+
+const defaultTaskFilters: FilterTasks = {
+    repoUrl: undefined,
+    issueTitle: undefined,
+    issueLabels: undefined,
+    issueMilestone: undefined,
+}

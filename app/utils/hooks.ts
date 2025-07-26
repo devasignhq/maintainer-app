@@ -1,4 +1,4 @@
-import { useToggle, useClickAway, useAsyncEffect, useLockFn } from "ahooks";
+import { useToggle, useClickAway, useAsyncEffect } from "ahooks";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import {
     useRef,
@@ -73,7 +73,7 @@ export function useGetInstallationRepositories() {
     const [repositories, setRepositories] = useState<RepositoryDto[]>([]);
     const [loading, setLoading] = useState(false);
 
-    useAsyncEffect(useLockFn(async () => {
+    useAsyncEffect(async () => {
         if (!activeInstallation) return;
 
         setLoading(true);
@@ -84,7 +84,7 @@ export function useGetInstallationRepositories() {
 
         setRepositories(response);
         setLoading(false);
-    }), [activeInstallation]);
+    }, [activeInstallation]);
 
     return { repositories, loading }
 }

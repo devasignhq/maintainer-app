@@ -6,10 +6,10 @@ import { usePathname } from "next/navigation";
 import { ROUTES } from "@/app/utils/data";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FaCheck } from "react-icons/fa6";
-import { usePopup } from "@/app/utils/hooks";
+import { useCustomSearchParams, usePopup } from "@/app/utils/hooks";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { InstallationAPI } from "@/app/services/installation.service";
-import { useRequest, useLockFn, useAsyncEffect } from "ahooks";
+import { useRequest, useLockFn } from "ahooks";
 import { TbLogout } from "react-icons/tb";
 import { useLogoutUser } from "@/lib/firebase";
 import { FiSettings } from "react-icons/fi";
@@ -24,6 +24,7 @@ export default function MainLayout({
     const currentPath = usePathname();
     const checkPath = (path: string) => currentPath.includes(path) || currentPath === path;
     const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
+    const { updateSearchParams } = useCustomSearchParams();
     const { 
         installationList, 
         activeInstallation,
@@ -31,23 +32,28 @@ export default function MainLayout({
         setActiveInstallation
     } = useInstallationStore();
 
-    const { loading: fetchingInstallations, runAsync: fetchInstallations } = useRequest(
+    const { loading: fetchingInstallations } = useRequest(
         useLockFn(() => InstallationAPI.getInstallations()), 
         {
-            manual: true,
             retryCount: 2,
             cacheKey: "installation-list",
+            onSuccess: (response) => {
+                if (!response) return;
+                
+                setInstallationList(response.data);
+                if (!activeInstallation) setActiveInstallation(response.data[0]);
+            }
         }
     );
 
-    useAsyncEffect(useLockFn(async () => {
-        const installations = await fetchInstallations();
+    // useAsyncEffect(useLockFn(async () => {
+    //     const installations = await fetchInstallations();
 
-        if (!installations) return;
+    //     if (!installations) return;
 
-        setInstallationList(installations.data);
-        if (!activeInstallation) setActiveInstallation(installations.data[0]);
-    }), [activeInstallation]);
+    //     setInstallationList(installations.data);
+    //     if (!activeInstallation) setActiveInstallation(installations.data[0]);
+    // }), []);
 
     return (
         <main className="h-full w-full px-[6.75%] flex flex-col">
@@ -109,7 +115,11 @@ export default function MainLayout({
                                                     <button
                                                         key={installation.id}
                                                         className="group flex items-center justify-between gap-2.5"
-                                                        onClick={() => setActiveInstallation(installation)}
+                                                        onClick={() => {
+                                                            setActiveInstallation(installation);
+                                                            updateSearchParams({ installationChange: true }, true);
+                                                            toggleMenu();
+                                                        }}
                                                     >
                                                         <p className="text-body-medium text-dark-100 group-hover:text-light-100">
                                                             {installation.account.login}
