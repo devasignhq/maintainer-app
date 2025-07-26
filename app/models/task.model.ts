@@ -1,5 +1,5 @@
 import { MessageDto } from "./message.model"
-import { GraphqlIssueDto, IssueDto } from "./github.model"
+import { IssueDto, IssueLabel } from "./github.model"
 import { InstallationDto } from "./installation.model"
 import { UserDto } from "./user.model"
 import { TransactionDto } from "./wallet.model"
@@ -46,10 +46,9 @@ export type TaskDto = {
     taskActivities?: TaskActivity[]
 }
 
-export type TaskIssue = Pick<IssueDto, "id" | "number" | "title" | "url" | "labels" | "locked" | "state" | "repository_url" | "created_at" | "updated_at"> & {
-    html_url?: string;
-    body?: string;
-    bountyCommentId?: number;
+export type TaskIssue = Omit<IssueDto, "labels"> & {
+    labels: IssueLabel[];
+    bountyCommentId?: string;
 }
 
 export type TaskSubmission = {
@@ -83,10 +82,10 @@ export type TaskActivity = {
 export type CreateTaskDto = {
     installationId: string
     issue: TaskIssue
-    ogIssue?: GraphqlIssueDto
     timeline?: number
     timelineType?: TimelineType
     bounty: string
+    bountyLabelId: string 
 }
 
 export type AddBountyCommentId = {
