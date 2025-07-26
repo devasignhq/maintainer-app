@@ -40,8 +40,10 @@ export class TaskAPI {
         return HttpClient.get<TaskDto>(ENDPOINTS.TASK.GET_BY_ID.replace("{taskId}", taskId));
     }
 
-    static async getInstallationTaskById(taskId: string) {
-        return HttpClient.get<TaskDto>(ENDPOINTS.TASK.GET_INSTALLATION_TASK_BY_ID.replace("{taskId}", taskId));
+    static async getInstallationTaskById(installationId: string, taskId: string) {
+        return HttpClient.get<TaskDto>(ENDPOINTS.TASK.GET_INSTALLATION_TASK_BY_ID
+            .replace("{installationId}", installationId)
+            .replace("{taskId}", taskId));
     }
 
     static async getTaskActivities(taskId: string, query?: QueryTaskActivityDto) {
@@ -49,7 +51,7 @@ export class TaskAPI {
             ENDPOINTS.TASK.GET_ACTIVITIES.replace("{taskId}", taskId), { params: query });
     }
 
-    static async createTask(data: { payload: CreateTaskDto & { bountyLabelId: number } }) {
+    static async createTask(data: { payload: CreateTaskDto }) {
         return HttpClient.post<TaskDto | PartialSuccessResponse<"task", TaskDto>>(ENDPOINTS.TASK.CREATE, data);
     }
 

@@ -5,7 +5,7 @@ import {
     GetRepositoryResourcesResponse,
     QueryRepositoryIssues,
     RepositoryDto,
-    SetBountyLabelResponse
+    GetOrCreateBountyLabelResponse
 } from "../models/github.model";
 
 export class GitHubAPI {
@@ -24,8 +24,8 @@ export class GitHubAPI {
             .replace("{installationId}", installationId), { params: { repoUrl } });
     }
 
-    static async setBountyLabel(installationId: string, repoUrl: string) {
-        return HttpClient.get<SetBountyLabelResponse>(ENDPOINTS.GITHUB.SET_BOUNTY_LABEL
-            .replace("{installationId}", installationId), { params: { repoUrl } });
+    static async getOrCreateBountyLabel(installationId: string, repositoryId: string) {
+        return HttpClient.get<GetOrCreateBountyLabelResponse>(ENDPOINTS.GITHUB.SET_BOUNTY_LABEL
+            .replace("{installationId}", installationId), { params: { repositoryId } });
     }
 }
