@@ -13,6 +13,7 @@ type FilterDropdownProps = {
     buttonAttributes?: React.ButtonHTMLAttributes<HTMLButtonElement>;
     extendedContainerClassName?: string;
     noMultiSelect?: boolean;
+    defaultValue?: string | number | (string | number)[];
 } & ({
     options: (string | number)[];
 } | {
@@ -29,12 +30,29 @@ const FilterDropdown = ({
     buttonAttributes,
     extendedContainerClassName,
     noMultiSelect,
+    defaultValue,
     ...otherProps
 }: FilterDropdownProps) => {
     const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
-    const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
-        options.reduce<Record<string, boolean>>((acc, _, index) => ({ ...acc, [`${index}`]: false }), {})
-    );
+    const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(() => {
+        const initialState = options.reduce<Record<string, boolean>>((acc, _, index) => ({ ...acc, [`${index}`]: false }), {});
+
+        if (defaultValue !== undefined) {
+            const defaultValues = Array.isArray(defaultValue) ? defaultValue : [defaultValue];
+
+            options.forEach((option, index) => {
+                const optionValue = typeof option === "object"
+                    ? option[(otherProps as any).fieldValue]
+                    : option;
+
+                if (defaultValues.includes(optionValue)) {
+                    initialState[`${index}`] = true;
+                }
+            });
+        }
+
+        return initialState;
+    });
 
     const toggleItems = (field: string) => {
         if (!noMultiSelect) {
@@ -89,18 +107,33 @@ const FilterDropdown = ({
 
     // Update selected items when options change
     useEffect(() => {
-        setSelectedItems(
-            options.reduce<Record<string, boolean>>((acc, _, index) => ({ ...acc, [`${index}`]: false }), {})
-        );
-    }, [options]);
+        const newState = options.reduce<Record<string, boolean>>((acc, _, index) => ({ ...acc, [`${index}`]: false }), {});
+
+        if (defaultValue !== undefined) {
+            const defaultValues = Array.isArray(defaultValue) ? defaultValue : [defaultValue];
+
+            options.forEach((option, index) => {
+                const optionValue = typeof option === "object"
+                    ? option[(otherProps as any).fieldValue]
+                    : option;
+
+                if (defaultValues.includes(optionValue)) {
+                    newState[`${index}`] = true;
+                }
+            });
+        }
+
+        setSelectedItems(newState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [options, defaultValue]);
 
     return (
         <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
-            <button 
+            <button
                 type="button"
                 ref={menuButtonRef}
                 className={twMerge(
-                    "p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]", 
+                    "p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]",
                     extendedButtonClassName
                 )}
                 onClick={toggleMenu}
@@ -110,7 +143,7 @@ const FilterDropdown = ({
                 <IoMdArrowDropdown className={`text-2xl ${openMenu && "rotate-180"}`} />
             </button>
             {openMenu && (
-                <div 
+                <div
                     ref={menuRef}
                     className="fixed top-[var(--dropdown-top)] left-[var(--dropdown-left)] px-2.5 max-h-[350px] 
                     bg-dark-400 dropdown-box shadow-[-20px_4px_40px_0px_#000000] z-[110] overflow-y-auto"
@@ -120,7 +153,7 @@ const FilterDropdown = ({
                     } as React.CSSProperties}
                 >
                     <div className="w-full pb-3 pt-[15px] bg-dark-400 sticky top-0">
-                        <button 
+                        <button
                             type="button"
                             className="w-fit text-body-tiny text-light-200 font-bold hover:text-primary-100"
                             onClick={clearSelection}
@@ -130,13 +163,13 @@ const FilterDropdown = ({
                         </button>
                     </div>
                     <ul className="flex flex-col gap-3 list-none items-start">
-                        {options.length === 0 ? 
-                            <li className="text-light-100">No options available</li> 
-                        : null}
-                        
+                        {options.length === 0 ?
+                            <li className="text-light-100">No options available</li>
+                            : null}
+
                         {options.map((option, index) => (
-                            <li 
-                                key={index} 
+                            <li
+                                key={index}
                                 className="flex items-center gap-2.5"
                             >
                                 {selectedItems[`${index}`] ? (
@@ -144,10 +177,10 @@ const FilterDropdown = ({
                                 ) : (
                                     <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
                                 )}
-                                <button 
+                                <button
                                     type="button"
                                     className="text-body-small text-light-100"
-                                    onClick={() => toggleItems(`${index}`)} 
+                                    onClick={() => toggleItems(`${index}`)}
                                 >
                                     {typeof option === "object" ? option[(otherProps as any).fieldName] : option}
                                 </button>
@@ -155,7 +188,7 @@ const FilterDropdown = ({
                         ))}
                     </ul>
                     <div className="w-full pt-3 pb-[15px] bg-dark-400 sticky bottom-0">
-                        <button 
+                        <button
                             type="button"
                             className="group w-fit flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold"
                             onClick={applySelection}
