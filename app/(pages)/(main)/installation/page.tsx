@@ -4,14 +4,13 @@ import { getCurrentUser } from "@/lib/firebase";
 import { ROUTES } from "@/app/utils/data";
 import { useAsyncEffect, useLockFn } from "ahooks";
 import { InstallationAPI } from "@/app/services/installation.service";
-import { githubApp } from "@/app/services/github.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { toast } from "react-toastify";
-import { ErrorResponse } from "@/app/models/_global";
 import { useState } from "react";
 import { TbProgress } from "react-icons/tb";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { MdOutlineCancel } from "react-icons/md";
+import { handleApiError } from "@/app/utils/helper";
 
 type ReboundAction = "INSTALL" | "RELOAD" | "";
 
@@ -54,51 +53,9 @@ const Installation = () => {
             router.push(ROUTES.TASKS);
             return;
         }
-        
-        let octokit;
-        try {
-            octokit = await githubApp.getInstallationOctokit(Number(installationId));
-        } catch {
-            toast.error("Unable to authenticate with GitHub. Please try reinstalling the app.");
-            setIsProcessing(false);
-            setReboundAction("INSTALL");
-            return
-        }
-        
-        let githubInstallation;
-        try {
-            githubInstallation = await octokit.request(
-                "GET /app/installations/{installation_id}", 
-                { installation_id: Number(installationId) }
-            );
-            toast.info("Installation verified.");
-        } catch (githubError: any) {
-            if (githubError.status === 404) {
-                toast.error("Installation not found. It may have been uninstalled.");
-                setReboundAction("INSTALL");
-            } else {
-                toast.error("Failed to fetch installation details from GitHub.");
-                setReboundAction("RELOAD");
-            }
-            setIsProcessing(false);
-            return;
-        }
 
         try {
-            const response = await InstallationAPI.createInstallation({
-                installationId,
-                htmlUrl: githubInstallation.data.html_url,
-                targetId: githubInstallation.data.target_id,
-                targetType: githubInstallation.data.target_type,
-                account: {
-                    login: (githubInstallation.data.account! as any).login,
-                    nodeId: githubInstallation.data.account!.node_id,
-                    avatarUrl: githubInstallation.data.account!.avatar_url,
-                    htmlUrl: githubInstallation.data.account!.html_url
-                },
-            });
-
-            const noInstallations = !activeInstallation && installationList.length === 0;
+            const response = await InstallationAPI.createInstallation({ installationId });
             
             toast.success("Installation saved successfully.");
 
@@ -106,26 +63,23 @@ const Installation = () => {
                 setActiveInstallation(response);
                 setInstallationList([ ...installationList, response ]);
             }
-            if (response && "error" in response) {
+            if (response && "message" in response) {
                 setActiveInstallation(response.installation);
                 setInstallationList([ ...installationList, response.installation ]);
                 toast.warn(response.message);
             }
 
+            const noInstallations = !activeInstallation && installationList.length === 0;
 
             if (noInstallations) {
                 router.push(ROUTES.ONBOARDING + "?newInstallation=true");
             } else {
                 router.push(ROUTES.TASKS);
             }
-        } catch (err) {
-            const error = err as ErrorResponse;
-            if (error.error.message) {
-                toast.error(error.error.message);
-                return
-            }
-            toast.error("Failed to save installation. Please reload page to try again.");
+        } catch (error) {
+            handleApiError(error, "Failed to save installation. Please reload page to try again.");
             setReboundAction("RELOAD");
+        } finally {
             setIsProcessing(false);
         }
     }), [router, searchParams]);

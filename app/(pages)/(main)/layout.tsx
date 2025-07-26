@@ -77,7 +77,7 @@ export default function MainLayout({
                                         bg-dark-400 border border-dark-200 shadow-[-20px_4px_40px_0px_#000000]"
                                 >
                                     <div className="w-full flex flex-col gap-2.5">
-                                        {fetchingInstallations ? (
+                                        {(fetchingInstallations && installationList.length === 0) ? (
                                             <>
                                                 {[...Array(3)].map((_, i) => (
                                                     <div
