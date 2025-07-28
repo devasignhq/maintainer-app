@@ -9,12 +9,11 @@ import { FaCheck } from "react-icons/fa6";
 import { useCustomSearchParams, usePopup } from "@/app/utils/hooks";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { InstallationAPI } from "@/app/services/installation.service";
-import { useRequest, useLockFn, useAsyncEffect } from "ahooks";
+import { useRequest, useLockFn } from "ahooks";
 import { TbLogout } from "react-icons/tb";
 import { useLogoutUser } from "@/lib/firebase";
 import { FiSettings } from "react-icons/fi";
 import { openInNewTab } from "@/app/utils/helper";
-import { WalletAPI } from "@/app/services/wallet.service";
 
 export default function MainLayout({
     children,
@@ -46,12 +45,6 @@ export default function MainLayout({
             }
         }
     );
-
-    useAsyncEffect(useLockFn(async () => {
-        if (!activeInstallation) return;
-
-        await WalletAPI.recordWalletTopups(activeInstallation.id);
-    }), [activeInstallation]);
 
     return (
         <main className="h-full w-full px-[6.75%] flex flex-col">
