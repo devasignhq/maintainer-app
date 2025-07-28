@@ -9,7 +9,7 @@ import BountyTable from "./tables/BountyTable";
 import TopUpTable from "./tables/TopUpTable";
 import WithdrawalTable from "./tables/WithdrawalTable";
 import SwapTable from "./tables/SwapTable";
-import { useInfiniteScroll, useToggle } from "ahooks";
+import { useAsyncEffect, useInfiniteScroll, useLockFn, useToggle } from "ahooks";
 import SwapAssetModal from "./modals/SwapAssetModal";
 import WithdrawAssetModal from "./modals/WithdrawAssetModal";
 import FundWalletModal from "./modals/FundWalletModal";
@@ -62,11 +62,22 @@ const Wallet = () => {
                 list: response.transactions,
                 hasMore: response.hasMore,
             };
-        }, {
+        }, 
+        {
             isNoMore: (data) => !data?.hasMore,
             reloadDeps: [activeTab]
         }
     );
+
+    useAsyncEffect(useLockFn(async () => {
+        if (!activeInstallation) return;
+
+        try {
+            await WalletAPI.recordWalletTopups(activeInstallation.id);
+
+            reloadTransactions();
+        } catch {}
+    }), [activeInstallation]);
 
     return (
         <>

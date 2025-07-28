@@ -42,7 +42,8 @@ const TaskOverviewSection = () => {
                 list: response.data,
                 pagination: response.pagination,
             };
-        }, {
+        }, 
+        {
             isNoMore: (data) => !data?.pagination.hasMore,
             reloadDeps: [activeTask]
         }

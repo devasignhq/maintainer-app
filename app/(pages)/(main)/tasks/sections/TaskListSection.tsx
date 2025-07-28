@@ -78,7 +78,8 @@ const TaskListSection = () => {
                 list: response.data,
                 pagination: response.pagination,
             };
-        }, {
+        }, 
+        {
             isNoMore: (data) => !data?.pagination?.hasMore,
             reloadDeps: [activeInstallation?.id, ...Object.values(taskFilters)]
         }

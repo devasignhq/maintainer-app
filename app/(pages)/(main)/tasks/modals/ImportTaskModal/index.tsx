@@ -148,7 +148,8 @@ const ImportTaskModal = ({
             setCurrentPage(pageToLoad);
 
             return { list: issues, hasMore };
-        }, {
+        }, 
+        {
             isNoMore: (data) => !data?.hasMore,
             reloadDeps: [activeRepo, ...Object.values(issueFilters)],
         }
