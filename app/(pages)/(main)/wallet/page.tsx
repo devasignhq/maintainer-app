@@ -31,6 +31,7 @@ const Wallet = () => {
         activeInstallation?.id
     );
     const [activeTab, setActiveTab] = useState(tabs[0]);
+    const [currentPage, setCurrentPage] = useState(1);
     const [openWithdrawAssetModal, { toggle: toggleWithdrawAssetModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
     const [openSwapAssetModal, { toggle: toggleSwapAssetModal }] = useToggle(false);
@@ -58,7 +59,7 @@ const Wallet = () => {
         reload: reloadTransactions,
     } = useInfiniteScroll<Data>(
         async (currentData) => {
-            const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
+            const pageToLoad = currentData ? currentPage + 1 : 1;
 
             const category = activeTab.enum === "ALL" 
                 ? "" 
@@ -73,6 +74,8 @@ const Wallet = () => {
                 sort: "desc",
                 ...(category && { categories: category })
             });
+
+            setCurrentPage(pageToLoad);
 
             return { 
                 list: response.transactions,

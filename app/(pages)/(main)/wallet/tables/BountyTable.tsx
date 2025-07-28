@@ -74,17 +74,18 @@ const BountyTable = ({
                     </div>
                 )}
                 {loadingMore && (
-                    <div className="flex justify-center pt-2.5">
+                    <div className="flex justify-center pt-5 pb-2.5">
                         <span className="text-body-medium text-light-100">Loading more transactions...</span>
                     </div>
                 )}
-                {(!loadingMore && !noMore) && (
+                {(!loading && !loadingMore && !noMore) && (
+                    <div className="flex justify-center">
                     <button 
-                        className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
+                        className="w-fit mx-auto text-body-medium text-light-200 font-bold hover:text-light-100 pt-5 pb-2.5"
                         onClick={loadMore}
                     >
                         Load More
-                    </button>
+                    </button></div>
                 )}
             </tbody>
         </>
