@@ -53,6 +53,7 @@ export const ENDPOINTS = {
         WITHDRAW: preset.WALLET + "/withdraw",
         SWAP: preset.WALLET + "/swap",
         TRANSACTIONS: preset.WALLET + "/transactions",
+        RECORD_WALLET_TOPUPS: preset.WALLET + "/transactions/record-topups",
     },
     GITHUB: {
         GET_INSTALLATION_REPOSITORIES: preset.GITHUB + "/installations/{installationId}/repositories",

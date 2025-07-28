@@ -63,3 +63,9 @@ export type QueryTransactionDto = {
     limit?: number
     sort?: "asc" | "desc"
 }
+
+export type RecordWalletTopupsResponse = {
+    message: string;
+    processed: number;
+    transactions: TransactionDto[];
+}

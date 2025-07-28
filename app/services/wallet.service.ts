@@ -5,7 +5,8 @@ import {
     SwapAssetDto,
     QueryTransactionDto,
     TransactionDto,
-    WithdrawAssetDto
+    WithdrawAssetDto,
+    RecordWalletTopupsResponse
 } from "../models/wallet.model";
 import { ItemWithPaginationResponse } from "../models/_global";
 
@@ -25,5 +26,10 @@ export class WalletAPI {
     static async getTransactions(query?: QueryTransactionDto) {
         return HttpClient.get<ItemWithPaginationResponse<"transactions", TransactionDto[]>>(
             ENDPOINTS.WALLET.TRANSACTIONS, { params: query });
+    }
+
+    static async recordWalletTopups(installationId: string) {
+        return HttpClient.post<RecordWalletTopupsResponse>(
+            ENDPOINTS.WALLET.RECORD_WALLET_TOPUPS, undefined, { params: { installationId } });
     }
 }
