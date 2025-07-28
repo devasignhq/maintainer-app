@@ -9,11 +9,11 @@ import BountyTable from "./tables/BountyTable";
 import TopUpTable from "./tables/TopUpTable";
 import WithdrawalTable from "./tables/WithdrawalTable";
 import SwapTable from "./tables/SwapTable";
-import { useInfiniteScroll, useToggle } from "ahooks";
+import { useAsyncEffect, useInfiniteScroll, useLockFn, useToggle } from "ahooks";
 import SwapAssetModal from "./modals/SwapAssetModal";
 import WithdrawAssetModal from "./modals/WithdrawAssetModal";
 import FundWalletModal from "./modals/FundWalletModal";
-import { useStreamAccountBalance } from "@/app/services/horizon.service";
+import { useStreamAccountBalance, HorizonHelper } from "@/app/services/horizon.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { moneyFormat } from "@/app/utils/helper";
 import { WalletAPI } from "@/app/services/wallet.service";
@@ -21,8 +21,17 @@ import { Data } from "ahooks/lib/useInfiniteScroll/types";
 
 const Wallet = () => {
     const { activeInstallation } = useInstallationStore();
-    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeInstallation?.walletAddress, true);
+    const { 
+        xlmBalance, 
+        usdcBalance,
+        manualBalanceCheck
+    } = useStreamAccountBalance(
+        activeInstallation?.walletAddress, 
+        true, 
+        activeInstallation?.id
+    );
     const [activeTab, setActiveTab] = useState(tabs[0]);
+    const [currentPage, setCurrentPage] = useState(1);
     const [openWithdrawAssetModal, { toggle: toggleWithdrawAssetModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
     const [openSwapAssetModal, { toggle: toggleSwapAssetModal }] = useToggle(false);
@@ -31,6 +40,14 @@ const Wallet = () => {
     const handleOpenSwapAssetModal = (from: "XLM" | "USDC") => {
         setSwapAssetFrom(from);
         toggleSwapAssetModal();
+    };
+
+    const handleSwapSuccess = () => {
+        // Track the swap based on the current swap direction
+        const toAsset = swapAssetFrom === "XLM" ? "USDC" : "XLM";
+        HorizonHelper.trackSwap(swapAssetFrom, toAsset);
+        reloadTransactions();
+        manualBalanceCheck();
     };
         
     const {
@@ -42,7 +59,7 @@ const Wallet = () => {
         reload: reloadTransactions,
     } = useInfiniteScroll<Data>(
         async (currentData) => {
-            const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
+            const pageToLoad = currentData ? currentPage + 1 : 1;
 
             const category = activeTab.enum === "ALL" 
                 ? "" 
@@ -58,15 +75,28 @@ const Wallet = () => {
                 ...(category && { categories: category })
             });
 
+            setCurrentPage(pageToLoad);
+
             return { 
                 list: response.transactions,
                 hasMore: response.hasMore,
             };
-        }, {
+        }, 
+        {
             isNoMore: (data) => !data?.hasMore,
             reloadDeps: [activeTab]
         }
     );
+
+    useAsyncEffect(useLockFn(async () => {
+        if (!activeInstallation) return;
+
+        try {
+            await WalletAPI.recordWalletTopups(activeInstallation.id);
+
+            reloadTransactions();
+        } catch {}
+    }), [activeInstallation]);
 
     return (
         <>
@@ -203,7 +233,7 @@ const Wallet = () => {
                 xlmBalance={xlmBalance}
                 usdcBalance={usdcBalance}
                 toggleModal={toggleSwapAssetModal} 
-                reloadTransactions={reloadTransactions} 
+                reloadTransactions={handleSwapSuccess} 
             />
         )}
         </>

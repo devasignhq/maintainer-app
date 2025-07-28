@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { BalanceLineNative, BalanceLineAsset, AccountRecord, AssetType } from "../models/horizon.model";
+import { WalletAPI } from "./wallet.service";
 
 type WalletBalance = BalanceLineNative | BalanceLineAsset;
 type USDCBalance = BalanceLineAsset<AssetType.credit4>;
@@ -12,27 +13,61 @@ interface StreamState {
     lastUpdated: Date | null;
 }
 
+interface SwapTracker {
+    timestamp: number;
+    fromAsset: 'XLM' | 'USDC';
+    toAsset: 'XLM' | 'USDC';
+}
+
 interface PriceData {
     xlmToUsdc: number;
     lastUpdated: Date;
 }
-export class HorizonAPI {
-    static streamAccount(walletAddress: string, isTestnet: boolean = false) {
-        const baseUrl = isTestnet 
-            ? 'https://horizon-testnet.stellar.org' 
-            : 'https://horizon.stellar.org';
-        
-        const eventSource = new EventSource(
-            `${baseUrl}/accounts/${walletAddress}`
-        );
+// Global swap tracker to prevent recordWalletTopups calls after swaps
+let recentSwaps: SwapTracker[] = [];
 
-        return eventSource;
+export class HorizonHelper {
+    static getBaseUrl(isTestnet: boolean = false) {
+        const baseUrl = isTestnet
+            ? 'https://horizon-testnet.stellar.org'
+            : 'https://horizon.stellar.org';
+
+        return baseUrl;
+    }
+
+    // Method to track swaps to prevent false topup detection
+    static trackSwap(fromAsset: 'XLM' | 'USDC', toAsset: 'XLM' | 'USDC') {
+        const swapRecord: SwapTracker = {
+            timestamp: Date.now(),
+            fromAsset,
+            toAsset
+        };
+
+        recentSwaps.push(swapRecord);
+
+        // Clean up old swap records (older than 30 seconds)
+        setTimeout(() => {
+            recentSwaps = recentSwaps.filter(swap =>
+                Date.now() - swap.timestamp < 30000
+            );
+        }, 30000);
+    }
+
+    // Check if a balance change might be from a recent swap
+    static isRecentSwap(asset: 'XLM' | 'USDC', isIncrease: boolean): boolean {
+        const now = Date.now();
+        return recentSwaps.some(swap => {
+            const isRecent = now - swap.timestamp < 30000; // 30 seconds
+            const isTargetAsset = swap.toAsset === asset && isIncrease;
+            return isRecent && isTargetAsset;
+        });
     }
 }
 
 export function useStreamAccountBalance(
     walletAddress: string | undefined,
-    isTestnet: boolean = false
+    isTestnet: boolean = false,
+    installationId?: string
 ) {
     const [state, setState] = useState<StreamState>({
         xlmBalance: "0.00",
@@ -41,10 +76,55 @@ export function useStreamAccountBalance(
         error: null,
         lastUpdated: null
     });
-    
+
     const eventSourceRef = useRef<EventSource | null>(null);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const reconnectAttempts = useRef(0);
+    const previousBalances = useRef<{ xlm: number; usdc: number } | null>(null);
+    
+    const updateBalances = async (balances: WalletBalance[]) => {
+        const newXlmBalance = parseFloat(
+            balances.find(balance => balance.asset_type === "native")?.balance || "0"
+        );
+
+        const newUsdcBalance = parseFloat(
+            balances.find(
+                (balance) => (balance as USDCBalance).asset_code === "USDC"
+            )?.balance || "0"
+        );
+
+        // Check for balance increases that might indicate topups
+        if (previousBalances.current && installationId) {
+            const xlmIncrease = newXlmBalance > previousBalances.current.xlm;
+            const usdcIncrease = newUsdcBalance > previousBalances.current.usdc;
+
+            // Only call recordWalletTopups if there's an increase and it's not from a recent swap
+            if (xlmIncrease && !HorizonHelper.isRecentSwap('XLM', true)) {
+                try {
+                    await WalletAPI.recordWalletTopups(installationId);
+                } catch (error) {
+                    console.error('Failed to record wallet topups:', error);
+                }
+            } else if (usdcIncrease && !HorizonHelper.isRecentSwap('USDC', true)) {
+                try {
+                    await WalletAPI.recordWalletTopups(installationId);
+                } catch (error) {
+                    console.error('Failed to record wallet topups:', error);
+                }
+            }
+        }
+
+        // Update previous balances for next comparison
+        previousBalances.current = { xlm: newXlmBalance, usdc: newUsdcBalance };
+
+        setState(prev => ({
+            ...prev,
+            xlmBalance: newXlmBalance.toFixed(2),
+            usdcBalance: newUsdcBalance.toFixed(2),
+            lastUpdated: new Date(),
+            error: null
+        }));
+    };
 
     useEffect(() => {
         if (!walletAddress) {
@@ -72,34 +152,12 @@ export function useStreamAccountBalance(
             }
         }
 
-        function updateBalances(balances: WalletBalance[]) {
-            const xlmBalance = parseFloat(
-                balances.find(balance => balance.asset_type === "native")?.balance || "0"
-            ).toFixed(2);
-
-            const usdcBalance = parseFloat(
-                balances.find(
-                    (balance) => (balance as USDCBalance).asset_code === "USDC"
-                )?.balance || "0"
-            ).toFixed(2);
-
-            setState(prev => ({
-                ...prev,
-                xlmBalance,
-                usdcBalance,
-                lastUpdated: new Date(),
-                error: null
-            }));
-        }
-
         function connect() {
             cleanup();
 
             try {
-                const baseUrl = isTestnet 
-                    ? 'https://horizon-testnet.stellar.org' 
-                    : 'https://horizon.stellar.org';
-                
+                const baseUrl = HorizonHelper.getBaseUrl(isTestnet);
+
                 const eventSource = new EventSource(`${baseUrl}/accounts/${walletAddress}`);
                 eventSourceRef.current = eventSource;
 
@@ -111,45 +169,70 @@ export function useStreamAccountBalance(
                 eventSource.onmessage = (message) => {
                     const data = message.data ? JSON.parse(message.data) : message;
                     const result = data as AccountRecord;
-                    
+
                     if (result.balances) {
                         updateBalances(result.balances as WalletBalance[]);
                     }
                 };
 
                 eventSource.onerror = () => {
-                    setState(prev => ({ 
-                        ...prev, 
-                        isConnected: false, 
-                        error: 'Connection lost' 
+                    setState(prev => ({
+                        ...prev,
+                        isConnected: false,
+                        error: 'Connection lost'
                     }));
 
                     // Reconnection logic
                     if (reconnectAttempts.current < maxReconnectAttempts) {
                         const delay = reconnectDelay * Math.pow(2, reconnectAttempts.current);
                         reconnectAttempts.current++;
-                        
+
                         reconnectTimeoutRef.current = setTimeout(connect, delay);
                     } else {
-                        setState(prev => ({ 
-                            ...prev, 
-                            error: 'Max reconnection attempts reached' 
+                        setState(prev => ({
+                            ...prev,
+                            error: 'Max reconnection attempts reached'
                         }));
                     }
                 };
 
             } catch {
-                setState(prev => ({ 
-                    ...prev, 
+                setState(prev => ({
+                    ...prev,
                     error: 'Failed to establish connection',
-                    isConnected: false 
+                    isConnected: false
                 }));
             }
         }
 
         connect();
         return cleanup;
-    }, [walletAddress, isTestnet]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [walletAddress, isTestnet, installationId]);
+
+    const manualBalanceCheck = useCallback(async () => {
+        if (!walletAddress) return;
+        try {
+            const baseUrl = HorizonHelper.getBaseUrl(isTestnet);
+            const response = await fetch(`${baseUrl}/accounts/${walletAddress}`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.balances) {
+                await updateBalances(data.balances as WalletBalance[]);
+            }
+        } catch (error) {
+            setState(prev => ({
+                ...prev,
+                error: error instanceof Error ? error.message : 'Failed to fetch balance'
+            }));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [walletAddress]);
 
     const reconnect = () => {
         reconnectAttempts.current = 0;
@@ -158,6 +241,7 @@ export function useStreamAccountBalance(
 
     return {
         ...state,
+        manualBalanceCheck,
         reconnect
     };
 }
@@ -173,7 +257,7 @@ export function useAccountBalancePolling(
         error: null,
         lastUpdated: null
     });
-    
+
     const [isLoading, setIsLoading] = useState(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -181,21 +265,19 @@ export function useAccountBalancePolling(
         if (!walletAddress) return;
 
         setIsLoading(true);
-        const baseUrl = isTestnet 
-            ? 'https://horizon-testnet.stellar.org' 
-            : 'https://horizon.stellar.org';
+        const baseUrl = HorizonHelper.getBaseUrl(isTestnet);
 
         try {
             const response = await fetch(`${baseUrl}/accounts/${walletAddress}`);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             const xlmBalance = parseFloat(
-                data.balances.find((balance: WalletBalance) => 
+                data.balances.find((balance: WalletBalance) =>
                     balance.asset_type === "native"
                 )?.balance || "0"
             ).toFixed(2);
@@ -255,19 +337,19 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000, pause: bool
         try {
             // Query Stellar DEX for XLM/USDC orderbook
             const response = await fetch(
-                'https://horizon.stellar.org/order_book?' + 
+                'https://horizon.stellar.org/order_book?' +
                 'selling_asset_type=native&' +
                 'buying_asset_type=credit_alphanum4&' +
                 'buying_asset_code=USDC&' +
                 'buying_asset_issuer=GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN'
             );
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             // Get the best bid (highest price someone will pay for XLM in USDC)
             const bestBid = data.bids[0];
             if (bestBid) {
@@ -277,7 +359,7 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000, pause: bool
                     lastUpdated: new Date()
                 });
             }
-            
+
             setError(null);
             setIsLoading(false);
         } catch (err) {
@@ -293,10 +375,10 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000, pause: bool
             }
             return;
         }
-        
+
         fetchStellarDEXPrice();
         intervalRef.current = setInterval(fetchStellarDEXPrice, intervalMs);
-        
+
         return () => {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);

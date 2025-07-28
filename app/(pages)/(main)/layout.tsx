@@ -46,15 +46,6 @@ export default function MainLayout({
         }
     );
 
-    // useAsyncEffect(useLockFn(async () => {
-    //     const installations = await fetchInstallations();
-
-    //     if (!installations) return;
-
-    //     setInstallationList(installations.data);
-    //     if (!activeInstallation) setActiveInstallation(installations.data[0]);
-    // }), []);
-
     return (
         <main className="h-full w-full px-[6.75%] flex flex-col">
             <section className="pt-5 flex items-center justify-between">

@@ -60,17 +60,19 @@ const AllTable = ({
                     </div>
                 )}
                 {loadingMore && (
-                    <div className="flex justify-center pt-2.5">
+                    <div className="flex justify-center pt-5 pb-2.5">
                         <span className="text-body-medium text-light-100">Loading more transactions...</span>
                     </div>
                 )}
-                {(!loadingMore && !noMore) && (
-                    <button 
-                        className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
-                        onClick={loadMore}
-                    >
-                        Load More
-                    </button>
+                {(!loading && !loadingMore && !noMore) && (
+                    <div className="flex justify-center">
+                        <button 
+                            className="w-fit mx-auto text-body-medium text-light-200 font-bold hover:text-light-100 pt-5 pb-2.5"
+                            onClick={loadMore}
+                        >
+                            Load More
+                        </button>
+                    </div>
                 )}
             </tbody>
         </>
