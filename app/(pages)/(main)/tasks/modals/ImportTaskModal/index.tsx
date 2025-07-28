@@ -146,9 +146,9 @@ const ImportTaskModal = ({
 
             return { list: issues, hasMore };
         }, {
-        isNoMore: (data) => !data?.hasMore,
-        reloadDeps: [activeRepo, ...Object.values(issueFilters)],
-    }
+            isNoMore: (data) => !data?.hasMore,
+            reloadDeps: [activeRepo, ...Object.values(issueFilters)],
+        }
     );
 
     const { loading: loadingResources, data: repoResources } = useRequest<GetRepositoryResourcesResponse, any>(
@@ -163,7 +163,7 @@ const ImportTaskModal = ({
         },
         {
             retryCount: 1,
-            cacheKey: `${activeRepo?.id}-resources`,
+            cacheKey: `${activeRepo?.url}-resources`,
             refreshDeps: [activeRepo]
         }
     );
@@ -436,7 +436,7 @@ const ImportTaskModal = ({
                             <div className="flex justify-center py-4">
                                 <span className="text-body-medium text-light-100">Fetching issues...</span>
                             </div>
-                        ) : (
+                        ):(
                             repoIssues?.list?.map((issue) => (
                                 <CreateTaskCard
                                     key={issue.id}

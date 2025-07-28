@@ -128,6 +128,10 @@ export type QueryTaskDto = {
     page?: number
     limit?: number
     sort?: "asc" | "desc"
+    repoUrl?: string
+    issueTitle?: string
+    issueLabels?: string[]
+    issueMilestone?: string
 }
 
 export type QueryTaskActivityDto = {
@@ -136,12 +140,7 @@ export type QueryTaskActivityDto = {
     sort?: "asc" | "desc"
 }
 
-export type FilterTasks = {
-    repoUrl?: string;
-    issueTitle?: string;
-    issueLabels?: string[];
-    issueMilestone?: string;
-}
+export type FilterTasks = Pick<QueryTaskDto, "repoUrl" | "issueTitle" | "issueLabels" | "issueMilestone">
 
 export type TimelineExtensionResponse = {
     comment: MessageDto;
