@@ -1,24 +1,28 @@
 "use client";
 import FilterDropdown from "@/app/components/Dropdown/Filter";
-import InputField from "@/app/components/Input/InputField";
 import { useContext, useEffect, useState } from "react";
-import { FiSearch } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
 import TaskCard from "../components/TaskCard";
 import ImportTaskModal from "../modals/ImportTaskModal";
-import { useInfiniteScroll, useToggle } from "ahooks";
+import { useInfiniteScroll, useRequest, useToggle } from "ahooks";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { FilterTasks } from "@/app/models/task.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import { ActiveTaskContext } from "../page";
 import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/utils/hooks";
+import { GetRepositoryResourcesResponse } from "@/app/models/github.model";
+import { GitHubAPI } from "@/app/services/github.service";
+import SearchBox from "../components/SearchBox";
 
+// ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
     const { activeInstallation } = useInstallationStore();
     const { activeTask } = useContext(ActiveTaskContext);
     const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
     const [taskFilters, setTaskFilters] = useState(defaultTaskFilters);
+    const [searchValue, setSearchValue] = useState("");
+    const [displaySearchIcon, setDisplaySearchIcon] = useState(true);
     const { 
         searchParams, 
         updateSearchParams,
@@ -47,14 +51,19 @@ const TaskListSection = () => {
             }
 
             const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
+            let filters: FilterTasks = { issueTitle: taskFilters.issueTitle };
+
+            if (taskFilters.repoUrl) {
+                filters = taskFilters;
+            }
 
             const response = await TaskAPI.getInstallationTasks(
                 activeInstallation.id,
                 {
                     page: pageToLoad,
                     limit: 30,
+                    ...filters,
                 },
-                taskFilters
             );
 
             if (!searchParams.get("taskId") && !activeTask && response.data.length > 0) {
@@ -90,34 +99,31 @@ const TaskListSection = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [installationChange]);
 
-    // const { loading: loadingLabels, data: repoLabels } = useRequest(
-    //     () => getRepoLabels(
-    //         activeRepo || activeInstallation?.repoUrls[0] || "",
-    //         githubToken || "",
-    //     ), 
-    //     {
-    //         retryCount: 1,
-    //         cacheKey: `${activeRepo}-labels`,
-    //         refreshDeps: [activeRepo],,
-    // onError: () => {
-    //     if (!githubToken) reAuthenticate();
-    // }
-    //     }
-    // );
+    const { 
+        loading: loadingResources, 
+        data: repoResources,
+        run: fetchRepoResources
+    } = useRequest<GetRepositoryResourcesResponse, any>(
+        () => {
+            return GitHubAPI.getRepositoryResources(
+                activeInstallation!.id,
+                taskFilters.repoUrl!
+            ) as Promise<GetRepositoryResourcesResponse>;
+        },
+        {
+            manual: true,
+            retryCount: 1,
+            cacheKey: `${taskFilters.repoUrl}-resources`,
+            refreshDeps: [taskFilters.repoUrl]
+        }
+    );
 
-    // const { loading: loadingMilestones, data: repoMilestones } = useRequest(
-    //     () => getRepoMilestones(
-    //         activeRepo || activeInstallation?.repoUrls[0] || "",
-    //         githubToken || "",
-    //     ), 
-    //     {
-    //         retryCount: 1,
-    //         cacheKey: `${activeRepo}-milestones`,
-    //         refreshDeps: [activeRepo],
-    //         onSuccess: () => {},
-    //         onError: () => {}
-    //     }
-    // );
+    useEffect(() => {
+        if (taskFilters.repoUrl) {
+            fetchRepoResources();;
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [taskFilters.repoUrl]);
 
     return (
         <>
@@ -133,39 +139,67 @@ const TaskListSection = () => {
                     </button>
                 </div>
                 <div className="space-y-2.5 pr-5 my-[30px]">
-                    <InputField
-                        Icon={FiSearch}
+                    <SearchBox
                         attributes={{
-                            placeholder: "Search Tasks or Tasks",
-                            name: "search",
                             style: { fontSize: "12px", height: "40px" },
+                            placeholder: "Search tasks by issue title",
+                            name: "search",
+                            value: searchValue,
+                            onChange: (e) => {
+                                setSearchValue(e.target.value);
+                                if (!displaySearchIcon) setDisplaySearchIcon(true);
+                            },
+                            disabled: loadingTasks,
                         }}
                         extendedContainerClassName="w-full"
                         extendedInputClassName="text-body-tiny text-light-100"
-                    />
+                        enableSearchOption={Boolean(searchValue.trim().length > 2)}
+                        displaySearchIcon={!Boolean(taskFilters.issueTitle) || displaySearchIcon}
+                        onSearchIconClick={() => {
+                            setTaskFilters((prev) => ({
+                                ...prev,
+                                issueTitle: searchValue.trim()
+                            }));
+                            setDisplaySearchIcon(false);
+                        }}
+                        onClearIconClick={() => {
+                            setTaskFilters((prev) => ({
+                                ...prev,
+                                issueTitle: undefined
+                            }));
+                            setSearchValue("");
+                        }}
+                    /> 
                     <div className="flex items-center gap-2.5">
                         <FilterDropdown
-                            title="Code Repo"
-                            options={[]}
+                            title="Repo Name"
+                            options={installationRepos}
+                            fieldName="name"
+                            fieldValue="url"
                             extendedContainerClassName="w-full"
                             extendedButtonClassName="w-full py-[5px]"
                             buttonAttributes={{
-                                style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }
+                                style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                                disabled: loadingTasks || loadingInstallationRepos
                             }}
                             setField={(value) => setTaskFilters((prev) => ({
                                 ...prev,
-                                repoUrl: value as string
+                                repoUrl: value as string,
+                                issueLabels: undefined,
+                                issueMilestone: undefined,
                             }))}
                             noMultiSelect
                         />
                         <FilterDropdown
                             title="Labels"
-                            options={["bug", "feature", "enhancement", "question"]}
+                            options={repoResources?.labels || []}
+                            fieldName="name"
+                            fieldValue="name"
                             extendedContainerClassName="w-full"
                             extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
                             buttonAttributes={{
                                 style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
-                                disabled: true
+                                disabled: loadingResources || !Boolean(taskFilters.repoUrl)
                             }}
                             setField={(value) => setTaskFilters((prev) => ({
                                 ...prev,
@@ -174,12 +208,14 @@ const TaskListSection = () => {
                         />
                         <FilterDropdown
                             title="Milestone"
-                            options={["Stage One", "Planning", "Documentation", "Testing"]}
+                            options={repoResources?.milestones || []}
+                            fieldName="title"
+                            fieldValue="title"
                             extendedContainerClassName="w-full"
                             extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
                             buttonAttributes={{
                                 style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
-                                disabled: true
+                                disabled: loadingResources || !Boolean(taskFilters.repoUrl)
                             }}
                             setField={(value) => setTaskFilters((prev) => ({
                                 ...prev,
@@ -190,14 +226,20 @@ const TaskListSection = () => {
                     </div>
                 </div>
                 <div className="grow pr-5 pb-5 overflow-y-auto space-y-[15px]">
-                    {installationTasks?.list?.map((task) => (
-                        <TaskCard
-                            key={task.id}
-                            task={task}
-                            active={(activeTask?.id || searchParams.get("taskId")) === task.id}
-                            onClick={() => updateSearchParams({ taskId: task.id })}
-                        />
-                    ))}
+                    {loadingTasks ? (
+                        <div className="flex justify-center py-4">
+                            <span className="text-body-medium text-light-100">Loading tasks...</span>
+                        </div>
+                    ):(
+                        installationTasks?.list?.map((task) => (
+                            <TaskCard
+                                key={task.id}
+                                task={task}
+                                active={(activeTask?.id || searchParams.get("taskId")) === task.id}
+                                onClick={() => updateSearchParams({ taskId: task.id })}
+                            />
+                        ))
+                    )}
                     {(installationTasks?.list && installationTasks.list.length < 1 && !loadingTasks) && (
                         <div className="flex justify-center py-4">
                             <span className="text-body-medium text-light-100">No tasks found</span>
