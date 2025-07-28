@@ -14,7 +14,8 @@ export class UserAPI {
     }
 
     static async createUser(data: UserPayloadDto) {
-        return HttpClient.post<UserDto | PartialSuccessResponse<"user", UserDto>>(ENDPOINTS.USER.CREATE, data);
+        return HttpClient.post<UserDto | PartialSuccessResponse<"user", UserDto>>(
+            ENDPOINTS.USER.CREATE, data, { params: { skipWallet: "true" } });
     }
 
     static async updateUsername(data: UserPayloadDto) {
