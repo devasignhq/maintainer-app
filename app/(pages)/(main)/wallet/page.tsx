@@ -13,7 +13,7 @@ import { useAsyncEffect, useInfiniteScroll, useLockFn, useToggle } from "ahooks"
 import SwapAssetModal from "./modals/SwapAssetModal";
 import WithdrawAssetModal from "./modals/WithdrawAssetModal";
 import FundWalletModal from "./modals/FundWalletModal";
-import { useStreamAccountBalance } from "@/app/services/horizon.service";
+import { useStreamAccountBalance, HorizonHelper } from "@/app/services/horizon.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { moneyFormat } from "@/app/utils/helper";
 import { WalletAPI } from "@/app/services/wallet.service";
@@ -21,7 +21,15 @@ import { Data } from "ahooks/lib/useInfiniteScroll/types";
 
 const Wallet = () => {
     const { activeInstallation } = useInstallationStore();
-    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeInstallation?.walletAddress, true);
+    const { 
+        xlmBalance, 
+        usdcBalance,
+        manualBalanceCheck
+    } = useStreamAccountBalance(
+        activeInstallation?.walletAddress, 
+        true, 
+        activeInstallation?.id
+    );
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [openWithdrawAssetModal, { toggle: toggleWithdrawAssetModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
@@ -31,6 +39,14 @@ const Wallet = () => {
     const handleOpenSwapAssetModal = (from: "XLM" | "USDC") => {
         setSwapAssetFrom(from);
         toggleSwapAssetModal();
+    };
+
+    const handleSwapSuccess = () => {
+        // Track the swap based on the current swap direction
+        const toAsset = swapAssetFrom === "XLM" ? "USDC" : "XLM";
+        HorizonHelper.trackSwap(swapAssetFrom, toAsset);
+        reloadTransactions();
+        manualBalanceCheck();
     };
         
     const {
@@ -214,7 +230,7 @@ const Wallet = () => {
                 xlmBalance={xlmBalance}
                 usdcBalance={usdcBalance}
                 toggleModal={toggleSwapAssetModal} 
-                reloadTransactions={reloadTransactions} 
+                reloadTransactions={handleSwapSuccess} 
             />
         )}
         </>
