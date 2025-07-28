@@ -23,6 +23,7 @@ import { TaskAPI } from "@/app/services/task.service";
 import { openInNewTab } from "@/app/utils/helper";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { GitHubAPI } from "@/app/services/github.service";
+import SearchBox from "../../components/SearchBox";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -53,6 +54,8 @@ const ImportTaskModal = ({
     const taskBoxRef = useRef<HTMLDivElement>(null);
     const [activeRepo, setActiveRepo] = useState<RepositoryDto | undefined>(installationRepos[0]);
     const [issueFilters, setIssueFilters] = useState<IssueFilters>(defaultIssueFilters);
+    const [searchValue, setSearchValue] = useState("");
+    const [displaySearchIcon, setDisplaySearchIcon] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
     const [uploadingTasks, setUploadingTasks] = useState(false);
@@ -298,77 +301,95 @@ const ImportTaskModal = ({
                     />
                 </div>
             </section>
-            <section className="my-[30px] flex items-center gap-2.5">
-                {/* <div className="relative">
-                    <InputField 
-                        Icon={FiSearch}
-                        attributes={{
-                            placeholder: "Search Issues",
-                            name: "search",
-                        }}
-                        extendedContainerClassName="h- full"
-                        extendedInputClassName="h-full"
+            <section className="my-[30px] space-y-2.5">
+                <SearchBox
+                    attributes={{
+                        placeholder: "Search issues by title",
+                        name: "search",
+                        value: searchValue,
+                        onChange: (e) => {
+                            setSearchValue(e.target.value);
+                            if (!displaySearchIcon) setDisplaySearchIcon(true);
+                        },
+                        disabled: disableFilters,
+                    }}
+                    extendedContainerClassName="w-full"
+                    extendedInputClassName="h-full"
+                    enableSearchOption={Boolean(searchValue.trim().length > 2)}
+                    displaySearchIcon={!Boolean(issueFilters.title) || displaySearchIcon}
+                    onSearchIconClick={() => {
+                        setIssueFilters((prev) => ({
+                            ...prev,
+                            title: searchValue.trim()
+                        }));
+                        setDisplaySearchIcon(false);
+                    }}
+                    onClearIconClick={() => {
+                        setIssueFilters((prev) => ({
+                            ...prev,
+                            title: undefined
+                        }));
+                        setSearchValue("");
+                    }}
+                />
+                <div className="flex items-center gap-2.5">
+                    <FilterDropdown
+                        title="Labels"
+                        options={repoResources?.labels || []}
+                        fieldName="name"
+                        fieldValue="name"
+                        setField={(value) => setIssueFilters((prev) => ({
+                            ...prev,
+                            labels: value as string[]
+                        }))}
+                        buttonAttributes={{ disabled: loadingResources || disableFilters }}
                     />
-                    <button>
-
-                    </button>
-                </div> */}
-                <FilterDropdown
-                    title="Labels"
-                    options={repoResources?.labels || []}
-                    fieldName="name"
-                    fieldValue="name"
-                    setField={(value) => setIssueFilters((prev) => ({
-                        ...prev,
-                        labels: value as string[]
-                    }))}
-                    buttonAttributes={{ disabled: loadingResources || disableFilters }}
-                />
-                <FilterDropdown
-                    title="Milestones"
-                    options={repoResources?.milestones || []}
-                    fieldName="title"
-                    fieldValue="title"
-                    setField={(value) => setIssueFilters((prev) => ({
-                        ...prev,
-                        milestone: value as string
-                    }))}
-                    buttonAttributes={{ disabled: loadingResources || disableFilters }}
-                    noMultiSelect
-                />
-                <FilterDropdown
-                    title="Sort By"
-                    options={[
-                        { label: "Date Created", value: "created" },
-                        { label: "Last Updated", value: "updated" },
-                        { label: "Most Comments", value: "comments" }
-                    ]}
-                    fieldName="label"
-                    fieldValue="value"
-                    defaultValue="created"
-                    setField={(value) => setIssueFilters((prev) => ({
-                        ...prev,
-                        sort: value as "created" | "updated" | "comments"
-                    }))}
-                    buttonAttributes={{ disabled: disableFilters }}
-                    noMultiSelect
-                />
-                <FilterDropdown
-                    title="Order"
-                    options={[
-                        { label: "Ascending", value: "asc" },
-                        { label: "Descending", value: "desc" }
-                    ]}
-                    fieldName="label"
-                    fieldValue="value"
-                    defaultValue="desc"
-                    setField={(value) => setIssueFilters((prev) => ({
-                        ...prev,
-                        direction: value as "asc" | "desc"
-                    }))}
-                    buttonAttributes={{ disabled: disableFilters || !issueFilters.sort }}
-                    noMultiSelect
-                />
+                    <FilterDropdown
+                        title="Milestones"
+                        options={repoResources?.milestones || []}
+                        fieldName="title"
+                        fieldValue="title"
+                        setField={(value) => setIssueFilters((prev) => ({
+                            ...prev,
+                            milestone: value as string
+                        }))}
+                        buttonAttributes={{ disabled: loadingResources || disableFilters }}
+                        noMultiSelect
+                    />
+                    <FilterDropdown
+                        title="Sort By"
+                        options={[
+                            { label: "Date Created", value: "created" },
+                            { label: "Last Updated", value: "updated" },
+                            { label: "Most Comments", value: "comments" }
+                        ]}
+                        fieldName="label"
+                        fieldValue="value"
+                        defaultValue="created"
+                        setField={(value) => setIssueFilters((prev) => ({
+                            ...prev,
+                            sort: value as "created" | "updated" | "comments"
+                        }))}
+                        buttonAttributes={{ disabled: disableFilters }}
+                        noMultiSelect
+                    />
+                    <FilterDropdown
+                        title="Order"
+                        options={[
+                            { label: "Ascending", value: "asc" },
+                            { label: "Descending", value: "desc" }
+                        ]}
+                        fieldName="label"
+                        fieldValue="value"
+                        defaultValue="desc"
+                        setField={(value) => setIssueFilters((prev) => ({
+                            ...prev,
+                            direction: value as "asc" | "desc"
+                        }))}
+                        buttonAttributes={{ disabled: disableFilters || !issueFilters.sort }}
+                        noMultiSelect
+                    />
+                </div>
             </section>
             <section className="flex items-end justify-between">
                 <div>
