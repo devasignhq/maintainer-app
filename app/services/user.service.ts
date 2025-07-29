@@ -6,7 +6,6 @@ import {
     UserDto,
     UserPayloadDto 
 } from "../models/user.model";
-import { PartialSuccessResponse } from "../models/_global";
 
 export class UserAPI {
     static async getUser(query?: QueryUserDto) {
@@ -14,7 +13,7 @@ export class UserAPI {
     }
 
     static async createUser(data: UserPayloadDto) {
-        return HttpClient.post<UserDto | PartialSuccessResponse<"user", UserDto>>(
+        return HttpClient.post<UserDto>(
             ENDPOINTS.USER.CREATE, data, { params: { skipWallet: "true" } });
     }
 
