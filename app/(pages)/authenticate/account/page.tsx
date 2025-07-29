@@ -17,10 +17,10 @@ export const githubProvider = new GithubAuthProvider();
 const Account = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const installationId = searchParams.get("installation_id");
     const { setCurrentUser } = useUserStore();
 
     const getInstallation = () => {
-        const installationId = searchParams.get("installation_id");
         if (installationId) {
             router.push(ROUTES.INSTALLATION.CREATE + `?installation_id=${installationId}`);
         }
@@ -32,13 +32,8 @@ const Account = () => {
             manual: true,
             onSuccess: (data, params) => {
                 toast.success("User created successfully.");
-
-                if (data && "userId" in data) {
+                if (data) {
                     setCurrentUser({ ...data, username: params[0] });
-                }
-                if (data && "user" in data) {
-                    setCurrentUser({ ...data.user, username: params[0] });
-                    toast.warn(data.message);
                 }
                 
                 getInstallation();

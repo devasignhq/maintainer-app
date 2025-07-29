@@ -14,6 +14,7 @@ import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/uti
 import { GetRepositoryResourcesResponse } from "@/app/models/github.model";
 import { GitHubAPI } from "@/app/services/github.service";
 import SearchBox from "../components/SearchBox";
+import { PaginationResponse } from "@/app/models/_global";
 
 // ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
@@ -50,7 +51,7 @@ const TaskListSection = () => {
                 return { list: [], pagination: null }
             }
 
-            const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
+            const pageToLoad = currentData ? (currentData.pagination as PaginationResponse).currentPage + 1 : 1;
             let filters: FilterTasks = { issueTitle: taskFilters.issueTitle };
 
             if (taskFilters.repoUrl) {
