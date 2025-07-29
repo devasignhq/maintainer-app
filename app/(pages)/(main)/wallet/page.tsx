@@ -92,9 +92,11 @@ const Wallet = () => {
         if (!activeInstallation) return;
 
         try {
-            await WalletAPI.recordWalletTopups(activeInstallation.id);
+            const { processed } = await WalletAPI.recordWalletTopups(activeInstallation.id);
 
-            reloadTransactions();
+            if (processed > 0) {
+                reloadTransactions();
+            }
         } catch {}
     }), [activeInstallation]);
 
