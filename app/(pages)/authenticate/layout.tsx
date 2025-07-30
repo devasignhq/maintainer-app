@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
+export const dynamic = "force-dynamic";
+
 export default function AuthLayout({
     children,
 }: Readonly<{
