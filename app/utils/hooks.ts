@@ -21,7 +21,7 @@ export function useCustomSearchParams() {
     const updateSearchParams = (params: Record<string, string | number | boolean>, override = false) => {
         const currentSearchParams = override 
             ? new URLSearchParams() 
-            : new URLSearchParams(window.location.search);
+            : new URLSearchParams(searchParams);
 
         if (Object.keys(params).length === 0) {
             return router.push(pathname);
@@ -41,7 +41,7 @@ export function useCustomSearchParams() {
     };
 
     const removeSearchParams = (keys: string | string[]) => {
-        const currentSearchParams = new URLSearchParams(window.location.search);
+        const currentSearchParams = new URLSearchParams(searchParams);
         const keysToRemove = Array.isArray(keys) ? keys : [keys];
 
         keysToRemove.forEach(key => {
