@@ -8,11 +8,9 @@ import { useLockFn, useRequest } from "ahooks";
 import { toast } from "react-toastify";
 import { ErrorResponse } from "@/app/models/_global";
 import useUserStore from "@/app/state-management/useUserStore";
-import { auth } from "@/lib/firebase";
-import { GithubAuthProvider, signInWithPopup, getAdditionalUserInfo } from "@firebase/auth";
+import { auth, githubProvider } from "@/lib/firebase";
+import { signInWithPopup, getAdditionalUserInfo } from "@firebase/auth";
 import { handleApiError } from "@/app/utils/helper";
-
-export const githubProvider = new GithubAuthProvider();
 
 const Account = () => {
     const router = useRouter();
