@@ -1,5 +1,5 @@
 import { useToggle, useClickAway, useAsyncEffect } from "ahooks";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
     useRef,
     useState,
@@ -16,6 +16,7 @@ import { GitHubAPI } from "../services/github.service";
 export function useCustomSearchParams() {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const updateSearchParams = (params: Record<string, string | number | boolean>, override = false) => {
         const currentSearchParams = override 
@@ -56,16 +57,18 @@ export function useCustomSearchParams() {
         router.push(newUrl);
     };
 
-    const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-
-    return { searchParams, updateSearchParams, removeSearchParams };
+    return {
+        searchParams,
+        updateSearchParams,
+        removeSearchParams
+    };
 }
 
 export function usePopup() {
     const menuButtonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const [openMenu, { toggle: toggleMenu }] = useToggle(false);
-        
+
     useClickAway(() => toggleMenu(), [menuButtonRef, menuRef]);
 
     return {
