@@ -35,7 +35,7 @@ const SubscriptionCard = ({
                     <h6 className={`text-body-medium font-bold mb-2.5 flex items-center gap-2.5 ${active ? "text-primary-400" : "text-light-100"} `}>
                         <span>{plan.name}</span>
                         <GoDotFill className="text-[10px] text-light-100" />
-                        <span className={`${active && "text-light-200"}`}>{plan.priceString[0]}</span>
+                        {/* <span className={`${active && "text-light-200"}`}>{plan.priceString[0]}</span> */}
                         
                         {(!active && planState) && (
                             <>
@@ -51,9 +51,9 @@ const SubscriptionCard = ({
                         )}
                     </h6>
                     <ul className={`text-body-tiny list-disc list-inside space-y-1 ${active ? "text-light-100" : "text-dark-100"} `}>
-                        {plan.features.map((feature, index) => (
+                        {/* {plan.features.map((feature, index) => (
                             <li key={index}>{feature}</li>
-                        ))}
+                        ))} */}
                     </ul>
                 </div>
             </div>
