@@ -232,7 +232,7 @@ const TaskListSection = () => {
                         <div className="flex justify-center py-4">
                             <span className="text-body-medium text-light-100">Loading tasks...</span>
                         </div>
-                    ) : (
+                    ):(
                         installationTasks?.list?.map((task) => (
                             <TaskCard
                                 key={task.id}
@@ -245,11 +245,6 @@ const TaskListSection = () => {
                     {(installationTasks?.list && installationTasks.list.length < 1 && !loadingTasks) && (
                         <div className="flex justify-center py-4">
                             <span className="text-body-medium text-light-100">No tasks found</span>
-                        </div>
-                    )}
-                    {(loadingTasks && installationTasks?.list && installationTasks.list.length === 0) && (
-                        <div className="flex justify-center py-4">
-                            <span className="text-body-medium text-light-100">Loading tasks...</span>
                         </div>
                     )}
                     {loadingMoreTasks && (

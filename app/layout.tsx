@@ -2,6 +2,7 @@
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ToastProvider from "./components/ToastProvider";
+import { Suspense } from "react";
 
 const geistMono = Geist_Mono({
     subsets: ["latin"],
@@ -21,7 +22,9 @@ export default function RootLayout({
             </head>
             <body className={`${geistMono.className} antialiased`}>
                 <ToastProvider>
-                    {children}
+                    <Suspense fallback={<h1 className="text-display-small text-light-100">Loading App...</h1>}>
+                        {children}
+                    </Suspense>
                 </ToastProvider>
             </body>
         </html>

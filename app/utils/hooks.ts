@@ -1,5 +1,5 @@
 import { useToggle, useClickAway, useAsyncEffect } from "ahooks";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
     useRef,
     useState,
@@ -16,11 +16,12 @@ import { GitHubAPI } from "../services/github.service";
 export function useCustomSearchParams() {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const updateSearchParams = (params: Record<string, string | number | boolean>, override = false) => {
         const currentSearchParams = override 
             ? new URLSearchParams() 
-            : new URLSearchParams(window.location.search);
+            : new URLSearchParams(searchParams);
 
         if (Object.keys(params).length === 0) {
             return router.push(pathname);
@@ -40,7 +41,7 @@ export function useCustomSearchParams() {
     };
 
     const removeSearchParams = (keys: string | string[]) => {
-        const currentSearchParams = new URLSearchParams(window.location.search);
+        const currentSearchParams = new URLSearchParams(searchParams);
         const keysToRemove = Array.isArray(keys) ? keys : [keys];
 
         keysToRemove.forEach(key => {
@@ -56,16 +57,18 @@ export function useCustomSearchParams() {
         router.push(newUrl);
     };
 
-    const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-
-    return { searchParams, updateSearchParams, removeSearchParams };
+    return {
+        searchParams,
+        updateSearchParams,
+        removeSearchParams
+    };
 }
 
 export function usePopup() {
     const menuButtonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const [openMenu, { toggle: toggleMenu }] = useToggle(false);
-        
+
     useClickAway(() => toggleMenu(), [menuButtonRef, menuRef]);
 
     return {
@@ -98,12 +101,15 @@ export function useGetInstallationRepositories() {
 
         setLoading(true);
 
-        const response = await GitHubAPI.getInstallationRepositories(
-            activeInstallation.id
-        );
+        try {
+            const response = await GitHubAPI.getInstallationRepositories(
+                activeInstallation.id
+            );
 
-        setRepositories(response);
-        setLoading(false);
+            setRepositories(response);
+        } catch { } finally {
+            setLoading(false);
+        }
     }, [activeInstallation]);
 
     return { repositories, loading }
