@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useContext } from "react";
-import { ActiveTaskContext } from "../../../page";
+import { ActiveTaskContext } from "../../../contexts/ActiveTaskContext";
 import MarkdownFormatter from "@/app/components/MarkdownFormatter";
 
 const DetailsView = () => {

@@ -10,7 +10,7 @@ import { useContext, useState } from "react";
 import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import { toast } from "react-toastify";
-import { ActiveTaskContext } from "../../../page";
+import { ActiveTaskContext } from "../../../contexts/ActiveTaskContext";
 
 type MessageBlockProps = {
     message: MessageDto;

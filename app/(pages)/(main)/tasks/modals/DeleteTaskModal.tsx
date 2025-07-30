@@ -3,7 +3,7 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { useContext, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { ActiveTaskContext } from "../page";
+import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { handleApiError, moneyFormat } from "@/app/utils/helper";
 import { TaskAPI } from "@/app/services/task.service";
 import { toast } from "react-toastify";

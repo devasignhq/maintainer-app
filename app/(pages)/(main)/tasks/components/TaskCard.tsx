@@ -2,7 +2,7 @@
 import { TaskDto } from "@/app/models/task.model";
 import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
 import { useContext, useMemo } from "react";
-import { ActiveTaskContext } from "../page";
+import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 
 type TaskCardProps = {
     task: TaskDto;
