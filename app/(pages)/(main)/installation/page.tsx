@@ -1,5 +1,5 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/lib/firebase";
 import { ROUTES } from "@/app/utils/data";
 import { useAsyncEffect, useLockFn } from "ahooks";
@@ -11,12 +11,14 @@ import { TbProgress } from "react-icons/tb";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { MdOutlineCancel } from "react-icons/md";
 import { handleApiError } from "@/app/utils/helper";
+import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type ReboundAction = "INSTALL" | "RELOAD" | "";
 
 const Installation = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const { searchParams } = useCustomSearchParams();
+    const installationId = searchParams.get("installation_id");
     const [isProcessing, setIsProcessing] = useState(true);
     const [reboundAction, setReboundAction] = useState<ReboundAction>("");
     
@@ -29,7 +31,6 @@ const Installation = () => {
 
     useAsyncEffect(useLockFn(async () => {
         const user = await getCurrentUser();
-        const installationId = searchParams.get("installation_id");
 
         if (!installationId) {
             if (user) {
@@ -81,7 +82,7 @@ const Installation = () => {
         } finally {
             setIsProcessing(false);
         }
-    }), [router, searchParams]);
+    }), [router, installationId]);
 
     return isProcessing ? (
         <div className="fixed inset-0 z-[100] bg-[#0000004D] grid place-content-center backdrop-blur-[14px] pointer-events-none">

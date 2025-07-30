@@ -15,8 +15,6 @@ import { useLogoutUser } from "@/lib/firebase";
 import { FiSettings } from "react-icons/fi";
 import { openInNewTab } from "@/app/utils/helper";
 
-export const dynamic = "force-dynamic";
-
 export default function MainLayout({
     children,
 }: Readonly<{
