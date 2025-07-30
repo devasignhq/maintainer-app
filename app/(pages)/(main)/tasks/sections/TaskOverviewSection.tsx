@@ -9,7 +9,7 @@ import SetTaskBountyModal from "../modals/SetTaskBountyModal";
 import SetTaskTimelineModal from "../modals/SetTaskTimelineModal";
 import DeleteTaskModal from "../modals/DeleteTaskModal";
 import { useContext } from "react";
-import { ActiveTaskContext } from "../page";
+import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
 import { TaskDto, TIMELINE_TYPE } from "@/app/models/task.model";
 import { HiOutlineRefresh } from "react-icons/hi";

@@ -3,16 +3,12 @@ import TaskListSection from "./sections/TaskListSection";
 import TaskDetailSection from "./sections/TaskDetailSection";
 import TaskOverviewSection from "./sections/TaskOverviewSection";
 import { TaskDto } from "@/app/models/task.model";
-import { createContext, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAsyncEffect } from "ahooks";
 import { TaskAPI } from "@/app/services/task.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
-
-export const ActiveTaskContext = createContext<{
-    activeTask: TaskDto | null;
-    setActiveTask: React.Dispatch<React.SetStateAction<TaskDto | null>>
-}>({} as any);
+import { ActiveTaskContext } from "./contexts/ActiveTaskContext";
 
 const Tasks = () => {
     const searchParams = useSearchParams();
@@ -58,13 +54,13 @@ const Tasks = () => {
                 )}
                 {!loadingTask && activeTask && (
                     <>
-                    <TaskDetailSection />
-                    <TaskOverviewSection />
+                        <TaskDetailSection />
+                        <TaskOverviewSection />
                     </>
                 )}
             </ActiveTaskContext.Provider>
         </div>
     );
 }
- 
+
 export default Tasks;

@@ -2,7 +2,7 @@
 import DetailsView from "./views/DetailsView";
 import ConversationView from "./views/ConversationView";
 import { useContext, useState } from "react";
-import { ActiveTaskContext } from "../../page";
+import { ActiveTaskContext } from "../../contexts/ActiveTaskContext";
 
 const TaskDetailSection = () => {
     const { activeTask } = useContext(ActiveTaskContext);

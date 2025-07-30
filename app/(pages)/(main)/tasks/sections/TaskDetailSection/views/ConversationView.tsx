@@ -4,7 +4,7 @@ import { FiArrowUp } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
 import Image from "next/image";
 import MessageBlock from "../components/MessageBlock";
-import { ActiveTaskContext } from "../../../page";
+import { ActiveTaskContext } from "../../../contexts/ActiveTaskContext";
 import { useManageMessages } from "../hooks";
 import { createMessage } from "@/app/services/message.service";
 import { MessageType } from "@/app/models/message.model";

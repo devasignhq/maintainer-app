@@ -9,7 +9,7 @@ import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { FilterTasks } from "@/app/models/task.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
-import { ActiveTaskContext } from "../page";
+import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/utils/hooks";
 import { GetRepositoryResourcesResponse } from "@/app/models/github.model";
 import { GitHubAPI } from "@/app/services/github.service";
@@ -24,8 +24,8 @@ const TaskListSection = () => {
     const [taskFilters, setTaskFilters] = useState(defaultTaskFilters);
     const [searchValue, setSearchValue] = useState("");
     const [displaySearchIcon, setDisplaySearchIcon] = useState(true);
-    const { 
-        searchParams, 
+    const {
+        searchParams,
         updateSearchParams,
         removeSearchParams
     } = useCustomSearchParams();
@@ -79,7 +79,7 @@ const TaskListSection = () => {
                 list: response.data,
                 pagination: response.pagination,
             };
-        }, 
+        },
         {
             isNoMore: (data) => !data?.pagination?.hasMore,
             reloadDeps: [activeInstallation?.id, ...Object.values(taskFilters)]
@@ -90,7 +90,7 @@ const TaskListSection = () => {
         if (refresh === "true") {
             reloadTasks();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refresh]);
 
     useEffect(() => {
@@ -98,11 +98,11 @@ const TaskListSection = () => {
             setTaskFilters(defaultTaskFilters);
             reloadTasks();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [installationChange]);
 
-    const { 
-        loading: loadingResources, 
+    const {
+        loading: loadingResources,
         data: repoResources,
         run: fetchRepoResources
     } = useRequest<GetRepositoryResourcesResponse, any>(
@@ -124,7 +124,7 @@ const TaskListSection = () => {
         if (taskFilters.repoUrl) {
             fetchRepoResources();;
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [taskFilters.repoUrl]);
 
     return (
@@ -171,7 +171,7 @@ const TaskListSection = () => {
                             }));
                             setSearchValue("");
                         }}
-                    /> 
+                    />
                     <div className="flex items-center gap-2.5">
                         <FilterDropdown
                             title="Repo Name"
@@ -232,7 +232,7 @@ const TaskListSection = () => {
                         <div className="flex justify-center py-4">
                             <span className="text-body-medium text-light-100">Loading tasks...</span>
                         </div>
-                    ):(
+                    ) : (
                         installationTasks?.list?.map((task) => (
                             <TaskCard
                                 key={task.id}

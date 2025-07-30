@@ -5,7 +5,7 @@ import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { TimelineType } from "@/app/models/task.model";
 import { useContext, useMemo, useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
-import { ActiveTaskContext } from "../page";
+import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { TaskAPI } from "@/app/services/task.service";
 import { handleApiError } from "@/app/utils/helper";
 import { toast } from "react-toastify";
