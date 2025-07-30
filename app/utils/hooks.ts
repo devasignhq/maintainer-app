@@ -98,12 +98,15 @@ export function useGetInstallationRepositories() {
 
         setLoading(true);
 
-        const response = await GitHubAPI.getInstallationRepositories(
-            activeInstallation.id
-        );
+        try {
+            const response = await GitHubAPI.getInstallationRepositories(
+                activeInstallation.id
+            );
 
-        setRepositories(response);
-        setLoading(false);
+            setRepositories(response);
+        } catch { } finally {
+            setLoading(false);
+        }
     }, [activeInstallation]);
 
     return { repositories, loading }
