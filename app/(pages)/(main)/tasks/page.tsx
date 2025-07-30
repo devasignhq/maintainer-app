@@ -4,14 +4,14 @@ import TaskDetailSection from "./sections/TaskDetailSection";
 import TaskOverviewSection from "./sections/TaskOverviewSection";
 import { TaskDto } from "@/app/models/task.model";
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { useAsyncEffect } from "ahooks";
 import { TaskAPI } from "@/app/services/task.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { ActiveTaskContext } from "./contexts/ActiveTaskContext";
+import { useCustomSearchParams } from "@/app/utils/hooks";
 
 const Tasks = () => {
-    const searchParams = useSearchParams();
+    const { searchParams } = useCustomSearchParams();
     const taskId = searchParams.get("taskId");
     const { activeInstallation } = useInstallationStore();
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);

@@ -44,44 +44,4 @@ const AccountPlanSection = () => {
  
 export default AccountPlanSection;
 
-const demoSubscriptionPlans: SubscriptionPlanDto[] = [
-    {
-        id: "1",
-        name: "Free",
-        description: "Free plan for individuals",
-        price: 0,
-        priceString: ["$0/month", "No credit card required"],
-        features: [
-            "1 user",
-            "Basic support",
-            "Limited features",
-        ],
-        paid: false,
-    },
-    {
-        id: "2",
-        name: "Pro",
-        description: "Pro plan for teams",
-        price: 10,
-        priceString: ["$10/month"],
-        features: [
-            "5 users",
-            "Priority support",
-            "Advanced features",
-        ],
-        paid: true,
-    },
-    {
-        id: "3",
-        name: "Enterprise",
-        description: "Enterprise plan for large organizations",
-        price: 50,
-        priceString: ["$50/month"],
-        features: [
-            "Unlimited users",
-            "24/7 support",
-            "All features included",
-        ],
-        paid: true,
-    },
-]
+const demoSubscriptionPlans: SubscriptionPlanDto[] = []

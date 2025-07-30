@@ -11,14 +11,15 @@ import { useStreamAccountBalance } from '@/app/services/horizon.service';
 import useInstallationStore from '@/app/state-management/useInstallationStore';
 import useTaskStore from '@/app/state-management/useTaskStore';
 import { moneyFormat, openInNewTab } from '@/app/utils/helper';
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ROUTES } from '@/app/utils/data';
 import { useEffect } from 'react';
-import { useGetInstallationRepositories } from '@/app/utils/hooks';
+import { useCustomSearchParams, useGetInstallationRepositories } from '@/app/utils/hooks';
 
 const Onboarding = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const { searchParams } = useCustomSearchParams();
+    const newInstallation = searchParams.get("newInstallation");
     const { currentUser } = useUserStore();
     const { activeInstallation } = useInstallationStore();
     const { draftTasks } = useTaskStore();
@@ -32,11 +33,11 @@ const Onboarding = () => {
     } = useGetInstallationRepositories();
 
     useEffect(() => {
-        if (searchParams.get("newInstallation") === "true") {
+        if (newInstallation === "true") {
             toggleImportTaskModal();
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams]);
+    }, [newInstallation]);
 
     return (
         <>

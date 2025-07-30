@@ -1,5 +1,5 @@
 import { useToggle, useClickAway, useAsyncEffect } from "ahooks";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     useRef,
     useState,
@@ -16,10 +16,11 @@ import { GitHubAPI } from "../services/github.service";
 export function useCustomSearchParams() {
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
 
     const updateSearchParams = (params: Record<string, string | number | boolean>, override = false) => {
-        const currentSearchParams = override ? new URLSearchParams() : new URLSearchParams(searchParams);
+        const currentSearchParams = override 
+            ? new URLSearchParams() 
+            : new URLSearchParams(window.location.search);
 
         if (Object.keys(params).length === 0) {
             return router.push(pathname);
@@ -39,7 +40,7 @@ export function useCustomSearchParams() {
     };
 
     const removeSearchParams = (keys: string | string[]) => {
-        const currentSearchParams = new URLSearchParams(searchParams);
+        const currentSearchParams = new URLSearchParams(window.location.search);
         const keysToRemove = Array.isArray(keys) ? keys : [keys];
 
         keysToRemove.forEach(key => {
@@ -54,6 +55,8 @@ export function useCustomSearchParams() {
 
         router.push(newUrl);
     };
+
+    const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
 
     return { searchParams, updateSearchParams, removeSearchParams };
 }
