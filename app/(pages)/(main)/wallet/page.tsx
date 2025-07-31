@@ -84,7 +84,7 @@ const Wallet = () => {
         }, 
         {
             isNoMore: (data) => !data?.hasMore,
-            reloadDeps: [activeTab]
+            reloadDeps: [activeInstallation, activeTab]
         }
     );
 
