@@ -215,6 +215,14 @@ const ImportTaskModal = ({
         setUploadingTasks(true);
         taskBoxRef!.current!.scrollTop = 0;
 
+        await new Promise((resolve) => {
+            toast.warn(
+                "Please do not leave this page or close this modal while your tasks are still processing.", 
+                { autoClose: 3000 }
+            );
+            setTimeout(() => resolve(null), 500);
+        });
+
         const draftTasks: CreateTaskDto[] = [];
         let hasErrors = false;
 
@@ -268,7 +276,11 @@ const ImportTaskModal = ({
     };
 
     return (
-        <PopupModalLayout title="Import from GitHub Issues" toggleModal={toggleModal}>
+        <PopupModalLayout 
+            title="Import from GitHub Issues" 
+            toggleModal={toggleModal}
+            disableCloseButton={uploadingTasks}
+        >
             <section className="mt-[15px] space-y-2.5">
                 <p className="text-body-medium text-light-200">Repository URL(s)</p>
                 <div className="flex items-end justify-between gap-2.5">
