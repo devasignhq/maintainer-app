@@ -7,6 +7,7 @@ type PopupModalLayoutProps = {
     title: string;
     toggleModal: () => void;
     extendedModalClassName?: string;
+    disableCloseButton?: boolean;
 }
 
 const PopupModalLayout = ({
@@ -14,6 +15,7 @@ const PopupModalLayout = ({
     title,
     toggleModal,
     extendedModalClassName,
+    disableCloseButton,
 }: PopupModalLayoutProps) => {
     return (
         <div className="fixed inset-0 z-[100] bg-[#0000004D] grid place-content-center backdrop-blur-[14px] pointer-events-none">
@@ -25,6 +27,7 @@ const PopupModalLayout = ({
                     <button 
                         className="gradient-border-btn relative p-2.5 bg-dark-400 text-light-100 text-2xl"
                         onClick={toggleModal}
+                        disabled={disableCloseButton}
                     >
                         <IoMdClose />
                     </button>
