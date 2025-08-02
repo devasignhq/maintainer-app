@@ -11,7 +11,7 @@ export const ROUTES = {
         PLANS_AND_BILLINGS: "/settings/plans-and-billings",
     },
     INSTALLATION: {
-        NEW: "https://github.com/apps/dev-asign/installations/new",
+        NEW: "https://github.com/apps/devasign-app/installations/new",
         CREATE: "/installation",
     }
 };

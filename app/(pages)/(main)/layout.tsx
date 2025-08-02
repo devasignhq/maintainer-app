@@ -158,7 +158,7 @@ export default function MainLayout({
                             key={item.name}
                             href={item.path}
                             className={`px-[5px] py-[20px] 
-                                ${checkPath(item.alias || item.path) 
+                                ${checkPath(item.path) 
                                     ? "text-light-100 border-b border-light-100" 
                                     : "hover:text-[#F0C298]"}`
                             }
@@ -179,5 +179,5 @@ const navItems = [
     { name: "Tasks", path: ROUTES.TASKS },
     { name: "Wallet", path: ROUTES.WALLET },
     // { name: "Contributors", path: ROUTES.CONTRIBUTORS },
-    { name: "Settings", alias: "/settings", path: ROUTES.SETTINGS.MANAGE_TEAM },
+    // { name: "Settings", alias: "/settings", path: ROUTES.SETTINGS.MANAGE_TEAM },
 ];
