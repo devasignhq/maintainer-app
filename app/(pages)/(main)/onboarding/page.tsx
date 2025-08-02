@@ -11,13 +11,13 @@ import { useStreamAccountBalance } from '@/app/services/horizon.service';
 import useInstallationStore from '@/app/state-management/useInstallationStore';
 import useTaskStore from '@/app/state-management/useTaskStore';
 import { moneyFormat, openInNewTab } from '@/app/utils/helper';
-import { useRouter } from "next/navigation";
 import { ROUTES } from '@/app/utils/data';
 import { useEffect } from 'react';
 import { useCustomSearchParams, useGetInstallationRepositories } from '@/app/utils/hooks';
+import { useUnauthenticatedUserCheck } from '@/lib/firebase';
 
 const Onboarding = () => {
-    const router = useRouter();
+    const router = useUnauthenticatedUserCheck();
     const { searchParams } = useCustomSearchParams();
     const newInstallation = searchParams.get("newInstallation");
     const { currentUser } = useUserStore();

@@ -66,6 +66,8 @@ export const useUnauthenticatedUserCheck = () => {
             router.push(ROUTES.ACCOUNT)
         }
     }, [router]);
+    
+    return router;
 }
 
 // Checks if the user is signed in (used in authentication pages to redirect signed in users)
@@ -80,5 +82,5 @@ export const useAuthenticatedUserCheck = () => {
         }
     }, [router]);
     
-    return router
+    return router;
 }

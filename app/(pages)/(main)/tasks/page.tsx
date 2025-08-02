@@ -9,8 +9,10 @@ import { TaskAPI } from "@/app/services/task.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { ActiveTaskContext } from "./contexts/ActiveTaskContext";
 import { useCustomSearchParams } from "@/app/utils/hooks";
+import { useUnauthenticatedUserCheck } from "@/lib/firebase";
 
 const Tasks = () => {
+    useUnauthenticatedUserCheck();
     const { searchParams } = useCustomSearchParams();
     const taskId = searchParams.get("taskId");
     const { activeInstallation } = useInstallationStore();

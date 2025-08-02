@@ -1,20 +1,19 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { ROUTES } from "@/app/utils/data";
-import { useRouter } from "next/navigation";
 import { FaGithub } from "react-icons/fa";
 import { UserAPI } from "@/app/services/user.service";
 import { useLockFn, useRequest } from "ahooks";
 import { toast } from "react-toastify";
 import { ErrorResponse } from "@/app/models/_global";
 import useUserStore from "@/app/state-management/useUserStore";
-import { auth, githubProvider } from "@/lib/firebase";
+import { auth, githubProvider, useAuthenticatedUserCheck } from "@/lib/firebase";
 import { signInWithPopup, getAdditionalUserInfo } from "@firebase/auth";
 import { handleApiError } from "@/app/utils/helper";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
 const Account = () => {
-    const router = useRouter();
+    const router = useAuthenticatedUserCheck();
     const { searchParams } = useCustomSearchParams();
     const installationId = searchParams.get("installation_id");
     const { setCurrentUser } = useUserStore();

@@ -1,6 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { getCurrentUser } from "@/lib/firebase";
+import { getCurrentUser, useUnauthenticatedUserCheck } from "@/lib/firebase";
 import { ROUTES } from "@/app/utils/data";
 import { useAsyncEffect, useLockFn } from "ahooks";
 import { InstallationAPI } from "@/app/services/installation.service";
@@ -16,7 +15,7 @@ import { useCustomSearchParams } from "@/app/utils/hooks";
 type ReboundAction = "INSTALL" | "RELOAD" | "";
 
 const Installation = () => {
-    const router = useRouter();
+    const router = useUnauthenticatedUserCheck();;
     const { searchParams } = useCustomSearchParams();
     const installationId = searchParams.get("installation_id");
     const [isProcessing, setIsProcessing] = useState(true);

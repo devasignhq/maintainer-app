@@ -18,8 +18,10 @@ import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { moneyFormat } from "@/app/utils/helper";
 import { WalletAPI } from "@/app/services/wallet.service";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
+import { useUnauthenticatedUserCheck } from "@/lib/firebase";
 
 const Wallet = () => {
+    useUnauthenticatedUserCheck();
     const { activeInstallation } = useInstallationStore();
     const { 
         xlmBalance, 
