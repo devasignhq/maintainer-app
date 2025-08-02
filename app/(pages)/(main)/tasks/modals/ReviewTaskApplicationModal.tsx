@@ -70,7 +70,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                     {moneyFormat(activeTask?.bounty || "")} USDC
                 </p>
             </div>
-            <div className="space-y-[5px] text-body-tiny mb-5">
+            <div className="space-y-[5px] text-body-tiny">
                 <div className="w-full flex items-center justify-between gap-10">
                 <p className="text-primary-400">GitHub Issue:</p>
                     <div className="flex items-center gap-1">
@@ -87,24 +87,26 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                     <p className="text-light-100">{formatDateTime(taskActivity.createdAt)}</p>
                 </div>
             </div>
-            <div className="flex gap-2.5">
-                <ButtonPrimary
-                    format="OUTLINE"
-                    text="Ignore"
-                    attributes={{
-                        onClick: toggleModal,
-                    }}
-                />
-                <ButtonPrimary
-                    format="SOLID"
-                    text="Delegate Task"
-                    sideItem={<FiArrowUpRight />}
-                    attributes={{
-                        onClick: toggleApproveTaskDelegationModal,
-                    }}
-                    extendedSideItemClassName="text-xl"
-                />
-            </div>
+            {activeTask?.status === "OPEN" && (
+                <div className="flex gap-2.5 mt-5">
+                    <ButtonPrimary
+                        format="OUTLINE"
+                        text="Ignore"
+                        attributes={{
+                            onClick: toggleModal,
+                        }}
+                    />
+                    <ButtonPrimary
+                        format="SOLID"
+                        text="Delegate Task"
+                        sideItem={<FiArrowUpRight />}
+                        attributes={{
+                            onClick: toggleApproveTaskDelegationModal,
+                        }}
+                        extendedSideItemClassName="text-xl"
+                    />
+                </div>
+            )}
             
             {openApproveTaskDelegationModal && (
                 <ApproveTaskDelegationModal 

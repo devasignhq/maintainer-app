@@ -75,11 +75,22 @@ const ConversationView = () => {
                                 height={24}
                                 className="mx-auto"
                             />
-                            <h6 className="text-body-large text-light-100">Say “Hi” to the contributor</h6>
-                            <p className="text-body-tiny text-dark-100">
-                                Send your first message and the developer will get 
-                                <br /> it via email even while offline.
-                            </p>
+                            {activeTask?.status !== "COMPLETED" ? (
+                                <>
+                                <h6 className="text-body-large text-light-100">Say “Hi” to the contributor</h6>
+                                <p className="text-body-tiny text-dark-100">
+                                    Send your first message and the developer will get 
+                                    <br /> it via email even while offline.
+                                </p>
+                                </>
+                            ):(
+                                <>
+                                <h6 className="text-body-large text-light-100">Task already completed</h6>
+                                <p className="text-body-tiny text-dark-100">
+                                    There was no conversation during the task timeline.
+                                </p>
+                                </>
+                            )}
                         </div>
                     ):(
                         orderedDateLabels.map((dateLabel) => (
@@ -101,36 +112,39 @@ const ConversationView = () => {
                     )}
                 </div>
             )}
-            <div className="w-full px-5 mb-[30px]">
-                <div className={`py-[15px] pl-5 pr-2.5 border border-dark-100 space-y-5 ${sendingMessage && "animate-pulse"}`}>
-                    <textarea 
-                        ref={textareaRef}
-                        onInput={adjustHeight}
-                        placeholder="Write message to send to developer..."
-                        className="w-full resize-none text-light-100 min-h-[20px]"
-                        value={body}
-                        onChange={(e) => setBody(e.target.value)}
-                        disabled={loadingInitialMessages || sendingMessage}
-                    />
-                    <div className="flex items-center justify-between">
-                        <button 
-                            className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                            onClick={() => {}}
+
+            {activeTask?.status !== "COMPLETED" && (
+                <div className="w-full px-5 mb-[30px]">
+                    <div className={`py-[15px] pl-5 pr-2.5 border border-dark-100 space-y-5 ${sendingMessage && "animate-pulse"}`}>
+                        <textarea 
+                            ref={textareaRef}
+                            onInput={adjustHeight}
+                            placeholder="Write message to send to developer..."
+                            className="w-full resize-none text-light-100 min-h-[20px]"
+                            value={body}
+                            onChange={(e) => setBody(e.target.value)}
                             disabled={loadingInitialMessages || sendingMessage}
-                        >
-                            <span>Upload File</span>
-                            <HiPlus className="text-2xl" />
-                        </button>
-                        <button 
-                            className="h-[30px] w-[30px] text-dark-500 bg-primary-400 hover:bg-light-100 grid place-items-center"
-                            onClick={addNewMessage}
-                            disabled={loadingInitialMessages || sendingMessage || (!body.trim() && attachments.length < 1)}
-                        >
-                            <FiArrowUp className="text-2xl" />
-                        </button>
+                        />
+                        <div className="flex items-center justify-between">
+                            <button 
+                                className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                                onClick={() => {}}
+                                disabled={loadingInitialMessages || sendingMessage}
+                            >
+                                <span>Upload File</span>
+                                <HiPlus className="text-2xl" />
+                            </button>
+                            <button 
+                                className="h-[30px] w-[30px] text-dark-500 bg-primary-400 hover:bg-light-100 grid place-items-center"
+                                onClick={addNewMessage}
+                                disabled={loadingInitialMessages || sendingMessage || (!body.trim() && attachments.length < 1)}
+                            >
+                                <FiArrowUp className="text-2xl" />
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </>
     );
 }

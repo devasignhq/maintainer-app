@@ -80,23 +80,25 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
                     <p className="text-light-100">{formatDateTime(taskActivity.createdAt)}</p>
                 </div>
             </div>
-            <div className="flex gap-2.5 mt-5">
-                <ButtonPrimary
-                    format="OUTLINE"
-                    text="Reject PR"
-                    attributes={{
-                        onClick: toggleModal,
-                    }}
-                />
-                <ButtonPrimary
-                    format="SOLID"
-                    text="Approve PR"
-                    sideItem={<FiArrowUpRight />}
-                    attributes={{
-                        onClick: toggleApproveSubmissionModal,
-                    }}
-                />
-            </div>
+            {activeTask?.status === "OPEN" && (
+                <div className="flex gap-2.5 mt-5">
+                    <ButtonPrimary
+                        format="OUTLINE"
+                        text="Reject PR"
+                        attributes={{
+                            onClick: toggleModal,
+                        }}
+                    />
+                    <ButtonPrimary
+                        format="SOLID"
+                        text="Approve PR"
+                        sideItem={<FiArrowUpRight />}
+                        attributes={{
+                            onClick: toggleApproveSubmissionModal,
+                        }}
+                    />
+                </div>
+            )}
             
             {openApproveSubmissionModal && (
                 <ApproveSubmissionModal 
