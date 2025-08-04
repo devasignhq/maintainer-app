@@ -12,7 +12,7 @@ import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import { toast } from "react-toastify";
 import { ActiveTaskContext } from "../../../contexts/ActiveTaskContext";
-import { updateMessage } from "@/app/services/message.service";
+import { MessageAPI } from "@/app/services/message.service";
 
 type MessageBlockProps = {
     message: MessageDto;
@@ -52,7 +52,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
             }));
 
             try {
-                await updateMessage(message.id, {
+                await MessageAPI.updateMessage(message.id, {
                     metadata: { ...message.metadata!, responded: true }
                 });
 

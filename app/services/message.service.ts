@@ -16,161 +16,163 @@ import { MessageDto, MessageType, CreateMessageDto } from "../models/message.mod
 
 const messagesCollection = collection(db, "messages");
 
-export const getTaskMessages = async (taskId: string) => {
-    const q = query(
-        messagesCollection,
-        where("taskId", "==", taskId),
-        orderBy("createdAt", "asc")
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as MessageDto[];
-};
-
-export const listenToTaskMessages = (
-    taskId: string, 
-    userId: string, 
-    startDate: string,
-    callback: (messages: MessageDto[]) => void
-) => {
-    const constraints: any[] = [
-        where("taskId", "==", taskId),
-        where("userId", "==", userId)
-    ];
-
-    if (startDate && startDate.trim()) {
-        const startTimestamp = Timestamp.fromDate(new Date(startDate));
-        constraints.push(where("createdAt", ">", startTimestamp));
+export class MessageAPI {
+    static async getTaskMessages(taskId: string) {
+        const q = query(
+            messagesCollection,
+            where("taskId", "==", taskId),
+            orderBy("createdAt", "asc")
+        );
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as MessageDto[];
     }
-    
-    constraints.push(orderBy("createdAt", "asc"));
 
-    const q = query(messagesCollection, ...constraints);
-    
-    return onSnapshot(q, (snapshot) => {
-        const messages = snapshot.docs.map(doc => ({ 
-            id: doc.id, 
-            ...doc.data() 
-        } as MessageDto));
-        callback(messages);
-    });
-};
+    static listenToTaskMessages(
+        taskId: string,
+        userId: string,
+        startDate: string,
+        callback: (messages: MessageDto[]) => void
+    ) {
+        const constraints: any[] = [
+            where("taskId", "==", taskId),
+            where("userId", "==", userId)
+        ];
 
-export const createMessage = async ({
-    userId,
-    taskId,
-    type = MessageType.GENERAL,
-    body,
-    metadata = {} as any,
-    attachments = []
-}: CreateMessageDto) => {
-    const messageRef = doc(messagesCollection);
+        if (startDate && startDate.trim()) {
+            const startTimestamp = Timestamp.fromDate(new Date(startDate));
+            constraints.push(where("createdAt", ">", startTimestamp));
+        }
 
-    const messageData: MessageDto = {
-        id: messageRef.id,
+        constraints.push(orderBy("createdAt", "asc"));
+
+        const q = query(messagesCollection, ...constraints);
+
+        return onSnapshot(q, (snapshot) => {
+            const messages = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as MessageDto));
+            callback(messages);
+        });
+    }
+
+    static async createMessage({
         userId,
         taskId,
-        type,
+        type = MessageType.GENERAL,
         body,
-        metadata,
-        attachments,
-        read: false,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
-    };
+        metadata = {} as any,
+        attachments = []
+    }: CreateMessageDto) {
+        const messageRef = doc(messagesCollection);
 
-    await setDoc(messageRef, messageData);
-    return messageData;
-};
+        const messageData: MessageDto = {
+            id: messageRef.id,
+            userId,
+            taskId,
+            type,
+            body,
+            metadata,
+            attachments,
+            read: false,
+            createdAt: Timestamp.now(),
+            updatedAt: Timestamp.now()
+        };
 
-export const updateMessage = async (messageId: string, data: Partial<MessageDto>) => {
-    const messageRef = doc(db, "messages", messageId);
-    const messageSnap = await getDoc(messageRef);
-
-    if (!messageSnap.exists()) {
-        throw new Error("Message not found");
+        await setDoc(messageRef, messageData);
+        return messageData;
     }
 
-    const updateData = {
-        ...data,
-        updatedAt: Timestamp.now()
-    };
+    static async updateMessage(messageId: string, data: Partial<MessageDto>) {
+        const messageRef = doc(db, "messages", messageId);
+        const messageSnap = await getDoc(messageRef);
 
-    await updateDoc(messageRef, updateData);
+        if (!messageSnap.exists()) {
+            throw new Error("Message not found");
+        }
 
-    const updatedMessageSnap = await getDoc(messageRef);
-    return {
-        id: updatedMessageSnap.id,
-        ...updatedMessageSnap.data()
-    };
-};
+        const updateData = {
+            ...data,
+            updatedAt: Timestamp.now()
+        };
 
-export const markMessageAsRead = async (messageId: string) => {
-    const messageRef = doc(db, "messages", messageId);
-    const messageSnap = await getDoc(messageRef);
+        await updateDoc(messageRef, updateData);
 
-    if (!messageSnap.exists()) {
-        throw new Error("Message not found");
+        const updatedMessageSnap = await getDoc(messageRef);
+        return {
+            id: updatedMessageSnap.id,
+            ...updatedMessageSnap.data()
+        };
     }
 
-    const data = messageSnap.data() as MessageDto;
-    if (!data.read) {
-        await updateDoc(messageRef, { read: true });
+    static async markMessageAsRead(messageId: string) {
+        const messageRef = doc(db, "messages", messageId);
+        const messageSnap = await getDoc(messageRef);
+
+        if (!messageSnap.exists()) {
+            throw new Error("Message not found");
+        }
+
+        const data = messageSnap.data() as MessageDto;
+        if (!data.read) {
+            await updateDoc(messageRef, { read: true });
+        }
     }
-};
 
-export const countUnreadMessages = async (taskId: string, userId: string) => {
-    const q = query(
-        messagesCollection,
-        where("taskId", "==", taskId),
-        where("userId", "!=", userId),
-        where("read", "==", false)
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.size;
-};
-
-export const listenToUnreadMessagesCount = (
-    taskId: string,
-    userId: string,
-    callback: (count: number) => void
-) => {
-    const q = query(
-        messagesCollection,
-        where("taskId", "==", taskId),
-        where("userId", "!=", userId),
-        where("read", "==", false)
-    );
-    return onSnapshot(q, (snapshot) => {
-        callback(snapshot.size);
-    });
-};
-
-export const listenToExtensionReplies = (
-    taskId: string, 
-    userId: string, 
-    startDate: string,
-    callback: (messages: MessageDto[]) => void
-) => {
-    const constraints: any[] = [
-        where("taskId", "==", taskId),
-        where("userId", "==", userId),
-        where("type", "==", "TIMELINE_MODIFICATION"),
-    ];
-
-    if (startDate && startDate.trim()) {
-        const startTimestamp = Timestamp.fromDate(new Date(startDate));
-        constraints.push(where("createdAt", ">", startTimestamp));
+    static async countUnreadMessages(taskId: string, userId: string) {
+        const q = query(
+            messagesCollection,
+            where("taskId", "==", taskId),
+            where("userId", "!=", userId),
+            where("read", "==", false)
+        );
+        const snapshot = await getDocs(q);
+        return snapshot.size;
     }
-    
-    constraints.push(orderBy("createdAt", "asc"));
 
-    const q = query(messagesCollection, ...constraints);
-    
-    return onSnapshot(q, (snapshot) => {
-        const messages = snapshot.docs.map(doc => ({ 
-            id: doc.id, 
-            ...doc.data() 
-        } as MessageDto));
-        callback(messages);
-    });
-};
+    static listenToUnreadMessagesCount(
+        taskId: string,
+        userId: string,
+        callback: (count: number) => void
+    ) {
+        const q = query(
+            messagesCollection,
+            where("taskId", "==", taskId),
+            where("userId", "!=", userId),
+            where("read", "==", false)
+        );
+        return onSnapshot(q, (snapshot) => {
+            callback(snapshot.size);
+        });
+    }
+
+    static listenToExtensionReplies(
+        taskId: string,
+        userId: string,
+        startDate: string,
+        callback: (messages: MessageDto[]) => void
+    ) {
+        const constraints: any[] = [
+            where("taskId", "==", taskId),
+            where("userId", "==", userId),
+            where("type", "==", "TIMELINE_MODIFICATION"),
+        ];
+
+        if (startDate && startDate.trim()) {
+            const startTimestamp = Timestamp.fromDate(new Date(startDate));
+            constraints.push(where("createdAt", ">", startTimestamp));
+        }
+
+        constraints.push(orderBy("createdAt", "asc"));
+
+        const q = query(messagesCollection, ...constraints);
+
+        return onSnapshot(q, (snapshot) => {
+            const messages = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            } as MessageDto));
+            callback(messages);
+        });
+    }
+}

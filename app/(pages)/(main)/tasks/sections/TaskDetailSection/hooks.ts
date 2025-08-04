@@ -1,5 +1,5 @@
 import { MessageDto } from "@/app/models/message.model";
-import { getTaskMessages, listenToExtensionReplies, listenToTaskMessages } from "@/app/services/message.service";
+import { MessageAPI } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useEffectOnce } from "@/app/utils/hooks";
@@ -29,25 +29,25 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
         
         const initializeMessages = async () => {
             try {
-                const initialMessages = await getTaskMessages(taskId);
+                const initialMessages = await MessageAPI.getTaskMessages(taskId);
                 setMessages(initialMessages);
                 setLoading(false);
 
-                unsubscribeFromTaskMessages = listenToTaskMessages(
+                unsubscribeFromTaskMessages = MessageAPI.listenToTaskMessages(
                     taskId, 
                     contributorId, 
                     (getLastUserMessage(initialMessages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
-                    (updatedMessages) => {
+                    (updatedMessages: MessageDto[]) => {
                         if (updatedMessages.length > 0) {
                             setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
                         }
                     }
                 );
-                unsubscribeFromExtensionReplies = listenToExtensionReplies(
+                unsubscribeFromExtensionReplies = MessageAPI.listenToExtensionReplies(
                     taskId, 
                     currentUser.userId, 
                     (getLastUserMessage(initialMessages, currentUser.userId)?.createdAt)?.toDate().toISOString() || "",
-                    (updatedMessages) => {
+                    (updatedMessages: MessageDto[]) => {
                         if (updatedMessages.length > 0) {
                             setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
                         }
