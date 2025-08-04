@@ -22,7 +22,7 @@ import {
 } from "../models/_global";
 
 export class TaskAPI {
-    static async getTasks(query?: QueryTaskDto) {
+    static async getTasks(query?: Omit<QueryTaskDto, "status">) {
         return HttpClient.get<PaginatedResponse<TaskDto>>(ENDPOINTS.TASK.GET_ALL, { params: query });
     }
 

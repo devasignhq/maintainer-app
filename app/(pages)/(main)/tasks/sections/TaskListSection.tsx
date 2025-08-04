@@ -6,7 +6,7 @@ import TaskCard from "../components/TaskCard";
 import ImportTaskModal from "../modals/ImportTaskModal";
 import { useInfiniteScroll, useRequest, useToggle } from "ahooks";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
-import { FilterTasks } from "@/app/models/task.model";
+import { FilterTasks, TASK_STATUS, TaskStatus } from "@/app/models/task.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
@@ -15,6 +15,7 @@ import { GetRepositoryResourcesResponse } from "@/app/models/github.model";
 import { GitHubAPI } from "@/app/services/github.service";
 import SearchBox from "../components/SearchBox";
 import { PaginationResponse } from "@/app/models/_global";
+import { enumToStringConverter } from "@/app/utils/helper";
 
 // ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
@@ -52,7 +53,10 @@ const TaskListSection = () => {
             }
 
             const pageToLoad = currentData ? (currentData.pagination as PaginationResponse).currentPage + 1 : 1;
-            let filters: FilterTasks = { issueTitle: taskFilters.issueTitle };
+            let filters: FilterTasks = { 
+                issueTitle: taskFilters.issueTitle,
+                status: taskFilters.status
+            };
 
             if (taskFilters.repoUrl) {
                 filters = taskFilters;
@@ -174,6 +178,26 @@ const TaskListSection = () => {
                     />
                     <div className="flex items-center gap-2.5">
                         <FilterDropdown
+                            title="Status"
+                            options={Object.entries(TASK_STATUS).map(
+                                ([key, value]) => ({ name: enumToStringConverter(key), value })
+                            )}
+                            fieldName="name"
+                            fieldValue="value"
+                            extendedContainerClassName="w-full"
+                            extendedButtonClassName="w-full py-[5px]"
+                            buttonAttributes={{
+                                style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                                disabled: loadingTasks
+                            }}
+                            setField={(value) => setTaskFilters((prev) => ({
+                                ...prev,
+                                status: value as TaskStatus,
+                            }))}
+                            defaultValue={taskFilters.status}
+                            noMultiSelect
+                        />
+                        <FilterDropdown
                             title="Repo Name"
                             options={installationRepos}
                             fieldName="name"
@@ -188,7 +212,6 @@ const TaskListSection = () => {
                                 ...prev,
                                 repoUrl: value as string,
                                 issueLabels: undefined,
-                                issueMilestone: undefined,
                             }))}
                             noMultiSelect
                         />
@@ -207,23 +230,6 @@ const TaskListSection = () => {
                                 ...prev,
                                 issueLabels: value as string[]
                             }))}
-                        />
-                        <FilterDropdown
-                            title="Milestone"
-                            options={repoResources?.milestones || []}
-                            fieldName="title"
-                            fieldValue="title"
-                            extendedContainerClassName="w-full"
-                            extendedButtonClassName="w-full py-[5px] border-dark-100 text-dark-100"
-                            buttonAttributes={{
-                                style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
-                                disabled: loadingResources || !Boolean(taskFilters.repoUrl)
-                            }}
-                            setField={(value) => setTaskFilters((prev) => ({
-                                ...prev,
-                                issueMilestone: value as string
-                            }))}
-                            noMultiSelect
                         />
                     </div>
                 </div>
@@ -278,8 +284,8 @@ const TaskListSection = () => {
 export default TaskListSection;
 
 const defaultTaskFilters: FilterTasks = {
+    status: undefined,
     repoUrl: undefined,
     issueTitle: undefined,
     issueLabels: undefined,
-    issueMilestone: undefined,
 }

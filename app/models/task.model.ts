@@ -123,7 +123,6 @@ export type MarkAsCompleteDto = {
 export type QueryTaskDto = {
     status?: TaskStatus
     installationId?: string
-    role?: 'creator' | 'contributor'
     detailed?: boolean
     page?: number
     limit?: number
@@ -131,7 +130,6 @@ export type QueryTaskDto = {
     repoUrl?: string
     issueTitle?: string
     issueLabels?: string[]
-    issueMilestone?: string
 }
 
 export type QueryTaskActivityDto = {
@@ -140,7 +138,7 @@ export type QueryTaskActivityDto = {
     sort?: "asc" | "desc"
 }
 
-export type FilterTasks = Pick<QueryTaskDto, "repoUrl" | "issueTitle" | "issueLabels" | "issueMilestone">
+export type FilterTasks = Pick<QueryTaskDto, "status" | "repoUrl" | "issueTitle" | "issueLabels">
 
 export type TimelineExtensionResponse = {
     comment: MessageDto;

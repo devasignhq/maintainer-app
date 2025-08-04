@@ -133,7 +133,7 @@ const FilterDropdown = ({
                 type="button"
                 ref={menuButtonRef}
                 className={twMerge(
-                    "p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center gap-[5px]",
+                    "p-2.5 border border-light-200 text-button-large font-extrabold text-light-200 flex items-center justify-between gap-[5px]",
                     extendedButtonClassName
                 )}
                 onClick={toggleMenu}
