@@ -21,7 +21,7 @@ const TaskOverviewSection = () => {
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
-    
+
     const {
         data: activities,
         loading: loadingActivities,
@@ -32,17 +32,17 @@ const TaskOverviewSection = () => {
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
-            
+
             const response = await TaskAPI.getTaskActivities(
                 activeTask!.id,
                 { page: pageToLoad, limit: 30 }
             );
 
-            return { 
+            return {
                 list: response.data,
                 pagination: response.pagination,
             };
-        }, 
+        },
         {
             isNoMore: (data) => !data?.pagination.hasMore,
             reloadDeps: [activeTask]
@@ -51,109 +51,111 @@ const TaskOverviewSection = () => {
 
     return (
         <>
-        <section className="min-w-[360px] w-[12%] h-full pt-[30px] flex flex-col">
-            <div className="pl-5 pb-[30px] space-y-[30px] border-b border-dark-200">
-                <div className="flex items-center justify-between">
-                    <h6 className="text-headline-small text-light-100">Task Overview</h6>
-                    <p className={`w-fit py-0.5 px-[7px] text-body-tiny font-bold ${taskStatusFormatter(activeTask!.status)[1]}`}>
-                        {taskStatusFormatter(activeTask!.status)[0]}
-                    </p>
-                </div>
-                {activeTask?.status !== "OPEN" && (
+            <section className="min-w-[360px] w-[12%] h-full pt-[30px] flex flex-col">
+                <div className="pl-5 pb-[30px] space-y-[30px] border-b border-dark-200">
+                    <div className="flex items-center justify-between">
+                        <h6 className="text-headline-small text-light-100">Task Overview</h6>
+                        <p className={`w-fit py-0.5 px-[7px] text-body-tiny font-bold ${taskStatusFormatter(activeTask!.status)[1]}`}>
+                            {taskStatusFormatter(activeTask!.status)[0]}
+                        </p>
+                    </div>
+                    {activeTask?.status !== "OPEN" && (
+                        <div className="space-y-2.5">
+                            <p className="text-body-tiny text-light-100">Developer</p>
+                            <div className="flex items-center gap-1">
+                                <p className="text-body-large text-light-200">@{activeTask?.contributor?.username}</p>
+                                <Link href={`https://github.com/${activeTask?.contributor?.username}`} target="_blank">
+                                    <FiArrowUpRight className="text-2xl text-primary-100 hover:text-light-100" />
+                                </Link>
+                            </div>
+                        </div>
+                    )}
                     <div className="space-y-2.5">
-                        <p className="text-body-tiny text-light-100">Developer</p>
+                        <p className="text-body-tiny text-light-100">Bounty</p>
                         <div className="flex items-center gap-1">
-                            <p className="text-body-large text-light-200">@{activeTask?.contributor?.username}</p>
-                            <Link href={`https://github.com/${activeTask?.contributor?.username}`} target="_blank">
-                                <FiArrowUpRight className="text-2xl text-primary-100 hover:text-light-100" />
-                            </Link>
+                            <p className="text-body-large text-light-200">{moneyFormat(activeTask?.bounty || "")} USDC</p>
+                            {activeTask?.status === "OPEN" && (
+                                <button onClick={toggleSetTaskBountyModal}>
+                                    <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
+                                </button>
+                            )}
                         </div>
                     </div>
-                )}
-                <div className="space-y-2.5">
-                    <p className="text-body-tiny text-light-100">Bounty</p>
-                    <div className="flex items-center gap-1">
-                        <p className="text-body-large text-light-200">{moneyFormat(activeTask?.bounty || "")} USDC</p>
-                        {activeTask?.status === "OPEN" && (
-                            <button onClick={toggleSetTaskBountyModal}>
-                                <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
-                            </button>
-                        )}
-                    </div>
-                </div>
-                {activeTask?.status === "OPEN" ? (
-                    <div className="space-y-2.5">
-                        <p className="text-body-tiny text-light-100">Timeline</p>
-                        <div className="flex items-center gap-1">
-                            <p className="text-body-large text-light-200">
-                                {formatTimeline(activeTask!)}
+                    {activeTask?.status === "OPEN" ? (
+                        <div className="space-y-2.5">
+                            <p className="text-body-tiny text-light-100">Timeline</p>
+                            <div className="flex items-center gap-1">
+                                <p className="text-body-large text-light-200">
+                                    {formatTimeline(activeTask!)}
+                                </p>
+                                <button onClick={toggleSetTaskTimelineModal}>
+                                    <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="space-y-2.5">
+                            <p className="text-body-tiny text-light-100">Time Left</p>
+                            <p className={`text-body-large ${getTimeLeft(activeTask!).startsWith('Overdue') ? 'text-indicator-500' : 'text-light-200'}`}>
+                                {getTimeLeft(activeTask!)}
                             </p>
-                            <button onClick={toggleSetTaskTimelineModal}>
-                                <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
-                            </button>
                         </div>
-                    </div>
-                ): (
-                    <div className="space-y-2.5">
-                        <p className="text-body-tiny text-light-100">Time Left</p>
-                        <p className="text-body-large text-light-200">{getTimeLeft(activeTask!)}</p>
-                    </div>
-                )}
-                {activeTask?.status === "OPEN" && (
-                    <ButtonPrimary
-                        format="OUTLINE"
-                        text="Delete Task"
-                        sideItem={<MdOutlineCancel />}
-                        attributes={{ onClick: toggleDeleteTaskModal }}
-                        extendedClassName="border-indicator-500 text-indicator-500"
-                    />
-                )}
-            </div>
-            <div className="pt-[30px] pl-5 flex items-center justify-between">
-                <h6 className="text-headline-small text-light-100">Task Activities</h6>
-                <button 
-                    onClick={reloadActivities}
-                    disabled={loadingActivities || loadingMoreActivities}
-                    className={(loadingActivities || loadingMoreActivities) ? "rotate-loading" : ""}
-                >
-                    <HiOutlineRefresh className="text-2xl text-light-200 hover:text-light-100" />
-                </button>
-            </div>
-            <div className="pl-5 pb-5 mt-[30px] overflow-y-auto space-y-[15px]">
-                {activities?.list?.map((activity) => (
-                    <TaskActivityCard
-                        key={activity.id}
-                        issueNumber={activeTask!.issue.number}
-                        activity={activity}
-                    />
-                ))}
-                {(activities?.list && activities.list.length < 1 && !loadingActivities) && (
-                    <p className="text-body-medium text-light-100">No activity to show</p>
-                )}
-                {(loadingActivities && activities?.list && activities.list.length < 1) && (
-                    <p className="text-body-medium text-light-100">Loading activities...</p>
-                )}
-                {loadingMoreActivities && (
-                    <p className="text-body-medium text-light-100">Loading more activities...</p>
-                )}
-                {(!loadingMoreActivities && !noMoreActivities) && (
-                    <button 
-                        className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
-                        onClick={loadMoreActivities}
+                    )}
+                    {activeTask?.status === "OPEN" && (
+                        <ButtonPrimary
+                            format="OUTLINE"
+                            text="Delete Task"
+                            sideItem={<MdOutlineCancel />}
+                            attributes={{ onClick: toggleDeleteTaskModal }}
+                            extendedClassName="border-indicator-500 text-indicator-500"
+                        />
+                    )}
+                </div>
+                <div className="pt-[30px] pl-5 flex items-center justify-between">
+                    <h6 className="text-headline-small text-light-100">Task Activities</h6>
+                    <button
+                        onClick={reloadActivities}
+                        disabled={loadingActivities || loadingMoreActivities}
+                        className={(loadingActivities || loadingMoreActivities) ? "rotate-loading" : ""}
                     >
-                        Load More
+                        <HiOutlineRefresh className="text-2xl text-light-200 hover:text-light-100" />
                     </button>
-                )}
-            </div>
-        </section>
-        
-        {openSetTaskBountyModal && <SetTaskBountyModal toggleModal={toggleSetTaskBountyModal} />}
-        {openSetTaskTimelineModal && <SetTaskTimelineModal toggleModal={toggleSetTaskTimelineModal} />}
-        {openDeleteTaskModal && <DeleteTaskModal toggleModal={toggleDeleteTaskModal} />}
+                </div>
+                <div className="pl-5 pb-5 mt-[30px] overflow-y-auto space-y-[15px]">
+                    {activities?.list?.map((activity) => (
+                        <TaskActivityCard
+                            key={activity.id}
+                            issueNumber={activeTask!.issue.number}
+                            activity={activity}
+                        />
+                    ))}
+                    {(activities?.list && activities.list.length < 1 && !loadingActivities) && (
+                        <p className="text-body-medium text-light-100">No activity to show</p>
+                    )}
+                    {(loadingActivities && activities?.list && activities.list.length < 1) && (
+                        <p className="text-body-medium text-light-100">Loading activities...</p>
+                    )}
+                    {loadingMoreActivities && (
+                        <p className="text-body-medium text-light-100">Loading more activities...</p>
+                    )}
+                    {(!loadingMoreActivities && !noMoreActivities) && (
+                        <button
+                            className="text-body-medium text-light-200 font-bold hover:text-light-100 pt-2.5"
+                            onClick={loadMoreActivities}
+                        >
+                            Load More
+                        </button>
+                    )}
+                </div>
+            </section>
+
+            {openSetTaskBountyModal && <SetTaskBountyModal toggleModal={toggleSetTaskBountyModal} />}
+            {openSetTaskTimelineModal && <SetTaskTimelineModal toggleModal={toggleSetTaskTimelineModal} />}
+            {openDeleteTaskModal && <DeleteTaskModal toggleModal={toggleDeleteTaskModal} />}
         </>
     );
 }
- 
+
 export default TaskOverviewSection;
 
 function formatTimeline(task: TaskDto) {
@@ -183,7 +185,7 @@ export const getTimeLeft = (task: TaskDto): string => {
 
     // Calculate total days for the timeline
     let totalTimelineDays: number;
-    
+
     if (task.timelineType === TIMELINE_TYPE.WEEK) {
         // Handle float values for weeks (e.g., 2.5 = 2 weeks + 5 days)
         const weeks = Math.floor(task.timeline);
@@ -202,9 +204,10 @@ export const getTimeLeft = (task: TaskDto): string => {
     // Calculate the difference in milliseconds
     const timeDiff = deadline.getTime() - now.getTime();
 
-    // If the deadline has passed, return overdue message
+    // If the deadline has passed, calculate how overdue it is
     if (timeDiff <= 0) {
-        return "Overdue";
+        const overdueDays = Math.ceil(Math.abs(timeDiff) / (1000 * 60 * 60 * 24));
+        return `Overdue by ${formatTimeLeft(overdueDays)}`;
     }
 
     // Convert milliseconds to days
@@ -261,7 +264,7 @@ export const getDetailedTimeLeft = (task: TaskDto) => {
     const now = new Date();
 
     let totalTimelineDays: number;
-    
+
     if (task.timelineType === TIMELINE_TYPE.WEEK) {
         const weeks = Math.floor(task.timeline);
         const extraDays = Math.round((task.timeline - weeks) * 10);
@@ -324,7 +327,7 @@ export const getTaskDeadline = (task: TaskDto): Date | null => {
 
     const acceptedAt = new Date(task.acceptedAt!);
     let totalTimelineDays: number;
-    
+
     if (task.timelineType === TIMELINE_TYPE.WEEK) {
         const weeks = Math.floor(task.timeline);
         const extraDays = Math.round((task.timeline - weeks) * 10);
@@ -337,6 +340,6 @@ export const getTaskDeadline = (task: TaskDto): Date | null => {
 
     const deadline = new Date(acceptedAt);
     deadline.setDate(deadline.getDate() + totalTimelineDays);
-    
+
     return deadline;
 };
