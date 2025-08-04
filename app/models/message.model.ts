@@ -18,6 +18,7 @@ export type MessageMetadata = {
     requestedTimeline: number;
     timelineType: TimelineType;
     reason?: string
+    responded?: boolean
 }
 
 export enum MessageType {

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
@@ -11,13 +12,15 @@ import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import { toast } from "react-toastify";
 import { ActiveTaskContext } from "../../../contexts/ActiveTaskContext";
+import { updateMessage } from "@/app/services/message.service";
 
 type MessageBlockProps = {
     message: MessageDto;
-    largeMargin: boolean;
+    margin: string;
+    setMessages: React.Dispatch<React.SetStateAction<MessageDto[]>>;
 }
 
-const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
+const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
     const { currentUser } = useUserStore();
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
     const [openReplyModal, { toggle: toggleReplyModal }] = useToggle(false);
@@ -36,8 +39,29 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                     timelineType: message.metadata!.timelineType!,
                 }
             );
-            
-            toast.success("Request sent successfully.");
+
+            setMessages(prev => prev.map((msg) => {
+                if (msg.id === message.id) {
+                    return {
+                        ...msg,
+                        metadata: { ...msg.metadata!, responded: true }
+                    } as MessageDto
+                } else {
+                    return msg
+                }
+            }));
+
+            try {
+                await updateMessage(message.id, {
+                    metadata: { ...message.metadata!, responded: true }
+                });
+
+                toast.success("Request sent successfully.");
+            } catch {
+                toast.success("Request sent successfully.");
+                toast.warn("Failed to mark extension request message as 'responded'.")
+            }
+
             setActiveTask({ ...activeTask!, ...response.task! });
             toggleReplyModal();
         } catch (error) {
@@ -45,12 +69,12 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
         } finally {
             setReplying(false);
         }
-    }
+    };
 
     return message.type === MessageType.GENERAL ? (
-        <div className={`max-w-[78%] w-fit p-[15px] space-y-2.5 ${largeMargin ? "mb-[30px]" : "mb-2.5"} 
-            ${message.userId === currentUser?.userId 
-                ? "bg-dark-300 ml-auto" 
+        <div className={`max-w-[78%] w-fit p-[15px] space-y-2.5 ${margin} 
+            ${message.userId === currentUser?.userId
+                ? "bg-dark-300 ml-auto"
                 : "bg-primary-300 mr-auto"}`
         }>
             <p className="text-body-medium text-light-100">{message.body}</p>
@@ -58,34 +82,46 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                 {formatTime(message.createdAt.toDate().toISOString())}
             </small>
         </div>
-    ):(
+    ) : (
         <>
             {message.userId !== currentUser?.userId && (
-                <div className={`max-w-[78%] w-fit mr-auto space-y-2.5 ${largeMargin ? "mb-[30px]" : "mb-2.5"}`}>
+                <div className={`max-w-[78%] w-fit mr-auto space-y-2.5 ${margin}`}>
                     <div className="max-w-full w-fit p-[15px] mr-auto bg-dark-400 border border-dark-300 space-y-5">
                         <p className="text-body-medium text-light-100">{message.body}</p>
-                        <div className="flex gap-2.5">
-                            <ButtonPrimary
-                                format="SOLID"
-                                text="Approve"
-                                attributes={{
-                                    onClick: () => {
-                                        setReplyMode("approve");
-                                        toggleReplyModal();
-                                    },
-                                }}
-                            />
-                            <ButtonPrimary
-                                format="OUTLINE"
-                                text="Reject"
-                                attributes={{
-                                    onClick: () => {
-                                        setReplyMode("reject");
-                                        toggleReplyModal();
-                                    },
-                                }}
-                            />
-                        </div>
+                        {activeTask?.status === "COMPLETED" ? (
+                            message.metadata?.responded ? (
+                                <p className="text-body-medium text-light-100">You've responded!</p>
+                            ) : (
+                                <p className="text-body-medium text-light-100">
+                                    Can't respond. Task already completed.
+                                </p>
+                            )
+                        ) : message.metadata?.responded ? (
+                            <p className="text-body-medium text-light-100">You've responded!</p>
+                        ) : (
+                            <div className="flex gap-2.5">
+                                <ButtonPrimary
+                                    format="SOLID"
+                                    text="Approve"
+                                    attributes={{
+                                        onClick: () => {
+                                            setReplyMode("approve");
+                                            toggleReplyModal();
+                                        },
+                                    }}
+                                />
+                                <ButtonPrimary
+                                    format="OUTLINE"
+                                    text="Reject"
+                                    attributes={{
+                                        onClick: () => {
+                                            setReplyMode("reject");
+                                            toggleReplyModal();
+                                        },
+                                    }}
+                                />
+                            </div>
+                        )}
                         {!message.metadata?.reason && (
                             <small className="text-body-tiny font-bold text-dark-200">
                                 {formatTime(message.createdAt.toDate().toISOString())}
@@ -103,20 +139,20 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                 </div>
             )}
             {message.userId === currentUser?.userId && (
-                <div className={`max-w-[78%] w-fit p-2.5 ml-auto bg-dark-400 border flex items-center gap-2.5 ${largeMargin ? "mb-[30px]" : "mb-2.5"} 
+                <div className={`max-w-[78%] w-fit p-2.5 ml-auto bg-dark-400 border flex items-center gap-2.5 ${margin} 
                     ${message.metadata?.reason === "ACCEPTED" ? "border-indicator-100" : "border-indicator-500"}`
                 }>
                     {message.metadata?.reason === "ACCEPTED" ? (
                         <FiCheckCircle className="text-2xl text-indicator-100" />
-                    ):(
+                    ) : (
                         <MdOutlineCancel className="text-2xl text-indicator-500" />
                     )}
                     <p className="text-body-medium text-dark-100">{message.body}</p>
                 </div>
             )}
-            
+
             {openReplyModal && (
-                <PopupModalLayout 
+                <PopupModalLayout
                     title={(replyMode === "approve" ? "Approve" : "Reject") + " Extension Request"}
                     toggleModal={toggleReplyModal}
                 >
@@ -141,10 +177,10 @@ const MessageBlock = ({ message, largeMargin }: MessageBlockProps) => {
                         extendedSideItemClassName="text-xl"
                         extendedClassName="w-fit"
                     />
-                </PopupModalLayout> 
+                </PopupModalLayout>
             )}
         </>
     );
 }
- 
+
 export default MessageBlock;
