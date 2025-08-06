@@ -12,7 +12,6 @@ type TaskCardProps = {
     active: boolean;
 };
 
-// ? Place issue number beside repo name
 const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
     const { currentUser } = useUserStore();
     const { activeTask } = useContext(ActiveTaskContext);

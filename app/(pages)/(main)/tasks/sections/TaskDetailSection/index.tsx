@@ -38,7 +38,7 @@ const TaskDetailSection = () => {
         <section className="grow pt-5 border-x border-dark-200 flex flex-col">
             {(activeTask && activeTask.status === "OPEN") ? (
                 <DetailsView />
-            ):(
+            ) : (
                 <>
                     <div className="px-5 flex gap-[15px] text-title-large text-dark-200">
                         {viewOptions.map((option) => (
@@ -64,7 +64,7 @@ const TaskDetailSection = () => {
                     </div>
                     {activeView.name === "Description" ? (
                         <DetailsView />
-                    ):(
+                    ) : (
                         <ConversationView />
                     )}
                 </>

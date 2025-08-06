@@ -112,10 +112,11 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
         <div
             ref={messageRef}
             className={`max-w-[78%] w-fit p-[15px] space-y-2.5 ${margin} 
-            ${message.userId === currentUser?.userId
+                ${message.userId === currentUser?.userId
                     ? "bg-dark-300 ml-auto"
                     : "bg-primary-300 mr-auto"}`
-            }>
+            }
+        >
             <p className="text-body-medium text-light-100">{message.body}</p>
             <small className="text-body-tiny font-bold text-dark-200">
                 {formatTime(message.createdAt.toDate().toISOString())}
@@ -184,8 +185,9 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
                 <div
                     ref={messageRef}
                     className={`max-w-[78%] w-fit p-2.5 ml-auto bg-dark-400 border flex items-center gap-2.5 ${margin} 
-                    ${message.metadata?.reason === "ACCEPTED" ? "border-indicator-100" : "border-indicator-500"}`
-                    }>
+                        ${message.metadata?.reason === "ACCEPTED" ? "border-indicator-100" : "border-indicator-500"}`
+                    }
+                >
                     {message.metadata?.reason === "ACCEPTED" ? (
                         <FiCheckCircle className="text-2xl text-indicator-100" />
                     ) : (

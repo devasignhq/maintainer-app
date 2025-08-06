@@ -62,7 +62,7 @@ const ConversationView = () => {
                 <div className="grow grid place-content-center text-body-medium text-light-100">
                     <p>Loading Messages...</p>
                 </div>
-            ):(
+            ) : (
                 <div 
                     ref={messageBoxRef} 
                     className={`px-5 mb-[30px] overflow-y-auto ${orderedDateLabels.length < 1 ? "grow grid place-content-center" : "h-fit mt-auto"}`}
@@ -76,24 +76,20 @@ const ConversationView = () => {
                                 height={24}
                                 className="mx-auto"
                             />
-                            {activeTask?.status !== "COMPLETED" ? (
-                                <>
+                            {activeTask?.status !== "COMPLETED" ? (<>
                                 <h6 className="text-body-large text-light-100">Say “Hi” to the contributor</h6>
                                 <p className="text-body-tiny text-dark-100">
                                     Send your first message and the developer will get 
                                     <br /> it via email even while offline.
                                 </p>
-                                </>
-                            ):(
-                                <>
+                            </>) : (<>
                                 <h6 className="text-body-large text-light-100">Task already completed</h6>
                                 <p className="text-body-tiny text-dark-100">
                                     There was no conversation during the task timeline.
                                 </p>
-                                </>
-                            )}
+                            </>)}
                         </div>
-                    ):(
+                    ) : (
                         orderedDateLabels.map((dateLabel) => (
                             <div key={dateLabel} className="w-full">
                                 <div className="w-fit sticky top-2.5 px-[15px] py-[3px] my-5 mx-auto bg-dark-500 border border-primary-200 text-body-medium text-light-200">

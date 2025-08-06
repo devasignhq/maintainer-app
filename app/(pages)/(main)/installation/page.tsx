@@ -93,7 +93,7 @@ const Installation = () => {
                 </p>
             </div>
         </div>
-    ):(
+    ) : (
         <div className="fixed inset-0 z-[100] bg-[#0000004D] grid place-content-center backdrop-blur-[14px] pointer-events-none">
             <div className="w-[820px] max-h-[92dvh] p-10 popup-modal relative bg-dark-500 pointer-events-auto">
                 <MdOutlineCancel className="text-[44px] text-indicator-500 mx-auto" />

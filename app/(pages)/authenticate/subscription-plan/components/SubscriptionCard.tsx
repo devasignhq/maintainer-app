@@ -51,7 +51,7 @@ const SubscriptionCard = ({
             <div className="text-xl text-dark-100">
                 {active ? (
                     <GoCheckCircleFill className="text-primary-100" />
-                ):(
+                ) : (
                     <FaRegCircle />
                 )}
             </div>

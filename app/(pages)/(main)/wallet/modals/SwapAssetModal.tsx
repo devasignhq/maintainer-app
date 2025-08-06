@@ -185,7 +185,7 @@ const SwapAssetModal = ({
                             </div>
                         </div>
                     </div>
-                ):(
+                ) : (
                     <div className="w-full flex items-center gap-5 my-[30px]">
                         <div className="grow">
                             <label htmlFor="fromAmount" className="text-body-tiny font-bold text-light-100">Swap From:</label>

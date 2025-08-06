@@ -470,7 +470,7 @@ const ImportTaskModal = ({
                             <div className="flex justify-center py-4">
                                 <span className="text-body-medium text-light-100">Fetching issues...</span>
                             </div>
-                        ):(
+                        ) : (
                             repoIssues?.list?.map((issue) => (
                                 <CreateTaskCard
                                     key={issue.id}
