@@ -31,10 +31,14 @@ const TaskOverviewSection = () => {
         reload: reloadActivities,
     } = useInfiniteScroll<Data>(
         async (currentData) => {
+            if (!activeTask) {
+                return { list: [], pagination: null }
+            }
+
             const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
 
             const response = await TaskAPI.getTaskActivities(
-                activeTask!.id,
+                activeTask.id,
                 { page: pageToLoad, limit: 30 }
             );
 
@@ -44,7 +48,7 @@ const TaskOverviewSection = () => {
             };
         },
         {
-            isNoMore: (data) => !data?.pagination.hasMore,
+            isNoMore: (data) => !data?.pagination?.hasMore,
             reloadDeps: [activeTask]
         }
     );
