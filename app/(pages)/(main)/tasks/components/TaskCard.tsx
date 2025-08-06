@@ -94,11 +94,11 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
                 )}
                 <div className="w-fit ml-auto text-body-medium font-bold flex items-center gap-[5px]">
                     <p className="text-primary-400 whitespace-nowrap">{moneyFormat(task.bounty)} USDC</p>
-                    {!active && totalNotifications > 0 && (
+                    {!active && totalNotifications > 0 ? (
                         <span className="px-[5px] text-body-tiny text-dark-500 bg-primary-100">
                             {totalNotifications}
                         </span>
-                    )}
+                    ): null}
                 </div>
             </div>
             <p

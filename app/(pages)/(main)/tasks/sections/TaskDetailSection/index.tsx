@@ -52,13 +52,13 @@ const TaskDetailSection = () => {
                                 onClick={() => setActiveView(option)}
                             >
                                 <span>{option.name}</span>
-                                {(option.tag && unreadMessagesCount > 0) && (
+                                {(option.tag && unreadMessagesCount > 0) ? (
                                     <span className={`px-[5px] text-body-medium font-bold text-dark-500 
                                         ${activeView.name !== option.name ? "bg-light-200 group-hover:bg-primary-400" : "bg-primary-100"}`}
                                     >
                                         {unreadMessagesCount}
                                     </span>
-                                )}
+                                ): null}
                             </button>
                         ))}
                     </div>
