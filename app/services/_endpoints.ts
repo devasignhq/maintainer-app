@@ -35,6 +35,7 @@ export const ENDPOINTS = {
         ADD_BOUNTY_COMMENT_ID: preset.TASK + "/{taskId}/issue-comment",
         UPDATE_TASK_BOUNTY: preset.TASK + "/{taskId}/bounty",
         UPDATE_TASK_TIMELINE: preset.TASK + "/{taskId}/timeline",
+        MARK_ACTIVITY_AS_VIEWED: preset.TASK + "/activities/{taskActivityId}/viewed",
         DELETE: preset.TASK + "/{taskId}",
         
         SUBMIT_APPLICATION: preset.TASK + "/{taskId}/apply",

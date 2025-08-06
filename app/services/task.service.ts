@@ -98,6 +98,11 @@ export class TaskAPI {
             .replace("{taskId}", taskId), data);
     }
 
+    static async markActivityAsViewed(taskActivityId: string) {
+        return HttpClient.patch<Pick<TaskActivity, "id" | "viewed" | "updatedAt">>(
+            ENDPOINTS.TASK.MARK_ACTIVITY_AS_VIEWED.replace("{taskActivityId}", taskActivityId), {});
+    }
+
     static async deleteTask(taskId: string) {
         return HttpClient.delete<MessageWithDataResponse<"refunded", string> | PartialSuccessResponse<"data", MessageWithDataResponse<"refunded", string>>>(
             ENDPOINTS.TASK.DELETE.replace("{taskId}", taskId));

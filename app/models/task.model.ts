@@ -36,6 +36,7 @@ export type TaskDto = {
     installationId: string
     createdAt: string
     updatedAt: string
+    _count?: { taskActivities: number }
     
     applications?: UserDto[]
     creator?: UserDto
@@ -71,6 +72,7 @@ export type TaskActivity = {
     taskId: string
     userId: string | null
     taskSubmissionId: string | null
+    viewed: boolean
     createdAt: string
     updatedAt: string
     
