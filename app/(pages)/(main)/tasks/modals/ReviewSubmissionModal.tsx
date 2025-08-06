@@ -5,10 +5,11 @@ import { TaskActivity } from "@/app/models/task.model";
 import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
 import ApproveSubmissionModal from "./ApproveSubmissionModal";
-import { useToggle } from "ahooks";
+import { useAsyncEffect, useLockFn, useToggle } from "ahooks";
 import { useContext } from "react";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { moneyFormat, formatDateTime } from "@/app/utils/helper";
+import { TaskAPI } from "@/app/services/task.service";
 
 type ReviewSubmissionModalProps = {
     taskActivity: TaskActivity;
@@ -18,11 +19,21 @@ type ReviewSubmissionModalProps = {
 const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionModalProps) => {
     const { activeTask } = useContext(ActiveTaskContext);
     const [openApproveSubmissionModal, { toggle: toggleApproveSubmissionModal }] = useToggle(false);
-    
+
+    useAsyncEffect(useLockFn(async () => {
+        if (!taskActivity.viewed) {
+            try {
+                await TaskAPI.markActivityAsViewed(taskActivity.id);
+            } catch (error) {
+                console.error('Failed to mark activity as viewed:', error);
+            }
+        }
+    }), [taskActivity]);
+
     return (
         <PopupModalLayout title="Review Contributor Submission" toggleModal={toggleModal}>
             <p className="mt-2.5 text-body-medium text-dark-100">
-                Kindly review this pull request if it solves the problem as described in your GitHub issue. 
+                Kindly review this pull request if it solves the problem as described in your GitHub issue.
                 Once you merge the code successfully in GitHub, the bounty will be paid out to the contributor automatically.
             </p>
             <div className="w-full p-[15px] border border-dark-200 flex items-start gap-2.5 my-5">
@@ -32,8 +43,8 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
                 <p className="grow text-body-medium font-bold text-light-100 truncate">
                     {activeTask?.issue.title}
                 </p>
-                <p 
-                    className="text-body-tiny font-bold tracking-[-3%] text-primary-100 whitespace-nowrap" 
+                <p
+                    className="text-body-tiny font-bold tracking-[-3%] text-primary-100 whitespace-nowrap"
                     style={{ lineHeight: "20px" }}
                 >
                     {moneyFormat(activeTask?.bounty || "")} USDC
@@ -80,18 +91,18 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
                     <p className="text-light-100">{formatDateTime(taskActivity.createdAt)}</p>
                 </div>
             </div>
-            {activeTask?.status === "OPEN" && (
+            {activeTask?.status === "MARKED_AS_COMPLETED" && (
                 <div className="flex gap-2.5 mt-5">
                     <ButtonPrimary
                         format="OUTLINE"
-                        text="Reject PR"
+                        text="Ignore"
                         attributes={{
                             onClick: toggleModal,
                         }}
                     />
                     <ButtonPrimary
                         format="SOLID"
-                        text="Approve PR"
+                        text="Approve Submission"
                         sideItem={<FiArrowUpRight />}
                         attributes={{
                             onClick: toggleApproveSubmissionModal,
@@ -99,16 +110,16 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
                     />
                 </div>
             )}
-            
+
             {openApproveSubmissionModal && (
-                <ApproveSubmissionModal 
+                <ApproveSubmissionModal
                     taskActivity={taskActivity}
-                    toggleModal={toggleApproveSubmissionModal} 
-                    onSuccess={toggleModal} 
+                    toggleModal={toggleApproveSubmissionModal}
+                    onSuccess={toggleModal}
                 />
             )}
         </PopupModalLayout>
     );
 }
- 
+
 export default ReviewSubmissionModal;

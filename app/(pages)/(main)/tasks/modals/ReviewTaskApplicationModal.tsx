@@ -7,8 +7,9 @@ import { useContext } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { moneyFormat, formatDateTime } from "@/app/utils/helper";
-import { useToggle } from "ahooks";
+import { useAsyncEffect, useLockFn, useToggle } from "ahooks";
 import ApproveTaskDelegationModal from "./ApproveTaskDelegationModal";
+import { TaskAPI } from "@/app/services/task.service";
 
 type ReviewTaskApplicationModalProps = {
     taskActivity: TaskActivity;
@@ -18,6 +19,16 @@ type ReviewTaskApplicationModalProps = {
 const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApplicationModalProps) => {
     const { activeTask } = useContext(ActiveTaskContext);
     const [openApproveTaskDelegationModal, { toggle: toggleApproveTaskDelegationModal }] = useToggle(false);
+
+    useAsyncEffect(useLockFn(async () => {
+        if (!taskActivity.viewed) {
+            try {
+                await TaskAPI.markActivityAsViewed(taskActivity.id);
+            } catch (error) {
+                console.error('Failed to mark activity as viewed:', error);
+            }
+        }
+    }), [taskActivity]);
     
     return (
         <PopupModalLayout 
