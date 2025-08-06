@@ -16,7 +16,14 @@ type TaskCardProps = {
 const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
     const { currentUser } = useUserStore();
     const { activeTask } = useContext(ActiveTaskContext);
-    const { updateSearchParams } = useCustomSearchParams();
+    const { 
+        searchParams, 
+        updateSearchParams, 
+        removeSearchParams 
+    } = useCustomSearchParams();
+    const viewedTaskActivity = searchParams.get("viewedTaskActivity");
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+
     const task = useMemo(() => {
         if (activeTask && active) {
             return activeTask;
@@ -25,10 +32,10 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
         }
     }, [active, activeTask, defaultTask]);
 
-    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
-    const [hasBeenClicked, setHasBeenClicked] = useState(false);
-    const taskActivitiesCount = task._count?.taskActivities || 0;
-    const totalNotifications = hasBeenClicked ? 0 : taskActivitiesCount + unreadMessagesCount;
+    const [unseenTaskActivities, setUnseenTaskActivities] = useState(
+        task._count?.taskActivities || 0
+    );
+    const totalNotifications = unseenTaskActivities + unreadMessagesCount;
 
     // Listen to unread messages count
     useEffect(() => {
@@ -43,6 +50,14 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
         return () => unsubscribe();
     }, [task, currentUser?.userId]);
 
+    useEffect(() => {
+        if (!viewedTaskActivity) return;
+
+        setUnseenTaskActivities(prev => prev - 1);
+        removeSearchParams("viewedTaskActivity");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [viewedTaskActivity]);
+
     const handleClick = async () => {
         if (unreadMessagesCount > 0) {
             updateSearchParams({ 
@@ -52,9 +67,6 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
         } else {
             updateSearchParams({ taskId: task.id }, true);
         }
-
-        setHasBeenClicked(true);
-        setUnreadMessagesCount(0);
     };
 
     return (
@@ -83,7 +95,7 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
                 )}
                 <div className="w-fit ml-auto text-body-medium font-bold flex items-center gap-[5px]">
                     <p className="text-primary-400 whitespace-nowrap">{moneyFormat(task.bounty)} USDC</p>
-                    {totalNotifications > 0 && (
+                    {!active && totalNotifications > 0 && (
                         <span className="px-[5px] text-body-tiny text-dark-500 bg-primary-100">
                             {totalNotifications}
                         </span>

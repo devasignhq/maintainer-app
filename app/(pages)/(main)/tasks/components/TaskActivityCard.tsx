@@ -4,6 +4,7 @@ import { FaChevronRight } from "react-icons/fa6";
 import ReviewSubmissionModal from "../modals/ReviewSubmissionModal";
 import ReviewTaskApplicationModal from "../modals/ReviewTaskApplicationModal";
 import { useState } from "react";
+import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type TaskActivityCardProps = {
     activity: TaskActivity;
@@ -15,11 +16,11 @@ const TaskActivityCard = ({
     issueNumber,
 }: TaskActivityCardProps) => {
     const [viewed, setViewed] = useState(activity.viewed);
+    const { updateSearchParams } = useCustomSearchParams();
     const [openReviewSubmissionModal, { toggle: toggleReviewSubmissionModal }] = useToggle(false);
     const [openReviewTaskApplicationModal, { toggle: toggleReviewTaskApplicationModal }] = useToggle(false);
     
-    return (
-        <>
+    return (<>
         <div 
             onClick={() => {
                 if (activity.taskSubmissionId) {
@@ -27,7 +28,11 @@ const TaskActivityCard = ({
                 } else {
                     toggleReviewTaskApplicationModal();
                 }
-                setViewed(true);
+
+                if (!viewed) {
+                    updateSearchParams({ viewedTaskActivity: true });
+                    setViewed(true);
+                }
             }}
             role="button"
             className={`w-full p-2.5 border border-primary-200 bg-dark-400 cursor-pointer flex 
@@ -62,8 +67,7 @@ const TaskActivityCard = ({
                 toggleModal={toggleReviewTaskApplicationModal} 
             />
         )}
-        </>
-    );
+    </>);
 }
  
 export default TaskActivityCard;
