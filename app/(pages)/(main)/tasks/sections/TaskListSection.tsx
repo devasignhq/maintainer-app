@@ -234,19 +234,17 @@ const TaskListSection = () => {
                     </div>
                 </div>
                 <div className="grow pr-5 pb-5 overflow-y-auto space-y-[15px]">
-                    {loadingTasks ? (
+                    {installationTasks?.list?.map((task) => (
+                        <TaskCard
+                            key={task.id}
+                            task={task}
+                            active={(activeTask?.id || searchParams.get("taskId")) === task.id}
+                        />
+                    ))}
+                    {(loadingTasks && installationTasks?.list && installationTasks.list.length < 1) && (
                         <div className="flex justify-center py-4">
                             <span className="text-body-medium text-light-100">Loading tasks...</span>
                         </div>
-                    ):(
-                        installationTasks?.list?.map((task) => (
-                            <TaskCard
-                                key={task.id}
-                                task={task}
-                                active={(activeTask?.id || searchParams.get("taskId")) === task.id}
-                                onClick={() => updateSearchParams({ taskId: task.id })}
-                            />
-                        ))
                     )}
                     {(installationTasks?.list && installationTasks.list.length < 1 && !loadingTasks) && (
                         <div className="flex justify-center py-4">

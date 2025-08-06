@@ -1,34 +1,72 @@
 "use client";
 import { TaskDto } from "@/app/models/task.model";
 import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState, useEffect } from "react";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
+import { MessageAPI } from "@/app/services/message.service";
+import useUserStore from "@/app/state-management/useUserStore";
+import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type TaskCardProps = {
     task: TaskDto;
-    active?: boolean;
-    onClick?: () => void;
+    active: boolean;
 };
 
 // ? Place issue number beside repo name
-const TaskCard = ({ task: defaultTask, active, onClick }: TaskCardProps) => {
+const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
+    const { currentUser } = useUserStore();
     const { activeTask } = useContext(ActiveTaskContext);
+    const { updateSearchParams } = useCustomSearchParams();
     const task = useMemo(() => {
         if (activeTask && active) {
             return activeTask;
         } else {
             return defaultTask;
         }
-    }, [active, activeTask, defaultTask])
-    
+    }, [active, activeTask, defaultTask]);
+
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+    const [hasBeenClicked, setHasBeenClicked] = useState(false);
+    const taskActivitiesCount = task._count?.taskActivities || 0;
+    const totalNotifications = hasBeenClicked ? 0 : taskActivitiesCount + unreadMessagesCount;
+
+    // Listen to unread messages count
+    useEffect(() => {
+        if (!currentUser?.userId || !task.id || !task.contributorId) return;
+
+        const unsubscribe = MessageAPI.listenToUnreadMessagesCount(
+            task.id,
+            currentUser.userId,
+            (count) => setUnreadMessagesCount(count)
+        );
+
+        return () => unsubscribe();
+    }, [task, currentUser?.userId]);
+
+    const handleClick = async () => {
+        if (unreadMessagesCount > 0) {
+            updateSearchParams({ 
+                taskId: task.id, 
+                unread: unreadMessagesCount 
+            });
+        } else {
+            updateSearchParams({ taskId: task.id }, true);
+        }
+
+        setHasBeenClicked(true);
+        setUnreadMessagesCount(0);
+    };
+
     return (
-        <div 
-            onClick={onClick}
+        <div
+            onClick={handleClick}
             role="button"
             className={`w-full p-[15px] border space-y-2.5 cursor-pointer 
-                ${active 
-                    ? "bg-dark-400 border-light-100" 
-                    : "border-primary-200 hover:border-dark-200 hover:bg-dark-400"}
+                ${active
+                    ? "bg-dark-400 border-light-100"
+                    : totalNotifications > 0
+                        ? "border-primary-100 hover:border-dark-200 hover:bg-dark-400"
+                        : "border-primary-200 hover:border-dark-200 hover:bg-dark-400"}
             `}
         >
             <div className="flex items-center gap-1.5">
@@ -37,21 +75,28 @@ const TaskCard = ({ task: defaultTask, active, onClick }: TaskCardProps) => {
                     <p className="py-0.5 px-[7px] bg-primary-300 text-body-tiny font-bold text-light-200 truncate">
                         {task.issue.labels
                             .map(label => label.name)
-                            .map((name, index, array) => 
+                            .map((name, index, array) =>
                                 index === array.length - 1 ? name : `${name}, `
                             )
                             .join('')}
                     </p>
                 )}
-                <p className="text-body-medium text-primary-400 font-bold ml-auto whitespace-nowrap">{moneyFormat(task.bounty)} USDC</p>
+                <div className="w-fit ml-auto text-body-medium font-bold flex items-center gap-[5px]">
+                    <p className="text-primary-400 whitespace-nowrap">{moneyFormat(task.bounty)} USDC</p>
+                    {totalNotifications > 0 && (
+                        <span className="px-[5px] text-body-tiny text-dark-500 bg-primary-100">
+                            {totalNotifications}
+                        </span>
+                    )}
+                </div>
             </div>
-            <p 
+            <p
                 className="text-body-medium text-light-100 overflow-hidden leading-5"
                 style={{
                     display: '-webkit-box',
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical',
-                    maxHeight: '2.5rem', 
+                    maxHeight: '2.5rem',
                     lineHeight: '1.25rem'
                 }}
             >
@@ -70,5 +115,5 @@ const TaskCard = ({ task: defaultTask, active, onClick }: TaskCardProps) => {
         </div>
     );
 }
- 
+
 export default TaskCard;
