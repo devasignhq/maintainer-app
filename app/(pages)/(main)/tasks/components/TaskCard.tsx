@@ -1,7 +1,7 @@
 "use client";
 import { TaskDto } from "@/app/models/task.model";
 import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
-import { useContext, useMemo, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { MessageAPI } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
@@ -21,15 +21,14 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
         removeSearchParams 
     } = useCustomSearchParams();
     const viewedTaskActivity = searchParams.get("viewedTaskActivity");
+    const [task, setTask] = useState(defaultTask);
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
-    const task = useMemo(() => {
-        if (activeTask && active) {
-            return activeTask;
-        } else {
-            return defaultTask;
-        }
-    }, [active, activeTask, defaultTask]);
+    useEffect(() => {
+        if (activeTask?.id !== task.id) return;
+
+        setTask(prev => ({ ...prev, ...activeTask! }));
+    }, [activeTask, task.id]);
 
     const [unseenTaskActivities, setUnseenTaskActivities] = useState(
         task._count?.taskActivities || 0
