@@ -41,7 +41,12 @@ export default function MainLayout({
                 if (!response) return;
                 
                 setInstallationList(response.data);
-                if (!activeInstallation) setActiveInstallation(response.data[0]);
+                if (!activeInstallation) {
+                    setActiveInstallation(response.data[0]);
+                } else {
+                    const mostRecentData = response.data.find(ins => ins.id === activeInstallation.id);
+                    setActiveInstallation(mostRecentData!);
+                }
             }
         }
     );
