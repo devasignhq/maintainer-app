@@ -54,9 +54,9 @@
     </a>
   </div>
 
-## What This App Does
+## DevAsign Maintainer App
 
-The DevAsign Maintainer App is the frontend interface for project maintainers to:
+DevAsign Maintainer App empowers open-source project maintainers to:
 
 - **Create & Manage Bounties**: Install DevAsign app on project repo. Add bounties to issues/tasks.
 - **Monitor AI Reviews**: Oversee AI-powered pull request analysis and merge decisions.
