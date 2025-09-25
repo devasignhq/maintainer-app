@@ -36,10 +36,7 @@
 
 
 <div align="center">
-  DevAsign helps open-source project maintainers spend more time building great software and less time on administrative tasks. 
   
-  Uses AI to review PRs - filtering out low-quality submissions; Provides intelligent feedback helping developers improve their code before maintainer review; Handles bounty payouts when code gets merged.
-
   **Join our stargazers :)** 
 
   <a href="https://github.com/devasignhq/maintainer-app">
@@ -63,6 +60,7 @@ The DevAsign Maintainer App is the frontend interface for project maintainers to
 
 - **Create & Manage Bounties**: Install DevAsign app on project repo. Add bounties to issues/tasks.
 - **Monitor AI Reviews**: Oversee AI-powered pull request analysis and merge decisions.
+- **Contributor Feedback**: Automatically generate and send contributor feedback based on PR review.
 - **Track Contributors**: View contributor activity and reputation scores.
 - **Manage Payments**: Process bounty payments on-chain through the Stellar blockchain network.
 - **Configure Workflows**: Set up project-specific rules and automated approval thresholds.
