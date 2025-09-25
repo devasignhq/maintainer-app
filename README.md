@@ -4,7 +4,7 @@
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="./public/devasign-white.png">
       <source media="(prefers-color-scheme: light)" srcset="./public/devasign-black.png">
-      <img alt="DevAsign Logo" src="./public/devasign-white.png" height="120" style="display: block; margin: 0 auto;">
+      <img alt="DevAsign Logo" src="./public/devasign-white.png" height="80" style="display: block; margin: 0 auto;">
     </picture>
   </a>
 <br/>
