@@ -35,7 +35,6 @@
 </div>
 
 
-<br/>
 <div align="center">
   DevAsign helps open-source project maintainers spend more time building great software and less time on administrative tasks. 
   
