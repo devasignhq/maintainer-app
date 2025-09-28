@@ -156,9 +156,9 @@ npm run dev
 
 DevAsign is open-source software licensed under the Apache 2.0 License. See [LICENSE](https://github.com/devasignhq/app.devasign.com/blob/main/LICENSE) for more details.
 
-## Repo Activity
+<!-- ## Repo Activity
 
-<img width="100%" src="https://repobeats.axiom.co/api/embed/e2500bf3a23067a94775239ab9da53e1f04a16b8.svg" />
+<img width="100%" src="https://repobeats.axiom.co/api/embed/e2500bf3a23067a94775239ab9da53e1f04a16b8.svg" /> -->
 
 ## Related Projects
 
