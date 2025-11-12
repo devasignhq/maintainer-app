@@ -3,7 +3,6 @@ const preset = {
     INSTALLATION: "/installations",
     TASK: "/tasks",
     WALLET: "/wallet",
-    GITHUB: "/github",
 };
 
 export const ENDPOINTS = {
@@ -23,6 +22,11 @@ export const ENDPOINTS = {
         ADD_TEAM_MEMBER: preset.INSTALLATION + "/{installationId}/team",
         UPDATE_TEAM_MEMBER: preset.INSTALLATION + "/{installationId}/team/{userId}",
         REMOVE_TEAM_MEMBER: preset.INSTALLATION + "/{installationId}/team/{userId}",
+        
+        GET_INSTALLATION_REPOSITORIES: preset.INSTALLATION + "/github/{installationId}/repositories",
+        GET_REPOSITORY_ISSUES: preset.INSTALLATION + "/github/{installationId}/issues",
+        GET_REPOSITORY_RESOURCES: preset.INSTALLATION + "/github/{installationId}/resources",
+        SET_BOUNTY_LABEL: preset.INSTALLATION + "/github/{installationId}/set-bounty-label",
     },
     TASK: {
         GET_ALL: preset.TASK + "",
@@ -55,11 +59,5 @@ export const ENDPOINTS = {
         SWAP: preset.WALLET + "/swap",
         TRANSACTIONS: preset.WALLET + "/transactions",
         RECORD_WALLET_TOPUPS: preset.WALLET + "/transactions/record-topups",
-    },
-    GITHUB: {
-        GET_INSTALLATION_REPOSITORIES: preset.GITHUB + "/installations/{installationId}/repositories",
-        GET_REPOSITORY_ISSUES: preset.GITHUB + "/installations/{installationId}/issues",
-        GET_REPOSITORY_RESOURCES: preset.GITHUB + "/installations/{installationId}/resources",
-        SET_BOUNTY_LABEL: preset.GITHUB + "/installations/{installationId}/set-bounty-label",
     },
 };

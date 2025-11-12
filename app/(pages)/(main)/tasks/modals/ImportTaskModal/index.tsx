@@ -22,8 +22,8 @@ import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
 import { openInNewTab } from "@/app/utils/helper";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
-import { GitHubAPI } from "@/app/services/github.service";
 import SearchBox from "../../components/SearchBox";
+import { InstallationAPI } from "@/app/services/installation.service";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -99,7 +99,7 @@ const ImportTaskModal = ({
             if (validBountyLabel.get(repo.id)) return;
 
             try {
-                const response = await GitHubAPI.getOrCreateBountyLabel(
+                const response = await InstallationAPI.getOrCreateBountyLabel(
                     activeInstallation.id,
                     repo.id
                 );
@@ -136,7 +136,7 @@ const ImportTaskModal = ({
                 return { list: [], hasMore: false };
             }
 
-            const { issues, hasMore } = await GitHubAPI.getRepositoryIssues(
+            const { issues, hasMore } = await InstallationAPI.getRepositoryIssues(
                 activeInstallation.id,
                 {
                     repoUrl: activeRepo.url,
@@ -160,7 +160,7 @@ const ImportTaskModal = ({
             if (!activeRepo || !activeInstallation) {
                 return delayedEmptyResources();
             }
-            return GitHubAPI.getRepositoryResources(
+            return InstallationAPI.getRepositoryResources(
                 activeInstallation.id,
                 activeRepo.url
             ) as Promise<GetRepositoryResourcesResponse>;

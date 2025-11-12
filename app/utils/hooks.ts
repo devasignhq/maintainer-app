@@ -11,7 +11,7 @@ import useUserStore from "../state-management/useUserStore";
 import useInstallationStore from "../state-management/useInstallationStore";
 import useTaskStore from "../state-management/useTaskStore";
 import { RepositoryDto } from "../models/github.model";
-import { GitHubAPI } from "../services/github.service";
+import { InstallationAPI } from "../services/installation.service";
 
 export function useCustomSearchParams() {
     const router = useRouter();
@@ -102,7 +102,7 @@ export function useGetInstallationRepositories() {
         setLoading(true);
 
         try {
-            const response = await GitHubAPI.getInstallationRepositories(
+            const response = await InstallationAPI.getInstallationRepositories(
                 activeInstallation.id
             );
 

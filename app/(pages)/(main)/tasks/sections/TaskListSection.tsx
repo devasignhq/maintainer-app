@@ -12,10 +12,10 @@ import { TaskAPI } from "@/app/services/task.service";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/utils/hooks";
 import { GetRepositoryResourcesResponse } from "@/app/models/github.model";
-import { GitHubAPI } from "@/app/services/github.service";
 import SearchBox from "../components/SearchBox";
 import { PaginationResponse } from "@/app/models/_global";
 import { enumToStringConverter } from "@/app/utils/helper";
+import { InstallationAPI } from "@/app/services/installation.service";
 
 // ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
@@ -111,7 +111,7 @@ const TaskListSection = () => {
         run: fetchRepoResources
     } = useRequest<GetRepositoryResourcesResponse, any>(
         () => {
-            return GitHubAPI.getRepositoryResources(
+            return InstallationAPI.getRepositoryResources(
                 activeInstallation!.id,
                 taskFilters.repoUrl!
             ) as Promise<GetRepositoryResourcesResponse>;

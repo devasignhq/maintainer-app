@@ -40,6 +40,7 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                     (updatedMessages: MessageDto[]) => {
                         if (updatedMessages.length > 0) {
                             setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
+                            console.count("listenToTaskMessages")
                         }
                     }
                 );
@@ -50,6 +51,7 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                     (updatedMessages: MessageDto[]) => {
                         if (updatedMessages.length > 0) {
                             setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
+                            console.count("listenToExtensionReplies")
                         }
                     }
                 );
