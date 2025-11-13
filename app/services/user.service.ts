@@ -4,7 +4,8 @@ import {
     AddressBook,
     QueryUserDto,
     UserDto,
-    UserPayloadDto 
+    CreateUserPayloadDto, 
+    UpdateUserPayloadDto
 } from "../models/user.model";
 
 export class UserAPI {
@@ -12,12 +13,12 @@ export class UserAPI {
         return HttpClient.get<UserDto>(ENDPOINTS.USER.GET, { params: query });
     }
 
-    static async createUser(data: UserPayloadDto) {
+    static async createUser(data: CreateUserPayloadDto) {
         return HttpClient.post<UserDto>(
             ENDPOINTS.USER.CREATE, data, { params: { skipWallet: "true" } });
     }
 
-    static async updateUsername(data: UserPayloadDto) {
+    static async updateUsername(data: UpdateUserPayloadDto) {
         return HttpClient.patch<Pick<UserDto, "userId" | "username" | "updatedAt">>(
             ENDPOINTS.USER.UPDATE_USERNAME, data);
     }

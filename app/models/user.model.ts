@@ -41,8 +41,12 @@ export type ContributionSummary = {
     user?: Pick<UserDto, "username" | "userId" | "walletAddress" | "addressBook" | "createdAt" | "updatedAt">;
 }
 
-export type UserPayloadDto = {
-    gitHubUsername: string
+export type CreateUserPayloadDto = {
+    githubUsername: string
+}
+
+export type UpdateUserPayloadDto = {
+    newUsername: string
 }
 
 export type QueryUserDto = {

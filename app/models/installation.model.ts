@@ -51,7 +51,7 @@ export type UpdateInstallationDto = {
 
 export type AddTeamMemberDto = {
     username: string
-    email: string
+    email?: string
     permissionCodes: string[]
 }
 
@@ -62,6 +62,7 @@ export type UpdateTeamMemberDto = {
 export type QueryInstallationDto = {
     page?: string
     limit?: string
+    sort?: "asc" | "desc"
 }
 
 export type QueryInstallationIssues = {

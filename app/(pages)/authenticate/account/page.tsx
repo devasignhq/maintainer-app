@@ -25,7 +25,7 @@ const Account = () => {
     };
 
     const { loading: creatingUser, run: createUser } = useRequest(
-        useLockFn((gitHubUsername: string) => UserAPI.createUser({ gitHubUsername })),
+        useLockFn((githubUsername: string) => UserAPI.createUser({ githubUsername })),
         {
             manual: true,
             onSuccess: (data, params) => {
@@ -45,7 +45,7 @@ const Account = () => {
 
     const { loading: fetchingUser, run: getUser } = useRequest(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        useLockFn((gitHubUsername: string) => UserAPI.getUser({ view: "basic" })),
+        useLockFn((githubUsername: string) => UserAPI.getUser({ view: "basic" })),
         {
             manual: true,
             onSuccess: (data, params) => {
