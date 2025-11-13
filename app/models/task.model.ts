@@ -104,27 +104,14 @@ export type UpdateTaskTimelineDto = {
     newTimelineType: TimelineType
 }
 
-export type RequestTimelineExtensionDto = {
-    requestedTimeline: number 
-    timelineType: TimelineType
-    reason: string 
-    attachments?: string[]
-}
-
 export type ReplyTimelineExtensionRequestDto = {
     accept: boolean
     requestedTimeline: number 
     timelineType: TimelineType
 }
 
-export type MarkAsCompleteDto = {
-    pullRequest: string
-    attachmentUrl: string
-}
-
 export type QueryTaskDto = {
     status?: TaskStatus
-    installationId?: string
     detailed?: boolean
     page?: number
     limit?: number
