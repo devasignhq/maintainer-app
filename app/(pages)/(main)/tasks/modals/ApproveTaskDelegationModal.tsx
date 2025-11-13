@@ -7,7 +7,7 @@ import { useContext } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { toast } from 'react-toastify';
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
-import { formatDateTime } from "@/app/utils/helper";
+import { formatDateTime, handleApiError } from "@/app/utils/helper";
 import { TaskAPI } from "@/app/services/task.service";
 import { useRequest, useLockFn } from "ahooks";
 
@@ -19,25 +19,24 @@ type ApproveTaskDelegationModalProps = {
 
 const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: ApproveTaskDelegationModalProps) => {
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
-    
+
     const { loading: delegating, run: delegateTask } = useRequest(
-        useLockFn(() => TaskAPI.acceptTaskApplication(activeTask!.id, taskActivity.user!.userId)), 
+        useLockFn(() => TaskAPI.acceptTaskApplication(activeTask!.id, taskActivity.user!.userId)),
         {
             manual: true,
             onSuccess: (data) => {
                 toast.success("Task delegated successfully.");
                 if (data) {
-                    setActiveTask({ ...activeTask!, ...data})
+                    setActiveTask({ ...activeTask!, ...data })
                 }
                 toggleModal();
                 onSuccess();
             },
-            onError: (error: any) => {
-                if (error?.error?.message) {
-                    toast.error(error.error.message);
-                    return
-                }
-                toast.error("Failed to delegate task. Please try again.");
+            onError: (error) => {
+                handleApiError(
+                    error,
+                    "Failed to delegate task. Please try again."
+                );
             }
         }
     );
@@ -71,7 +70,7 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
                 </div>
             </div>
             <p className="my-5 text-body-medium text-dark-100">
-                Once you click “<span className="font-bold">Yes, Delegate Task,</span>” the task/issue will be 
+                Once you click “<span className="font-bold">Yes, Delegate Task,</span>” the task/issue will be
                 delegated to this developer and you can’t assign it to another developer till the timeline elapses.
             </p>
             <div className="flex gap-2.5">
@@ -96,5 +95,5 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
         </PopupModalLayout>
     );
 }
- 
+
 export default ApproveTaskDelegationModal;

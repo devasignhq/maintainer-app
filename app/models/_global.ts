@@ -16,11 +16,11 @@ export type ItemWithPaginationResponse<F extends string | number | symbol, T> = 
 }
 
 export type ErrorResponse = {
-    error: {
-        name: string
-        message: string
-        details?: never
-    }
+    name: string
+    code: string
+    message: string
+    details?: unknown
+    status: number
 }
 
 export type PartialSuccessResponse<F extends string | number | symbol, T> = {

@@ -5,7 +5,7 @@ import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { SiStellar } from "react-icons/si";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import { useXLMUSDCFromStellarDEX } from "@/app/services/horizon.service";
-import { moneyFormat } from "@/app/utils/helper";
+import { handleApiError, moneyFormat } from "@/app/utils/helper";
 import { object, string } from 'yup';
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useFormik } from "formik";
@@ -13,7 +13,6 @@ import MoneyInput from "@/app/components/Input/MoneyInput";
 import { useEffect, useState } from "react";
 import { WalletAPI } from "@/app/services/wallet.service";
 import { toast } from "react-toastify";
-import { ErrorResponse } from "@/app/models/_global";
 
 const withdrawAssetSchema = object({
     amount: string().required("Required"),
@@ -29,7 +28,7 @@ type WithdrawAssetModalProps = {
 const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: WithdrawAssetModalProps) => {
     const { activeInstallation } = useInstallationStore();
     const [amountInUsdc, setAmountInUsdc] = useState("");
-            
+
     const formik = useFormik({
         initialValues: {
             amount: "",
@@ -56,20 +55,18 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                 toast.success("Asset withdrawn successfully.");
                 reloadTransactions();
                 toggleModal();
-            } catch (err) {
-                const error = err as unknown as ErrorResponse;
-                if (error.error.message) {
-                    toast.error(error.error.message);
-                    return
-                }
-                toast.error("An error occured while withdrawing asset. Please try again.");
+            } catch (error) {
+                handleApiError(
+                    error,
+                    "An error occured while withdrawing asset. Please try again."
+                );
             }
         },
     });
 
-    const { 
-        xlmPriceInUsdc, 
-        isLoading: priceLoading 
+    const {
+        xlmPriceInUsdc,
+        isLoading: priceLoading
     } = useXLMUSDCFromStellarDEX(10000, formik.isSubmitting);
 
     useEffect(() => {
@@ -78,7 +75,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
         const formattedAmount = formik.values.amount.replace(/,/g, '');
         setAmountInUsdc(moneyFormat(parseFloat(formattedAmount) * parseFloat(xlmPriceInUsdc)));
     }, [formik.values.amount, xlmPriceInUsdc]);
-    
+
     return (
         <PopupModalLayout title="Withdraw Asset" toggleModal={toggleModal}>
             <section className="my-[30px] space-y-[5px]">
@@ -97,7 +94,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                         }>
                             <SiStellar className="text-2xl text-dark-100 mr-3" />
                             <span>XLM</span>
-                            <MoneyInput 
+                            <MoneyInput
                                 attributes={{
                                     id: "amount",
                                     name: "amount",
@@ -117,8 +114,8 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                     </div>
                     <div className="w-full space-y-[5px]">
                         <label htmlFor="" className="text-body-tiny font-bold text-light-100">Stellar Wallet Address</label>
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             id="walletAddress"
                             name="walletAddress"
                             placeholder="Enter wallet address"
@@ -157,7 +154,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                     format="SOLID"
                     text={formik.isSubmitting ? "Withdrawing..." : "Withdraw"}
                     sideItem={<FiArrowDownRight />}
-                    attributes={{ 
+                    attributes={{
                         type: "submit",
                         disabled: formik.isSubmitting,
                     }}
@@ -167,5 +164,5 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
         </PopupModalLayout>
     );
 }
- 
+
 export default WithdrawAssetModal;

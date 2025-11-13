@@ -63,12 +63,12 @@ const Account = () => {
             },
             onError: (err, params) => {
                 const error = err as unknown as ErrorResponse;
-                if (error.error.name === "NotFoundError") {
+                if (error.name === "NOT_FOUND") {
                     createUser(params[0]);
                     return
                 }
-                if (error.error.message) {
-                    toast.error(error.error.message);
+                if (error.message) {
+                    toast.error(error.message);
                     return
                 }
                 toast.error("Failed to fetch user.");

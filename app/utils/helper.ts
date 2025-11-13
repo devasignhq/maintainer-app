@@ -120,8 +120,8 @@ export const openInNewTab = (url: string) => {
 
 export const handleApiError = (err: any, altMessage: string) => {
     const error = err as unknown as ErrorResponse;
-    if (error.error.message) {
-        toast.error(error.error.message);
+    if (error.message) {
+        toast.error(error.message);
         return
     }
     toast.error(altMessage);

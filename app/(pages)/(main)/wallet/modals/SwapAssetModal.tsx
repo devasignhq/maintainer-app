@@ -10,9 +10,8 @@ import { useFormik } from "formik";
 import MoneyInput from "@/app/components/Input/MoneyInput";
 import { WalletAPI } from "@/app/services/wallet.service";
 import { toast } from "react-toastify";
-import { ErrorResponse } from "@/app/models/_global";
 import { useXLMUSDCFromStellarDEX } from "@/app/services/horizon.service";
-import { moneyFormat } from "@/app/utils/helper";
+import { handleApiError, moneyFormat } from "@/app/utils/helper";
 
 const swapAssetSchema = object({
     fromAmount: string().required("Required"),
@@ -35,7 +34,7 @@ const SwapAssetModal = ({
     reloadTransactions
 }: SwapAssetModalProps) => {
     const { activeInstallation } = useInstallationStore();
-            
+
     const formik = useFormik({
         initialValues: {
             fromAmount: "",
@@ -69,13 +68,11 @@ const SwapAssetModal = ({
                 toast.success("Asset swapped successfully.");
                 reloadTransactions();
                 toggleModal();
-            } catch (err) {
-                const error = err as unknown as ErrorResponse;
-                if (error.error.message) {
-                    toast.error(error.error.message);
-                    return;
-                }
-                toast.error("An error occured while swapping asset. Please try again.");
+            } catch (error) {
+                handleApiError(
+                    error,
+                    "An error occured while swapping asset. Please try again."
+                );
             }
         },
     });
@@ -117,7 +114,7 @@ const SwapAssetModal = ({
     return (
         <PopupModalLayout title="Swap Asset" toggleModal={toggleModal}>
             <p className="mt-2.5 text-body-medium text-dark-100">
-                Swap tokens across the same project wallet. USDC is used to fund 
+                Swap tokens across the same project wallet. USDC is used to fund
                 task bounties, while XLM is for top-up and withdrawal.
             </p>
             <form className="w-full" onSubmit={formik.handleSubmit}>
@@ -130,7 +127,7 @@ const SwapAssetModal = ({
                             }>
                                 <SiStellar className="text-2xl text-dark-100 mr-3" />
                                 <span>XLM</span>
-                                <MoneyInput 
+                                <MoneyInput
                                     attributes={{
                                         id: "fromAmount",
                                         name: "fromAmount",
@@ -156,15 +153,15 @@ const SwapAssetModal = ({
                             <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
                                 flex items-center ${formik.submitCount > 0 && formik.errors.toAmount && "border-indicator-500"}`
                             }>
-                                <Image 
-                                    src="/usdc.svg" 
-                                    alt="$" 
+                                <Image
+                                    src="/usdc.svg"
+                                    alt="$"
                                     width={31.9992}
                                     height={31.9992}
-                                    className="mr-3" 
+                                    className="mr-3"
                                 />
                                 <span>USDC</span>
-                                <MoneyInput 
+                                <MoneyInput
                                     attributes={{
                                         id: "toAmount",
                                         name: "toAmount",
@@ -192,15 +189,15 @@ const SwapAssetModal = ({
                             <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
                                 flex items-center ${formik.submitCount > 0 && formik.errors.fromAmount && "border-indicator-500"}`
                             }>
-                                <Image 
-                                    src="/usdc.svg" 
-                                    alt="$" 
+                                <Image
+                                    src="/usdc.svg"
+                                    alt="$"
                                     width={31.9992}
                                     height={31.9992}
-                                    className="mr-3" 
+                                    className="mr-3"
                                 />
                                 <span>USDC</span>
-                                <MoneyInput 
+                                <MoneyInput
                                     attributes={{
                                         id: "fromAmount",
                                         name: "fromAmount",
@@ -228,7 +225,7 @@ const SwapAssetModal = ({
                             }>
                                 <SiStellar className="text-2xl text-dark-100 mr-3" />
                                 <span>XLM</span>
-                                <MoneyInput 
+                                <MoneyInput
                                     attributes={{
                                         id: "toAmount",
                                         name: "toAmount",
@@ -264,5 +261,5 @@ const SwapAssetModal = ({
         </PopupModalLayout>
     );
 }
- 
+
 export default SwapAssetModal;
