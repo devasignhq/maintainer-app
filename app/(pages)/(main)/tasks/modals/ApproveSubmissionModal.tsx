@@ -3,7 +3,7 @@ import ButtonPrimary from "@/app/components/ButtonPrimary";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { TaskActivity } from "@/app/models/task.model";
 import { TaskAPI } from "@/app/services/task.service";
-import { formatDateTime } from "@/app/utils/helper";
+import { formatDateTime, handleApiError } from "@/app/utils/helper";
 import { useRequest, useLockFn } from "ahooks";
 import Link from "next/link";
 import { useContext } from "react";
@@ -38,12 +38,11 @@ const ApproveSubmissionModal = ({ taskActivity, toggleModal, onSuccess }: Approv
                 toggleModal();
                 onSuccess();
             },
-            onError: (error: any) => {
-                if (error?.error?.message) {
-                    toast.error(error.error.message);
-                    return
-                }
-                toast.error("Failed to approve task submission. Please try again.");
+            onError: (error) => {
+                handleApiError(
+                    error,
+                    "Failed to approve task submission. Please try again."
+                );
             }
         }
     );

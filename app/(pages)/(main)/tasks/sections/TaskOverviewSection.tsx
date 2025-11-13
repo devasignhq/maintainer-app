@@ -78,7 +78,7 @@ const TaskOverviewSection = () => {
                         <p className="text-body-tiny text-light-100">Bounty</p>
                         <div className="flex items-center gap-1">
                             <p className="text-body-large text-light-200">{moneyFormat(activeTask?.bounty || "")} USDC</p>
-                            {(activeTask?.status === "OPEN" && activeTask?._count?.taskActivities && activeTask._count?.taskActivities < 1) ? (
+                            {(activeTask?.status === "OPEN" && activeTask?._count && activeTask._count.taskActivities < 1) ? (
                                 <button onClick={toggleSetTaskBountyModal}>
                                     <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
                                 </button>
@@ -92,7 +92,7 @@ const TaskOverviewSection = () => {
                                 <p className="text-body-large text-light-200">
                                     {formatTimeline(activeTask!)}
                                 </p>
-                                {(activeTask._count?.taskActivities && activeTask._count?.taskActivities < 1) ? (
+                                {(activeTask._count && activeTask._count?.taskActivities < 1) ? (
                                     <button onClick={toggleSetTaskTimelineModal}>
                                         <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
                                     </button>

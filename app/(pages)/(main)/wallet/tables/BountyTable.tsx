@@ -3,7 +3,6 @@ import Link from "next/link";
 import { TransactionDto } from "@/app/models/wallet.model";
 import { formatDateTime, moneyFormat } from "@/app/utils/helper";
 import { ROUTES } from "@/app/utils/data";
-import useInstallationStore from "@/app/state-management/useInstallationStore";
 
 type BountyTableProps = {
     data: TransactionDto[];
@@ -20,8 +19,6 @@ const BountyTable = ({
     noMore,
     loadMore
 }: BountyTableProps) => {
-    const { activeInstallation } = useInstallationStore();
-
     return (
         <>
             <thead>
@@ -50,7 +47,7 @@ const BountyTable = ({
                         </td>
                         <td className="w-[33%] text-light-200 underline">
                             <Link 
-                                href={`https://stellar.expert/explorer/testnet/account/${activeInstallation?.walletAddress}/transactions/${transaction.txHash}`} 
+                                href={`https://stellar.expert/explorer/testnet/tx/${transaction.txHash}`} 
                                 target="_blank"
                             >
                                 {transaction.txHash}
