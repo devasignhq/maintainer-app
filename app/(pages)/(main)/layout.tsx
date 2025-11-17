@@ -9,7 +9,7 @@ import { FaCheck } from "react-icons/fa6";
 import { useCustomSearchParams, usePopup } from "@/app/utils/hooks";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { InstallationAPI } from "@/app/services/installation.service";
-import { useRequest, useLockFn } from "ahooks";
+import { useRequest } from "ahooks";
 import { TbLogout } from "react-icons/tb";
 import { useLogoutUser } from "@/lib/firebase";
 import { FiSettings } from "react-icons/fi";
@@ -33,7 +33,7 @@ export default function MainLayout({
     } = useInstallationStore();
 
     const { loading: fetchingInstallations } = useRequest(
-        useLockFn(() => InstallationAPI.getInstallations()), 
+        () => InstallationAPI.getInstallations(),
         {
             retryCount: 2,
             cacheKey: "installation-list",
