@@ -21,7 +21,9 @@ type TaskPayload = {
 
 const createTaskSchema = object({
     bounty: string().required("Required"),
-    timeline: number().required("Required"),
+    timeline: number().required("Required")
+        .min(1, "Minimum: 1")
+        .max(99, "Maximum: 99"),
     timelineType: string().required("Required"),
 });
 
@@ -166,7 +168,7 @@ const CreateTaskCard = ({
                                 id="timeline"
                                 name="timeline"
                                 type="number"
-                                placeholder="0"
+                                placeholder="1-99"
                                 step="1"
                                 className={`w-[80px] h-[40px] py-[7px] px-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100 
                                     ${formik.touched.timeline && formik.errors.timeline && "border-indicator-500"}`
