@@ -21,10 +21,11 @@ export type MessageMetadata = {
     responded?: boolean
 }
 
-export enum MessageType {
-    GENERAL,
-    TIMELINE_MODIFICATION
+export const MESSAGE_TYPE = {
+  GENERAL: 'GENERAL',
+  TIMELINE_MODIFICATION: 'TIMELINE_MODIFICATION'
 }
+export type MessageType = keyof typeof MESSAGE_TYPE
 
 export type CreateMessageDto = {
     userId: string;

@@ -125,3 +125,5 @@ export function useEffectOnce(effect: EffectCallback, deps?: DependencyList) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, deps);
 };
+
+// export function useAsyncEffectOnce

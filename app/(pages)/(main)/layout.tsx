@@ -156,8 +156,8 @@ export default function MainLayout({
                     </button>
                 </div>
             </section>
-            {!currentPath.includes(ROUTES.ONBOARDING) && (
-                <nav className="w-full flex items-center gap-[15px] border-b border-dark-200 text-title-large text-dark-200 mt-[15px]">
+            {!currentPath.includes(ROUTES.ONBOARDING) && (<>
+                <nav className="w-full flex items-center gap-[15px] text-title-large text-dark-200 mt-[15px]">
                     {navItems.map((item) => (
                         <Link
                             key={item.name}
@@ -172,7 +172,8 @@ export default function MainLayout({
                         </Link>
                     ))}
                 </nav>
-            )}
+                <hr className="h-[0.5px] w-full text-dark-200" />
+            </>)}
               
             {children}
         </main>

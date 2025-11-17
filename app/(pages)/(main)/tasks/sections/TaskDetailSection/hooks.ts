@@ -3,6 +3,7 @@ import { MessageAPI } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useEffectOnce } from "@/app/utils/hooks";
+import { useLockFn } from "ahooks";
 
 export interface GroupedMessages {
     [dateLabel: string]: MessageDto[];
@@ -21,6 +22,15 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
         return getOrderedDateLabels(groupedMessages)
     }, [groupedMessages]);
 
+    const updateMessage = useLockFn(async (newMessages: MessageDto[]) => {
+        const update = new Promise((resolve) => {
+            setMessages(prev => [...prev, newMessages[newMessages.length - 1]]);
+            setTimeout(() => resolve(null), 2500);
+        });
+
+        await update;
+    });
+
     useEffectOnce(() => {
         if (!taskId || !contributorId || !currentUser) return;
 
@@ -37,10 +47,9 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                     taskId, 
                     contributorId, 
                     (getLastUserMessage(initialMessages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
-                    (updatedMessages: MessageDto[]) => {
+                    async (updatedMessages: MessageDto[]) => {
                         if (updatedMessages.length > 0) {
-                            setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
-                            console.count("listenToTaskMessages")
+                            await updateMessage(updatedMessages);
                         }
                     }
                 );
@@ -48,10 +57,9 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                     taskId, 
                     currentUser.userId, 
                     (getLastUserMessage(initialMessages, currentUser.userId)?.createdAt)?.toDate().toISOString() || "",
-                    (updatedMessages: MessageDto[]) => {
+                    async (updatedMessages: MessageDto[]) => {
                         if (updatedMessages.length > 0) {
-                            setMessages(prev => [...prev, updatedMessages[updatedMessages.length - 1]]);
-                            console.count("listenToExtensionReplies")
+                            await updateMessage(updatedMessages);
                         }
                     }
                 );

@@ -2,7 +2,7 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
-import { MessageDto, MessageType } from "@/app/models/message.model";
+import { MessageDto } from "@/app/models/message.model";
 import { TaskAPI } from "@/app/services/task.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import { formatTime, handleApiError } from "@/app/utils/helper";
@@ -108,7 +108,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
         }
     };
 
-    return message.type === MessageType.GENERAL ? (
+    return message.type === "GENERAL" ? (
         <div
             ref={messageRef}
             className={`max-w-[78%] w-fit p-[15px] space-y-2.5 ${margin} 

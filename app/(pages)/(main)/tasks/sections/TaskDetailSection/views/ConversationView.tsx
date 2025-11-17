@@ -7,7 +7,6 @@ import MessageBlock from "../components/MessageBlock";
 import { ActiveTaskContext } from "../../../contexts/ActiveTaskContext";
 import { useManageMessages } from "../hooks";
 import { MessageAPI } from "@/app/services/message.service";
-import { MessageType } from "@/app/models/message.model";
 import { toast } from "react-toastify";
 import useUserStore from "@/app/state-management/useUserStore";
 
@@ -42,8 +41,8 @@ const ConversationView = () => {
             const newMessage = await MessageAPI.createMessage({
                 userId: currentUser!.userId,
                 taskId: activeTask!.id,
-                type: MessageType.GENERAL,
-                body,
+                type: "GENERAL",
+                body: body.trim(),
             });
 
             setMessages(prev => [...prev, newMessage]);

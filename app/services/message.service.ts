@@ -12,7 +12,7 @@ import {
     updateDoc,
     where
 } from "firebase/firestore";
-import { MessageDto, MessageType, CreateMessageDto } from "../models/message.model";
+import { MessageDto, CreateMessageDto } from "../models/message.model";
 
 const messagesCollection = collection(db, "messages");
 
@@ -59,7 +59,7 @@ export class MessageAPI {
     static async createMessage({
         userId,
         taskId,
-        type = MessageType.GENERAL,
+        type = "GENERAL",
         body,
         metadata = {} as any,
         attachments = []
