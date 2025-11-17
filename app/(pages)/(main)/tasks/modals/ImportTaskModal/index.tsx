@@ -253,6 +253,7 @@ const ImportTaskModal = ({
         if (!hasErrors) {
             toast.success("All tasks created successfully!");
             setUploadingTasks(false);
+            setDraftTasks([]);
             toggleModal();
             onSuccess();
             return;
