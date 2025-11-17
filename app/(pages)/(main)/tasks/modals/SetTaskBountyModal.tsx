@@ -26,7 +26,8 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
 
         try {
             const response = await TaskAPI.updateTaskBounty(
-                activeTask!.id, { newBounty }
+                activeTask!.id, 
+                { newBounty: newBounty.replace(/,/g, "") }
             );
             
             toast.success("Bounty updated successfully.");

@@ -71,7 +71,7 @@ const CreateTaskCard = ({
                 ...issue,
                 labels: issue.labels.nodes,
             },
-            bounty: formik.values.bounty,
+            bounty: formik.values.bounty.replace(/,/g, ""),
             timeline: formik.values.timeline,
             timelineType: formik.values.timelineType as "DAY" | "WEEK",
             bountyLabelId
@@ -153,7 +153,6 @@ const CreateTaskCard = ({
                                     onBlur: formik.handleBlur,
                                     disabled: disableFields,
                                 }}
-                                defaultValue={defaultSelected?.payload.bounty}
                                 setValue={(value) => formik.setFieldValue("bounty", value)}
                             />
                         </div>
