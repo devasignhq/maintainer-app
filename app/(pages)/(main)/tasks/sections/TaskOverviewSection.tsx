@@ -63,6 +63,7 @@ const TaskOverviewSection = () => {
                             {taskStatusFormatter(activeTask!.status)[0]}
                         </p>
                     </div>
+                    
                     {activeTask?.status !== "OPEN" && (
                         <div className="space-y-2.5">
                             <p className="text-body-tiny text-light-100">Developer</p>
@@ -74,6 +75,7 @@ const TaskOverviewSection = () => {
                             </div>
                         </div>
                     )}
+
                     <div className="space-y-2.5">
                         <p className="text-body-tiny text-light-100">Bounty</p>
                         <div className="flex items-center gap-1">
@@ -85,6 +87,7 @@ const TaskOverviewSection = () => {
                             ): null}
                         </div>
                     </div>
+
                     {activeTask?.status === "OPEN" ? (
                         <div className="space-y-2.5">
                             <p className="text-body-tiny text-light-100">Timeline</p>
@@ -101,12 +104,28 @@ const TaskOverviewSection = () => {
                         </div>
                     ) : (
                         <div className="space-y-2.5">
-                            <p className="text-body-tiny text-light-100">Time Left</p>
-                            <p className={`text-body-large ${getTimeLeft(activeTask!).startsWith('Overdue') ? 'text-indicator-500' : 'text-light-200'}`}>
-                                {getTimeLeft(activeTask!)}
-                            </p>
+                            {activeTask?.status === "COMPLETED" ? (
+                                <>
+                                    <p className="text-body-tiny text-light-100">Completed In</p>
+                                    <p className="text-body-large text-light-200">
+                                        {getCompletionTime(activeTask!)}
+                                    </p>
+                            </>
+                            ) : (
+                                <>
+                                    <p className="text-body-tiny text-light-100">Time Left</p>
+                                    <p className={`text-body-large ${
+                                        getTimeLeft(activeTask!).startsWith('Overdue') 
+                                            ? 'text-indicator-500' 
+                                            : 'text-light-200'}`
+                                    }>
+                                        {getTimeLeft(activeTask!)}
+                                    </p>
+                                </>
+                            )}
                         </div>
                     )}
+
                     {activeTask?.status === "OPEN" && (
                         <ButtonPrimary
                             format="OUTLINE"
@@ -348,4 +367,33 @@ export const getTaskDeadline = (task: TaskDto): Date | null => {
     deadline.setDate(deadline.getDate() + totalTimelineDays);
 
     return deadline;
+};
+
+/**
+ * Calculates the time taken to complete a task
+ * @param task - The task object containing acceptedAt and completedAt dates
+ * @returns Formatted string showing completion time (e.g., "1 week(s) 5 day(s)", "5 day(s)")
+ */
+export const getCompletionTime = (task: TaskDto): string => {
+    // If task is not completed or missing required dates
+    if (!task.acceptedAt || !task.completedAt) {
+        return "N/A";
+    }
+
+    const acceptedAt = new Date(task.acceptedAt);
+    const completedAt = new Date(task.completedAt);
+
+    // Calculate the difference in milliseconds
+    const timeDiff = completedAt.getTime() - acceptedAt.getTime();
+
+    // If negative (shouldn't happen, but safety check)
+    if (timeDiff < 0) {
+        return "Invalid dates";
+    }
+
+    // Convert milliseconds to days (rounded up)
+    const totalDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+    // Format the output
+    return formatTimeLeft(totalDays);
 };

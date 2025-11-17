@@ -43,14 +43,14 @@ const Tasks = () => {
             <ActiveTaskContext.Provider value={{ activeTask, setActiveTask }}>
                 <TaskListSection />
                 {!activeTask && !loadingTask && (
-                    <section className="grow border-l border-dark-200 grid place-content-center">
+                    <section className="grow border-x border-dark-200 grid place-content-center">
                         <p className="text-body-medium text-light-100">
                             {searchParams.get("taskId") ? "Task not found" : "No task selected"}
                         </p>
                     </section>
                 )}
                 {loadingTask && (
-                    <section className="grow border-l border-dark-200 grid place-content-center">
+                    <section className="grow border-x border-dark-200 grid place-content-center">
                         <p className="text-body-medium text-light-100">Loading Task...</p>
                     </section>
                 )}
