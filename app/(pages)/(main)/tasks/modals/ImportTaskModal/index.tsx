@@ -356,7 +356,11 @@ const ImportTaskModal = ({
                             ...prev,
                             labels: value as string[]
                         }))}
-                        buttonAttributes={{ disabled: loadingResources || disableFilters }}
+                        extendedButtonClassName="py-[5px]"
+                        buttonAttributes={{ 
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }, 
+                            disabled: loadingResources || disableFilters 
+                        }}
                     />
                     <FilterDropdown
                         title="Milestones"
@@ -367,7 +371,11 @@ const ImportTaskModal = ({
                             ...prev,
                             milestone: value as string
                         }))}
-                        buttonAttributes={{ disabled: loadingResources || disableFilters }}
+                        extendedButtonClassName="py-[5px]"
+                        buttonAttributes={{ 
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }, 
+                            disabled: loadingResources || disableFilters 
+                        }}
                         noMultiSelect
                     />
                     <FilterDropdown
@@ -384,7 +392,11 @@ const ImportTaskModal = ({
                             ...prev,
                             sort: value as "created" | "updated" | "comments"
                         }))}
-                        buttonAttributes={{ disabled: disableFilters }}
+                        extendedButtonClassName="py-[5px]"
+                        buttonAttributes={{ 
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }, 
+                            disabled: disableFilters 
+                        }}
                         noMultiSelect
                     />
                     <FilterDropdown
@@ -400,7 +412,11 @@ const ImportTaskModal = ({
                             ...prev,
                             direction: value as "asc" | "desc"
                         }))}
-                        buttonAttributes={{ disabled: disableFilters || !issueFilters.sort }}
+                        extendedButtonClassName="py-[5px]"
+                        buttonAttributes={{ 
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }, 
+                            disabled: disableFilters || !issueFilters.sort 
+                        }}
                         noMultiSelect
                     />
                 </div>
