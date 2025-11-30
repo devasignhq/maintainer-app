@@ -33,7 +33,7 @@ const Account = () => {
                 if (data) {
                     setCurrentUser({ ...data, username: params[0] });
                 }
-                
+
                 getInstallation();
                 router.push(ROUTES.ONBOARDING);
             },
@@ -63,7 +63,7 @@ const Account = () => {
             },
             onError: (err, params) => {
                 const error = err as unknown as ErrorResponse;
-                if (error.name === "NOT_FOUND") {
+                if (error.code === "NOT_FOUND") {
                     createUser(params[0]);
                     return
                 }
