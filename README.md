@@ -47,7 +47,7 @@
   </div>
   <br/>
 
-  <a href="https://app.devasign.com?ref=github" style="display: block; margin: 0 auto;">
+  <a style="display: block; margin: 0 auto;">
       <picture>
         <img alt="DevAsign Maintainer App" src="./public/devasign-ui.svg" style="display: block; margin: 0 auto;">
       </picture>
