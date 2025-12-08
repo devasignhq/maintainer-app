@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "legacy": "npm i --legacy-peer-deps"
   },
   "dependencies": {
     "@firebase/auth": "^1.10.0",
@@ -15,7 +16,7 @@
     "axios": "^1.8.4",
     "firebase": "^11.6.0",
     "formik": "^2.4.6",
-    "next": "15.3.1",
+    "next": "^15.5.7",
     "postcss": "^8.5.3",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
