@@ -20,9 +20,9 @@ const Installation = () => {
     const installationId = searchParams.get("installation_id");
     const [isProcessing, setIsProcessing] = useState(true);
     const [reboundAction, setReboundAction] = useState<ReboundAction>("");
-    
-    const { 
-        activeInstallation, 
+
+    const {
+        activeInstallation,
         installationList,
         setActiveInstallation,
         setInstallationList
@@ -37,16 +37,16 @@ const Installation = () => {
             } else {
                 router.push(ROUTES.ACCOUNT);
             }
-            return
+            return;
         }
-        
+
         if (!user) {
-            router.push(ROUTES.ACCOUNT + `?installation_id=${installationId}`);
-            return
+            router.push(`${ROUTES.ACCOUNT}?installation_id=${installationId}`);
+            return;
         }
 
         // Check if installationId already exists in installationList
-        const existingInstallation = installationList.find( (inst) => inst.id === installationId);
+        const existingInstallation = installationList.find((inst) => inst.id === installationId);
         if (existingInstallation) {
             setActiveInstallation(existingInstallation);
             toast.info("Installation already exists.");
@@ -56,22 +56,22 @@ const Installation = () => {
 
         try {
             const response = await InstallationAPI.createInstallation({ installationId });
-            
+
             toast.success("Installation saved successfully.");
             const noCurrentInstallations = !activeInstallation && installationList.length === 0;
 
             if (response && "account" in response) {
                 setActiveInstallation(response);
-                setInstallationList([ ...installationList, response ]);
+                setInstallationList([...installationList, response]);
             }
             if (response && "message" in response) {
                 setActiveInstallation(response.installation);
-                setInstallationList([ ...installationList, response.installation ]);
+                setInstallationList([...installationList, response.installation]);
                 toast.warn(response.message);
             }
 
             if (noCurrentInstallations) {
-                router.push(ROUTES.ONBOARDING + "?newInstallation=true");
+                router.push(`${ROUTES.ONBOARDING}?newInstallation=true`);
             } else {
                 router.push(ROUTES.TASKS);
             }
@@ -111,13 +111,13 @@ const Installation = () => {
                             } else {
                                 window.location.reload();
                             }
-                        },
+                        }
                     }}
                     extendedClassName="w-fit mx-auto"
                 />
             </div>
         </div>
     );
-}
+};
 
 export default Installation;

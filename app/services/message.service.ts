@@ -155,7 +155,7 @@ export class MessageAPI {
         const constraints: any[] = [
             where("taskId", "==", taskId),
             where("userId", "==", userId),
-            where("type", "==", "TIMELINE_MODIFICATION"),
+            where("type", "==", "TIMELINE_MODIFICATION")
         ];
 
         if (startDate && startDate.trim()) {

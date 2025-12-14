@@ -45,6 +45,6 @@ const DetailsView = () => {
             </div>
         </>
     );
-}
+};
  
 export default DetailsView;

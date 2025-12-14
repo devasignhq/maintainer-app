@@ -37,17 +37,17 @@ export interface AccountRecordSigners {
     type: string;
 }
 export enum AssetType {
-    native = 'native',
-    credit4 = 'credit_alphanum4',
-    credit12 = 'credit_alphanum12',
-    liquidityPoolShares = 'liquidity_pool_shares',
+    native = "native",
+    credit4 = "credit_alphanum4",
+    credit12 = "credit_alphanum12",
+    liquidityPoolShares = "liquidity_pool_shares",
 }
 export enum MemoType {
-  None = 'none',
-  ID = 'id',
-  Text = 'text',
-  Hash = 'hash',
-  Return = 'return',
+  None = "none",
+  ID = "id",
+  Text = "text",
+  Hash = "hash",
+  Return = "return",
 }
   
 export interface ResponseLink {

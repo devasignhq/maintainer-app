@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function SettingsLayout({
-    children,
+    children
 }: Readonly<{
     children: React.ReactNode;
 }>) {
@@ -20,8 +20,8 @@ export default function SettingsLayout({
                         href={item.path}
                         className={`p-[15px] text-title-large border-l-2 
                             ${checkPath(item.path) 
-                                ? "bg-dark-400 border-light-200 text-light-200" 
-                                : "border-transparent text-light-100 hover:bg-dark-400"}`
+                        ? "bg-dark-400 border-light-200 text-light-200" 
+                        : "border-transparent text-light-100 hover:bg-dark-400"}`
                         }
                     >
                         {item.name}
@@ -35,5 +35,5 @@ export default function SettingsLayout({
 
 const navItems = [
     { name: "Manage Team", path: ROUTES.SETTINGS.MANAGE_TEAM },
-    { name: "Plans & Billings", path: ROUTES.SETTINGS.PLANS_AND_BILLINGS },
+    { name: "Plans & Billings", path: ROUTES.SETTINGS.PLANS_AND_BILLINGS }
 ];

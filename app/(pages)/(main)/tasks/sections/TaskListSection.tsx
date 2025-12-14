@@ -45,11 +45,11 @@ const TaskListSection = () => {
         loadingMore: loadingMoreTasks,
         noMore: noMoreTasks,
         loadMore: loadMoreTasks,
-        reload: reloadTasks,
+        reload: reloadTasks
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             if (!activeInstallation) {
-                return { list: [], pagination: null }
+                return { list: [], pagination: null };
             }
 
             const pageToLoad = currentData ? (currentData.pagination as PaginationResponse).currentPage + 1 : 1;
@@ -67,8 +67,8 @@ const TaskListSection = () => {
                 {
                     page: pageToLoad,
                     limit: 30,
-                    ...filters,
-                },
+                    ...filters
+                }
             );
 
             if (!searchParams.get("taskId") && !activeTask && response.data.length > 0) {
@@ -81,7 +81,7 @@ const TaskListSection = () => {
 
             return {
                 list: response.data,
-                pagination: response.pagination,
+                pagination: response.pagination
             };
         },
         {
@@ -155,7 +155,7 @@ const TaskListSection = () => {
                                 setSearchValue(e.target.value);
                                 if (!displaySearchIcon) setDisplaySearchIcon(true);
                             },
-                            disabled: loadingTasks,
+                            disabled: loadingTasks
                         }}
                         extendedContainerClassName="w-full"
                         extendedInputClassName="text-body-tiny text-light-100"
@@ -192,7 +192,7 @@ const TaskListSection = () => {
                             }}
                             setField={(value) => setTaskFilters((prev) => ({
                                 ...prev,
-                                status: value as TaskStatus,
+                                status: value as TaskStatus
                             }))}
                             defaultValue={taskFilters.status}
                             noMultiSelect
@@ -211,7 +211,7 @@ const TaskListSection = () => {
                             setField={(value) => setTaskFilters((prev) => ({
                                 ...prev,
                                 repoUrl: value as string,
-                                issueLabels: undefined,
+                                issueLabels: undefined
                             }))}
                             noMultiSelect
                         />
@@ -277,7 +277,7 @@ const TaskListSection = () => {
             )}
         </>
     );
-}
+};
 
 export default TaskListSection;
 
@@ -285,5 +285,5 @@ const defaultTaskFilters: FilterTasks = {
     status: undefined,
     repoUrl: undefined,
     issueTitle: undefined,
-    issueLabels: undefined,
-}
+    issueLabels: undefined
+};

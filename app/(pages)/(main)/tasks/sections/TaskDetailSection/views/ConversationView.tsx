@@ -42,7 +42,7 @@ const ConversationView = () => {
                 userId: currentUser!.userId,
                 taskId: activeTask!.id,
                 type: "GENERAL",
-                body: body.trim(),
+                body: body.trim()
             });
 
             setMessages(prev => [...prev, newMessage]);
@@ -150,6 +150,6 @@ const ConversationView = () => {
             )}
         </>
     );
-}
+};
  
 export default ConversationView;

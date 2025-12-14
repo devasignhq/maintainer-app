@@ -8,7 +8,7 @@ import { useRequest, useLockFn } from "ahooks";
 import Link from "next/link";
 import { useContext } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 
 type ApproveSubmissionModalProps = {
@@ -115,6 +115,6 @@ const ApproveSubmissionModal = ({ taskActivity, toggleModal, onSuccess }: Approv
             </div>
         </PopupModalLayout>
     );
-}
+};
  
 export default ApproveSubmissionModal;

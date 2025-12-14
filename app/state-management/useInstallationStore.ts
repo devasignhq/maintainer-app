@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from "zustand/middleware";
 import { InstallationDto } from "../models/installation.model";
 
 type InstallationStore = {
@@ -16,18 +16,18 @@ const useInstallationStore = create<InstallationStore>()(
             activeInstallation: null,
             installationList: [],
             setActiveInstallation: (data: InstallationDto) => {
-                set({ activeInstallation: data })
+                set({ activeInstallation: data });
             },
             setInstallationList: (data: InstallationDto[]) => {
-                set({ installationList: data })
+                set({ installationList: data });
             },
             clearInstallationStore: () => {
-                set({ activeInstallation: null, installationList: [] })
-            },
+                set({ activeInstallation: null, installationList: [] });
+            }
         }),
         {
-            name: '@installation',
-            storage: createJSONStorage(() => localStorage),
+            name: "@installation",
+            storage: createJSONStorage(() => localStorage)
         }
     )
 );

@@ -22,9 +22,9 @@ export type MessageMetadata = {
 }
 
 export const MESSAGE_TYPE = {
-  GENERAL: 'GENERAL',
-  TIMELINE_MODIFICATION: 'TIMELINE_MODIFICATION'
-}
+    GENERAL: "GENERAL",
+    TIMELINE_MODIFICATION: "TIMELINE_MODIFICATION"
+};
 export type MessageType = keyof typeof MESSAGE_TYPE
 
 export type CreateMessageDto = {

@@ -4,45 +4,45 @@ import { TaskStatus } from "../models/task.model";
 
 export function formatDateTime(isoString: string): string {
     const date = new Date(isoString);
-    return date.toLocaleDateString('en-GB', { 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
+    return date.toLocaleDateString("en-GB", { 
+        day: "numeric", 
+        month: "long", 
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
         hour12: true
     });
 }
 
 export function formatDate(isoString: string): string {
     const date = new Date(isoString);
-    return date.toLocaleDateString('en-GB', { 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
+    return date.toLocaleDateString("en-GB", { 
+        day: "numeric", 
+        month: "long", 
+        year: "numeric" 
     });
 }
 
 export function formatTime(isoString: string): string {
     const date = new Date(isoString);
-    return date.toLocaleTimeString('en-GB', {
-        hour: 'numeric',
-        minute: '2-digit',
+    return date.toLocaleTimeString("en-GB", {
+        hour: "numeric",
+        minute: "2-digit",
         hour12: true
     });
 }
 
 /** ie Converts `ELAPSED_CONTRACT` to `Elapsed Contract` */
 export const enumToStringConverter = (value: string) => {
-	if (!value) return value;
-	const splittedValues = value.split("_");
+    if (!value) return value;
+    const splittedValues = value.split("_");
 
-	const newValue = splittedValues.reduce((acc, value) => {
-		return acc += value.slice(0, 1) + value.slice(1).toLowerCase() + " ";
-	}, "")
+    const newValue = splittedValues.reduce((acc, value) => {
+        return acc += `${value.slice(0, 1) + value.slice(1).toLowerCase()  } `;
+    }, "");
 
-	return newValue.trim();
-}
+    return newValue.trim();
+};
 /**
  * Formats a numeric value into a localized string representation with proper currency formatting.
  * 
@@ -63,10 +63,10 @@ export const enumToStringConverter = (value: string) => {
  * moneyFormat(1234.56, 'en-US', 2, true) // Returns "1,235"
  */
 export function moneyFormat(
-	value: number | string | bigint, 
-	standard?: string | string[], 
-	dec?: number,
-	noDecimals?: boolean,
+    value: number | string | bigint, 
+    standard?: string | string[], 
+    dec?: number,
+    noDecimals?: boolean
 ) {
     const decimal = (noDecimals || dec === 0) 
         ? 0
@@ -106,28 +106,28 @@ export function convertGitHubApiUrlToWebUrlRegex(apiUrl: string): string {
 
 export function taskStatusFormatter(status: TaskStatus) {
     switch (status) {
-        case "OPEN":
-            return ["Open", "bg-indicator-200 text-dark-500"];
-        case "IN_PROGRESS":
-            return ["In Progress", "bg-indicator-300 text-dark-500"];
-        case "MARKED_AS_COMPLETED":
-            return ["Submitted", "bg-primary-100 text-dark-500"];
-        case "COMPLETED":
-            return ["Completed", "bg-indicator-100 text-dark-500"];
-        default:
-            return status;
+    case "OPEN":
+        return ["Open", "bg-indicator-200 text-dark-500"];
+    case "IN_PROGRESS":
+        return ["In Progress", "bg-indicator-300 text-dark-500"];
+    case "MARKED_AS_COMPLETED":
+        return ["Submitted", "bg-primary-100 text-dark-500"];
+    case "COMPLETED":
+        return ["Completed", "bg-indicator-100 text-dark-500"];
+    default:
+        return status;
     }
 }
 
 export const openInNewTab = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, "_blank", "noopener,noreferrer");
 };
 
 export const handleApiError = (err: any, altMessage: string) => {
     const error = err as unknown as ErrorResponse;
     if (error.message) {
         toast.error(error.message);
-        return
+        return;
     }
     toast.error(altMessage);
-}
+};

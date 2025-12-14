@@ -10,6 +10,6 @@ const ManageTeam = () => {
             <ActiveTeamMembersSection />
         </section>
     );
-}
+};
  
 export default ManageTeam;

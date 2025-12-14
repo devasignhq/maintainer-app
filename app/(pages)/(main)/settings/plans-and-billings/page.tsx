@@ -9,6 +9,6 @@ const PlansAndBillings = () => {
             <BillingSection />
         </section>
     );
-}
+};
  
 export default PlansAndBillings;

@@ -15,7 +15,7 @@ const RequestResponseModal = ({
     title,
     description,
     buttonTitle,
-    onButtonClick,
+    onButtonClick
 }: RequestResponseModalProps) => {
     return (
         <div className="fixed inset-0 z-[100] bg-[#0000004D] grid place-content-center backdrop-blur-[14px] pointer-events-none">
@@ -27,13 +27,13 @@ const RequestResponseModal = ({
                     format="OUTLINE"
                     text={buttonTitle}
                     attributes={{
-                        onClick: onButtonClick,
+                        onClick: onButtonClick
                     }}
                     extendedClassName="w-fit mx-auto"
                 />
             </div>
         </div>
     );
-}
+};
  
 export default RequestResponseModal;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 import { BalanceLineNative, BalanceLineAsset, AccountRecord, AssetType } from "../models/horizon.model";
 import { WalletAPI } from "./wallet.service";
 
@@ -15,8 +15,8 @@ interface StreamState {
 
 interface SwapTracker {
     timestamp: number;
-    fromAsset: 'XLM' | 'USDC';
-    toAsset: 'XLM' | 'USDC';
+    fromAsset: "XLM" | "USDC";
+    toAsset: "XLM" | "USDC";
 }
 
 interface PriceData {
@@ -29,14 +29,14 @@ let recentSwaps: SwapTracker[] = [];
 export class HorizonHelper {
     static getBaseUrl(isTestnet: boolean = false) {
         const baseUrl = isTestnet
-            ? 'https://horizon-testnet.stellar.org'
-            : 'https://horizon.stellar.org';
+            ? "https://horizon-testnet.stellar.org"
+            : "https://horizon.stellar.org";
 
         return baseUrl;
     }
 
     // Method to track swaps to prevent false topup detection
-    static trackSwap(fromAsset: 'XLM' | 'USDC', toAsset: 'XLM' | 'USDC') {
+    static trackSwap(fromAsset: "XLM" | "USDC", toAsset: "XLM" | "USDC") {
         const swapRecord: SwapTracker = {
             timestamp: Date.now(),
             fromAsset,
@@ -54,7 +54,7 @@ export class HorizonHelper {
     }
 
     // Check if a balance change might be from a recent swap
-    static isRecentSwap(asset: 'XLM' | 'USDC', isIncrease: boolean): boolean {
+    static isRecentSwap(asset: "XLM" | "USDC", isIncrease: boolean): boolean {
         const now = Date.now();
         return recentSwaps.some(swap => {
             const isRecent = now - swap.timestamp < 30000; // 30 seconds
@@ -99,17 +99,17 @@ export function useStreamAccountBalance(
             const usdcIncrease = newUsdcBalance > previousBalances.current.usdc;
 
             // Only call recordWalletTopups if there's an increase and it's not from a recent swap
-            if (xlmIncrease && !HorizonHelper.isRecentSwap('XLM', true)) {
+            if (xlmIncrease && !HorizonHelper.isRecentSwap("XLM", true)) {
                 try {
                     await WalletAPI.recordWalletTopups(installationId);
                 } catch (error) {
-                    console.error('Failed to record wallet topups:', error);
+                    console.error("Failed to record wallet topups:", error);
                 }
-            } else if (usdcIncrease && !HorizonHelper.isRecentSwap('USDC', true)) {
+            } else if (usdcIncrease && !HorizonHelper.isRecentSwap("USDC", true)) {
                 try {
                     await WalletAPI.recordWalletTopups(installationId);
                 } catch (error) {
-                    console.error('Failed to record wallet topups:', error);
+                    console.error("Failed to record wallet topups:", error);
                 }
             }
         }
@@ -179,7 +179,7 @@ export function useStreamAccountBalance(
                     setState(prev => ({
                         ...prev,
                         isConnected: false,
-                        error: 'Connection lost'
+                        error: "Connection lost"
                     }));
 
                     // Reconnection logic
@@ -191,7 +191,7 @@ export function useStreamAccountBalance(
                     } else {
                         setState(prev => ({
                             ...prev,
-                            error: 'Max reconnection attempts reached'
+                            error: "Max reconnection attempts reached"
                         }));
                     }
                 };
@@ -199,7 +199,7 @@ export function useStreamAccountBalance(
             } catch {
                 setState(prev => ({
                     ...prev,
-                    error: 'Failed to establish connection',
+                    error: "Failed to establish connection",
                     isConnected: false
                 }));
             }
@@ -228,7 +228,7 @@ export function useStreamAccountBalance(
         } catch (error) {
             setState(prev => ({
                 ...prev,
-                error: error instanceof Error ? error.message : 'Failed to fetch balance'
+                error: error instanceof Error ? error.message : "Failed to fetch balance"
             }));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -251,7 +251,7 @@ export function useAccountBalancePolling(
     intervalMs: number = 10000,
     isTestnet: boolean = false
 ) {
-    const [state, setState] = useState<Omit<StreamState, 'isConnected'>>({
+    const [state, setState] = useState<Omit<StreamState, "isConnected">>({
         xlmBalance: "0.00",
         usdcBalance: "0.00",
         error: null,
@@ -297,7 +297,7 @@ export function useAccountBalancePolling(
         } catch (error) {
             setState(prev => ({
                 ...prev,
-                error: error instanceof Error ? error.message : 'Failed to fetch balance'
+                error: error instanceof Error ? error.message : "Failed to fetch balance"
             }));
         } finally {
             setIsLoading(false);
@@ -337,11 +337,11 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000, pause: bool
         try {
             // Query Stellar DEX for XLM/USDC orderbook
             const response = await fetch(
-                'https://horizon.stellar.org/order_book?' +
-                'selling_asset_type=native&' +
-                'buying_asset_type=credit_alphanum4&' +
-                'buying_asset_code=USDC&' +
-                'buying_asset_issuer=GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN'
+                "https://horizon.stellar.org/order_book?" +
+                "selling_asset_type=native&" +
+                "buying_asset_type=credit_alphanum4&" +
+                "buying_asset_code=USDC&" +
+                "buying_asset_issuer=GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN"
             );
 
             if (!response.ok) {
@@ -363,7 +363,7 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000, pause: bool
             setError(null);
             setIsLoading(false);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to fetch Stellar DEX price');
+            setError(err instanceof Error ? err.message : "Failed to fetch Stellar DEX price");
             setIsLoading(false);
         }
     };

@@ -28,11 +28,11 @@ const TaskOverviewSection = () => {
         loadingMore: loadingMoreActivities,
         noMore: noMoreActivities,
         loadMore: loadMoreActivities,
-        reload: reloadActivities,
+        reload: reloadActivities
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             if (!activeTask) {
-                return { list: [], pagination: null }
+                return { list: [], pagination: null };
             }
 
             const pageToLoad = currentData ? currentData.pagination.page + 1 : 1;
@@ -44,7 +44,7 @@ const TaskOverviewSection = () => {
 
             return {
                 list: response.data,
-                pagination: response.pagination,
+                pagination: response.pagination
             };
         },
         {
@@ -110,14 +110,14 @@ const TaskOverviewSection = () => {
                                     <p className="text-body-large text-light-200">
                                         {getCompletionTime(activeTask!)}
                                     </p>
-                            </>
+                                </>
                             ) : (
                                 <>
                                     <p className="text-body-tiny text-light-100">Time Left</p>
                                     <p className={`text-body-large ${
-                                        getTimeLeft(activeTask!).startsWith('Overdue') 
-                                            ? 'text-indicator-500' 
-                                            : 'text-light-200'}`
+                                        getTimeLeft(activeTask!).startsWith("Overdue") 
+                                            ? "text-indicator-500" 
+                                            : "text-light-200"}`
                                     }>
                                         {getTimeLeft(activeTask!)}
                                     </p>
@@ -179,7 +179,7 @@ const TaskOverviewSection = () => {
             {openDeleteTaskModal && <DeleteTaskModal toggleModal={toggleDeleteTaskModal} />}
         </>
     );
-}
+};
 
 export default TaskOverviewSection;
 
@@ -254,11 +254,11 @@ const formatTimeLeft = (totalDays: number): string => {
     const parts: string[] = [];
 
     if (weeks > 0) {
-        parts.push(`${weeks} week${weeks !== 1 ? '(s)' : ''}`);
+        parts.push(`${weeks} week${weeks !== 1 ? "(s)" : ""}`);
     }
 
     if (days > 0) {
-        parts.push(`${days} day${days !== 1 ? '(s)' : ''}`);
+        parts.push(`${days} day${days !== 1 ? "(s)" : ""}`);
     }
 
     // If no time left (shouldn't happen due to overdue check, but safety)
@@ -266,7 +266,7 @@ const formatTimeLeft = (totalDays: number): string => {
         return "Less than 1 day";
     }
 
-    return parts.join(' ');
+    return parts.join(" ");
 };
 
 /**
@@ -322,7 +322,7 @@ export const getDetailedTimeLeft = (task: TaskDto) => {
             totalDays: -overdueDays,
             weeks: 0,
             days: 0,
-            formatted: `Overdue by ${overdueDays} day${overdueDays !== 1 ? '(s)' : ''}`,
+            formatted: `Overdue by ${overdueDays} day${overdueDays !== 1 ? "(s)" : ""}`,
             deadline
         };
     }

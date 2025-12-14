@@ -16,10 +16,10 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
     const [loading, setLoading] = useState(true);
 
     const groupedMessages = useMemo<GroupedMessages>(() => {
-        return groupMessagesByDay(messages)
+        return groupMessagesByDay(messages);
     }, [messages]);
     const orderedDateLabels = useMemo<string[]>(() => {
-        return getOrderedDateLabels(groupedMessages)
+        return getOrderedDateLabels(groupedMessages);
     }, [groupedMessages]);
 
     const updateMessage = useLockFn(async (newMessages: MessageDto[]) => {
@@ -64,7 +64,7 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                     }
                 );
             } catch (error) {
-                console.error('Failed to load messages:', error);
+                console.error("Failed to load messages:", error);
                 setLoading(false);
             }
         };
@@ -118,19 +118,19 @@ export const formatDateLabel = (date: Date): string => {
     } else {
         // Return formatted date for 7+ days ago
         const day = messageDate.getDate();
-        const month = messageDate.toLocaleString('en-US', { month: 'long' });
+        const month = messageDate.toLocaleString("en-US", { month: "long" });
         const year = messageDate.getFullYear();
         
         // Add ordinal suffix to day
         const getOrdinalSuffix = (day: number): string => {
             if (day >= 11 && day <= 13) {
-                return 'th';
+                return "th";
             }
             switch (day % 10) {
-                case 1: return 'st';
-                case 2: return 'nd';
-                case 3: return 'rd';
-                default: return 'th';
+            case 1: return "st";
+            case 2: return "nd";
+            case 3: return "rd";
+            default: return "th";
             }
         };
         
@@ -139,7 +139,7 @@ export const formatDateLabel = (date: Date): string => {
 };
 
 export const groupMessagesByDay = (messages: MessageDto[]): GroupedMessages => {
-  const grouped: GroupedMessages = {};
+    const grouped: GroupedMessages = {};
   
     messages.forEach(message => {
         // Handle both ISO string and Timestamp formats
@@ -158,7 +158,7 @@ export const groupMessagesByDay = (messages: MessageDto[]): GroupedMessages => {
 };
 
 export const getOrderedDateLabels = (groupedMessages: GroupedMessages): string[] => {
-  const labels = Object.keys(groupedMessages);
+    const labels = Object.keys(groupedMessages);
   
     // Custom sort function to maintain chronological order
     return labels.sort((a, b) => {

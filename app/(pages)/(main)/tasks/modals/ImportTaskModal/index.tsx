@@ -77,7 +77,7 @@ const ImportTaskModal = ({
             ...task.payload.issue,
             labels: { nodes: task.payload.issue.labels }
         })),
-        [selectedTasks]
+    [selectedTasks]
     );
     const validPayload = useMemo(() => {
         if (selectedTasks.size === 0) return false;
@@ -127,7 +127,7 @@ const ImportTaskModal = ({
         loadingMore: loadingMoreIssues,
         noMore: noMoreIssues,
         loadMore: loadMoreIssues,
-        reload: reloadIssues,
+        reload: reloadIssues
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             const pageToLoad = currentData ? currentPage + 1 : 1;
@@ -141,7 +141,7 @@ const ImportTaskModal = ({
                 {
                     repoUrl: activeRepo.url,
                     page: pageToLoad,
-                    ...issueFilters,
+                    ...issueFilters
                 }
             );
 
@@ -151,7 +151,7 @@ const ImportTaskModal = ({
         }, 
         {
             isNoMore: (data) => !data?.hasMore,
-            reloadDeps: [activeRepo, ...Object.values(issueFilters)],
+            reloadDeps: [activeRepo, ...Object.values(issueFilters)]
         }
     );
 
@@ -325,7 +325,7 @@ const ImportTaskModal = ({
                             setSearchValue(e.target.value);
                             if (!displaySearchIcon) setDisplaySearchIcon(true);
                         },
-                        disabled: disableFilters,
+                        disabled: disableFilters
                     }}
                     extendedContainerClassName="w-full"
                     extendedInputClassName="h-full"
@@ -549,7 +549,7 @@ const ImportTaskModal = ({
             </section>
         </PopupModalLayout>
     );
-}
+};
 
 export default ImportTaskModal;
 
@@ -567,5 +567,5 @@ const defaultIssueFilters: IssueFilters = {
     milestone: undefined,
     sort: "created",
     direction: "desc",
-    perPage: 30,
-}
+    perPage: 30
+};

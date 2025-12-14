@@ -1,5 +1,5 @@
-import { InstallationDto } from "./installation.model"
-import { UserDto } from "./user.model"
+import { InstallationDto } from "./installation.model";
+import { UserDto } from "./user.model";
 
 export type PermissionDto = {
     code: string

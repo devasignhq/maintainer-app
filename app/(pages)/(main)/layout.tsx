@@ -16,7 +16,7 @@ import { FiSettings } from "react-icons/fi";
 import { openInNewTab } from "@/app/utils/helper";
 
 export default function MainLayout({
-    children,
+    children
 }: Readonly<{
     children: React.ReactNode;
 }>) {
@@ -99,8 +99,8 @@ export default function MainLayout({
                                                             <p className="text-body-medium text-light-100">{installation.account.login}</p>
                                                             <div className={`px-2.5 py-[7px] text-body-small 
                                                                 ${installation.subscriptionPackage?.price === 0 
-                                                                    ? "text-light-100 bg-dark-300" 
-                                                                    : "text-dark-500 bg-primary-100"}` 
+                                                        ? "text-light-100 bg-dark-300" 
+                                                        : "text-dark-500 bg-primary-100"}` 
                                                             }>
                                                                 {installation.subscriptionPackage?.name}
                                                             </div>
@@ -122,13 +122,13 @@ export default function MainLayout({
                                                         </p>
                                                         <div className={`px-2.5 py-[7px] text-body-small 
                                                             ${installation.subscriptionPackage?.price === 0 
-                                                            ? "text-light-100 bg-dark-300" 
-                                                            : "text-dark-500 bg-primary-100"}` 
+                                                        ? "text-light-100 bg-dark-300" 
+                                                        : "text-dark-500 bg-primary-100"}` 
                                                         }>
                                                             {installation.subscriptionPackage?.name}
                                                         </div>
                                                     </button>
-                                                )
+                                                );
                                             })
                                         )}
                                     </div>
@@ -164,8 +164,8 @@ export default function MainLayout({
                             href={item.path}
                             className={`px-[5px] py-[20px] 
                                 ${checkPath(item.path) 
-                                    ? "text-light-100 border-b border-light-100" 
-                                    : "hover:text-[#F0C298]"}`
+                            ? "text-light-100 border-b border-light-100" 
+                            : "hover:text-[#F0C298]"}`
                             }
                         >
                             {item.name}
@@ -183,7 +183,7 @@ export default function MainLayout({
 const navItems = [
     // { name: "Overview", path: ROUTES.OVERVIEW },
     { name: "Tasks", path: ROUTES.TASKS },
-    { name: "Wallet", path: ROUTES.WALLET },
+    { name: "Wallet", path: ROUTES.WALLET }
     // { name: "Contributors", path: ROUTES.CONTRIBUTORS },
     // { name: "Settings", alias: "/settings", path: ROUTES.SETTINGS.MANAGE_TEAM },
 ];

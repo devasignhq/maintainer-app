@@ -17,7 +17,7 @@ const CopyButton = ({ text, extendedClassName }: CopyButtonProps) => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch {
-            alert('Failed to copy text. Please try again.');
+            alert("Failed to copy text. Please try again.");
         }
     };
 

@@ -10,8 +10,8 @@ import { useRouter } from "next/navigation";
 const cardIcons: React.ReactNode[] = [
     <BsLayers key="basic" />,
     <FiLayers key="pro" />,
-    <FiZap key="enterprise" />,
-]
+    <FiZap key="enterprise" />
+];
 
 const SubscriptionPlan = () => {
     const router = useRouter();
@@ -56,7 +56,7 @@ const SubscriptionPlan = () => {
             />
         </>
     );
-}
+};
  
 export default SubscriptionPlan;
 

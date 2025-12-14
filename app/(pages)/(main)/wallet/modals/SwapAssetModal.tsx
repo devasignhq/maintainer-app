@@ -3,8 +3,8 @@ import ButtonPrimary from "../../../../components/ButtonPrimary";
 import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { SiStellar } from "react-icons/si";
 import { LiaExchangeAltSolid } from "react-icons/lia";
-import Image from 'next/image';
-import { object, string } from 'yup';
+import Image from "next/image";
+import { object, string } from "yup";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useFormik } from "formik";
 import MoneyInput from "@/app/components/Input/MoneyInput";
@@ -15,7 +15,7 @@ import { handleApiError, moneyFormat } from "@/app/utils/helper";
 
 const swapAssetSchema = object({
     fromAmount: string().required("Required"),
-    toAmount: string().required("Required"),
+    toAmount: string().required("Required")
 });
 
 type SwapAssetModalProps = {
@@ -38,7 +38,7 @@ const SwapAssetModal = ({
     const formik = useFormik({
         initialValues: {
             fromAmount: "",
-            toAmount: "",
+            toAmount: ""
         },
         validationSchema: swapAssetSchema,
         onSubmit: async (values) => {
@@ -62,7 +62,7 @@ const SwapAssetModal = ({
                     installationId: activeInstallation!.id,
                     toAssetType: from === "XLM" ? "USDC" : "XLM",
                     amount: values.fromAmount.replace(/,/g, ""),
-                    equivalentAmount: values.toAmount.replace(/,/g, ""),
+                    equivalentAmount: values.toAmount.replace(/,/g, "")
                 });
 
                 toast.success("Asset swapped successfully.");
@@ -74,7 +74,7 @@ const SwapAssetModal = ({
                     "An error occured while swapping asset. Please try again."
                 );
             }
-        },
+        }
     });
 
     const { xlmPriceInUsdc } = useXLMUSDCFromStellarDEX(10000, formik.isSubmitting);
@@ -135,7 +135,7 @@ const SwapAssetModal = ({
                                         className: "h-5 w-full ml-2.5 mr-3",
                                         value: formik.values.fromAmount,
                                         onBlur: formik.handleBlur,
-                                        disabled: formik.isSubmitting,
+                                        disabled: formik.isSubmitting
                                     }}
                                     setValue={(value) => {
                                         formik.setFieldValue("fromAmount", value);
@@ -169,7 +169,7 @@ const SwapAssetModal = ({
                                         className: "h-5 w-full ml-2.5 mr-3",
                                         value: formik.values.toAmount,
                                         onBlur: formik.handleBlur,
-                                        disabled: formik.isSubmitting,
+                                        disabled: formik.isSubmitting
                                     }}
                                     setValue={(value) => {
                                         formik.setFieldValue("toAmount", value);
@@ -205,7 +205,7 @@ const SwapAssetModal = ({
                                         className: "h-5 w-full ml-2.5 mr-3",
                                         value: formik.values.fromAmount,
                                         onBlur: formik.handleBlur,
-                                        disabled: formik.isSubmitting,
+                                        disabled: formik.isSubmitting
                                     }}
                                     setValue={(value) => {
                                         formik.setFieldValue("fromAmount", value);
@@ -233,7 +233,7 @@ const SwapAssetModal = ({
                                         className: "h-5 w-full ml-2.5 mr-3",
                                         value: formik.values.toAmount,
                                         onBlur: formik.handleBlur,
-                                        disabled: formik.isSubmitting,
+                                        disabled: formik.isSubmitting
                                     }}
                                     setValue={(value) => {
                                         formik.setFieldValue("toAmount", value);
@@ -253,13 +253,13 @@ const SwapAssetModal = ({
                     sideItem={<LiaExchangeAltSolid />}
                     attributes={{
                         type: "submit",
-                        disabled: formik.isSubmitting,
+                        disabled: formik.isSubmitting
                     }}
                     extendedClassName="w-fit"
                 />
             </form>
         </PopupModalLayout>
     );
-}
+};
 
 export default SwapAssetModal;

@@ -46,8 +46,8 @@ const TaskDetailSection = () => {
                                 key={option.name} 
                                 className={`group h-[50px] px-[5px] flex items-center gap-[7px] border-b 
                                     ${activeView.name === option.name 
-                                        ? "border-light-100 text-light-100" 
-                                        : "border-transparent hover:text-primary-400"}
+                                ? "border-light-100 text-light-100" 
+                                : "border-transparent hover:text-primary-400"}
                                 `}
                                 onClick={() => setActiveView(option)}
                             >
@@ -71,11 +71,11 @@ const TaskDetailSection = () => {
             )}
         </section>
     );
-}
+};
  
 export default TaskDetailSection;
 
 const viewOptions = [
     { name: "Description" },
     { name: "Conversation", tag: true }
-]
+];

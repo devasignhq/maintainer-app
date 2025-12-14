@@ -58,16 +58,16 @@ const SwapTable = ({
                 )}
                 {(!loading && !loadingMore && !noMore) && (
                     <div className="flex justify-center">
-                    <button 
-                        className="w-fit mx-auto text-body-medium text-light-200 font-bold hover:text-light-100 pt-5 pb-2.5"
-                        onClick={loadMore}
-                    >
+                        <button 
+                            className="w-fit mx-auto text-body-medium text-light-200 font-bold hover:text-light-100 pt-5 pb-2.5"
+                            onClick={loadMore}
+                        >
                         Load More
-                    </button></div>
+                        </button></div>
                 )}
             </tbody>
         </>
     );
-}
+};
  
 export default SwapTable;

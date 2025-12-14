@@ -6,7 +6,7 @@ import { SiStellar } from "react-icons/si";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import { useXLMUSDCFromStellarDEX } from "@/app/services/horizon.service";
 import { handleApiError, moneyFormat } from "@/app/utils/helper";
-import { object, string } from 'yup';
+import { object, string } from "yup";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useFormik } from "formik";
 import MoneyInput from "@/app/components/Input/MoneyInput";
@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 
 const withdrawAssetSchema = object({
     amount: string().required("Required"),
-    walletAddress: string().required("Required"),
+    walletAddress: string().required("Required")
 });
 
 type WithdrawAssetModalProps = {
@@ -32,7 +32,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
     const formik = useFormik({
         initialValues: {
             amount: "",
-            walletAddress: "",
+            walletAddress: ""
         },
         validationSchema: withdrawAssetSchema,
         onSubmit: async (values) => {
@@ -61,7 +61,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                     "An error occured while withdrawing asset. Please try again."
                 );
             }
-        },
+        }
     });
 
     const {
@@ -72,7 +72,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
     useEffect(() => {
         if (!xlmPriceInUsdc || !formik.values.amount) return;
 
-        const formattedAmount = formik.values.amount.replace(/,/g, '');
+        const formattedAmount = formik.values.amount.replace(/,/g, "");
         setAmountInUsdc(moneyFormat(parseFloat(formattedAmount) * parseFloat(xlmPriceInUsdc)));
     }, [formik.values.amount, xlmPriceInUsdc]);
 
@@ -102,7 +102,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                                     className: "h-5 w-full ml-2.5",
                                     value: formik.values.amount,
                                     onBlur: formik.handleBlur,
-                                    disabled: formik.isSubmitting,
+                                    disabled: formik.isSubmitting
                                 }}
                                 setValue={(value) => formik.setFieldValue("amount", value)}
                             />
@@ -156,13 +156,13 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                     sideItem={<FiArrowDownRight />}
                     attributes={{
                         type: "submit",
-                        disabled: formik.isSubmitting,
+                        disabled: formik.isSubmitting
                     }}
                     extendedClassName="w-fit"
                 />
             </form>
         </PopupModalLayout>
     );
-}
+};
 
 export default WithdrawAssetModal;

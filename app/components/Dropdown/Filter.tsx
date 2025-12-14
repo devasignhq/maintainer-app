@@ -148,8 +148,8 @@ const FilterDropdown = ({
                     className="fixed top-[var(--dropdown-top)] left-[var(--dropdown-left)] px-2.5 max-h-[350px] 
                     bg-dark-400 dropdown-box shadow-[-20px_4px_40px_0px_#000000] z-[110] overflow-y-auto"
                     style={{
-                        '--dropdown-top': `${menuButtonRef.current?.getBoundingClientRect().top}px`,
-                        '--dropdown-left': `${menuButtonRef.current?.getBoundingClientRect().right as number + 7}px`
+                        "--dropdown-top": `${menuButtonRef.current?.getBoundingClientRect().top}px`,
+                        "--dropdown-left": `${menuButtonRef.current?.getBoundingClientRect().right as number + 7}px`
                     } as React.CSSProperties}
                 >
                     <div className="w-full pb-3 pt-[15px] bg-dark-400 sticky top-0">
@@ -202,6 +202,6 @@ const FilterDropdown = ({
             )}
         </div>
     );
-}
+};
 
 export default FilterDropdown;

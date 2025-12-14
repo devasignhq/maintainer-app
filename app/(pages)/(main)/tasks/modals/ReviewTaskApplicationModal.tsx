@@ -25,7 +25,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
             try {
                 await TaskAPI.markActivityAsViewed(taskActivity.id);
             } catch (error) {
-                console.error('Failed to mark activity as viewed:', error);
+                console.error("Failed to mark activity as viewed:", error);
             }
         }
     }), [taskActivity]);
@@ -83,7 +83,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
             </div>
             <div className="space-y-[5px] text-body-tiny">
                 <div className="w-full flex items-center justify-between gap-10">
-                <p className="text-primary-400">GitHub Issue:</p>
+                    <p className="text-primary-400">GitHub Issue:</p>
                     <div className="flex items-center gap-1">
                         <span className="text-light-100 underline truncate">
                             {activeTask?.issue.url}
@@ -104,7 +104,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                         format="OUTLINE"
                         text="Ignore"
                         attributes={{
-                            onClick: toggleModal,
+                            onClick: toggleModal
                         }}
                     />
                     <ButtonPrimary
@@ -112,7 +112,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                         text="Delegate Task"
                         sideItem={<FiArrowUpRight />}
                         attributes={{
-                            onClick: toggleApproveTaskDelegationModal,
+                            onClick: toggleApproveTaskDelegationModal
                         }}
                         extendedSideItemClassName="text-xl"
                     />
@@ -128,6 +128,6 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
             )}
         </PopupModalLayout>
     );
-}
+};
  
 export default ReviewTaskApplicationModal;

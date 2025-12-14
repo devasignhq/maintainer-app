@@ -1,8 +1,8 @@
-import { BalanceLineAsset } from "./horizon.model"
-import { UserInstallationPermissionDto } from "./permission.model"
-import { InstallationDto } from "./installation.model"
-import { TaskDto, TaskSubmission } from "./task.model"
-import { TransactionDto } from "./wallet.model"
+import { BalanceLineAsset } from "./horizon.model";
+import { UserInstallationPermissionDto } from "./permission.model";
+import { InstallationDto } from "./installation.model";
+import { TaskDto, TaskSubmission } from "./task.model";
+import { TransactionDto } from "./wallet.model";
 
 export type UserDto = {
     userId: string

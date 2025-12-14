@@ -73,10 +73,10 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
             role="button"
             className={`w-full p-[15px] border space-y-2.5 cursor-pointer 
                 ${active
-                    ? "bg-dark-400 border-light-100"
-                    : totalNotifications > 0
-                        ? "border-primary-100 hover:border-dark-200 hover:bg-dark-400"
-                        : "border-primary-200 hover:border-dark-200 hover:bg-dark-400"}
+            ? "bg-dark-400 border-light-100"
+            : totalNotifications > 0
+                ? "border-primary-100 hover:border-dark-200 hover:bg-dark-400"
+                : "border-primary-200 hover:border-dark-200 hover:bg-dark-400"}
             `}
         >
             <div className="flex items-center gap-1.5">
@@ -88,7 +88,7 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
                             .map((name, index, array) =>
                                 index === array.length - 1 ? name : `${name}, `
                             )
-                            .join('')}
+                            .join("")}
                     </p>
                 )}
                 <div className="w-fit ml-auto text-body-medium font-bold flex items-center gap-[5px]">
@@ -103,11 +103,11 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
             <p
                 className="text-body-medium text-light-100 overflow-hidden leading-5"
                 style={{
-                    display: '-webkit-box',
+                    display: "-webkit-box",
                     WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    maxHeight: '2.5rem',
-                    lineHeight: '1.25rem'
+                    WebkitBoxOrient: "vertical",
+                    maxHeight: "2.5rem",
+                    lineHeight: "1.25rem"
                 }}
             >
                 {task.issue.title}
@@ -124,6 +124,6 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
             </div>
         </div>
     );
-}
+};
 
 export default TaskCard;

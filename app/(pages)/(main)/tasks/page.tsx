@@ -63,6 +63,6 @@ const Tasks = () => {
             </ActiveTaskContext.Provider>
         </div>
     );
-}
+};
 
 export default Tasks;

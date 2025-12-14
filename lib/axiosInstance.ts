@@ -1,5 +1,5 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { getCurrentUser } from './firebase';
+import axios, { AxiosRequestConfig } from "axios";
+import { getCurrentUser } from "./firebase";
 
 const axiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_NODE_ENV === "development"

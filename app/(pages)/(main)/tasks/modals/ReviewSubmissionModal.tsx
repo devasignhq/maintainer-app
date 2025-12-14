@@ -25,7 +25,7 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
             try {
                 await TaskAPI.markActivityAsViewed(taskActivity.id);
             } catch (error) {
-                console.error('Failed to mark activity as viewed:', error);
+                console.error("Failed to mark activity as viewed:", error);
             }
         }
     }), [taskActivity]);
@@ -97,7 +97,7 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
                         format="OUTLINE"
                         text="Ignore"
                         attributes={{
-                            onClick: toggleModal,
+                            onClick: toggleModal
                         }}
                     />
                     <ButtonPrimary
@@ -105,7 +105,7 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
                         text="Approve Submission"
                         sideItem={<FiArrowUpRight />}
                         attributes={{
-                            onClick: toggleApproveSubmissionModal,
+                            onClick: toggleApproveSubmissionModal
                         }}
                     />
                 </div>
@@ -120,6 +120,6 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
             )}
         </PopupModalLayout>
     );
-}
+};
 
 export default ReviewSubmissionModal;

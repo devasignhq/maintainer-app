@@ -30,7 +30,7 @@ const RemoveTeamMemberModal = ({ toggleModal }: RemoveTeamMemberModalProps) => {
                     format="OUTLINE"
                     text="Cancel"
                     attributes={{
-                        onClick: () => {},
+                        onClick: () => {}
                     }}
                 />
                 <ButtonPrimary
@@ -38,12 +38,12 @@ const RemoveTeamMemberModal = ({ toggleModal }: RemoveTeamMemberModalProps) => {
                     text="Remove"
                     sideItem={<IoMdClose />}
                     attributes={{
-                        onClick: () => {},
+                        onClick: () => {}
                     }}
                 />
             </div>
         </PopupModalLayout>
     );
-}
+};
  
 export default RemoveTeamMemberModal;

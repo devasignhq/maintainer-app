@@ -17,6 +17,6 @@ const RepoMenuCard = ({ repoName, repoUrl, active, onClick }: RepoMenuCardProps)
             <p className="text-body-micro text-dark-100 max-w-[136px] truncate">{repoUrl}</p>
         </button>
     );
-}
+};
  
 export default RepoMenuCard;

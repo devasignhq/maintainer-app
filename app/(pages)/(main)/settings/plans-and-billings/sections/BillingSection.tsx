@@ -66,6 +66,6 @@ const BillingSection = () => {
             </>
         </section>
     );
-}
+};
  
 export default BillingSection;

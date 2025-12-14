@@ -1,7 +1,7 @@
 "use client";
 import { IconType } from "react-icons/lib";
 import { twMerge } from "tailwind-merge";
-import Image from 'next/image';
+import Image from "next/image";
 
 type InputFieldProps = {
     Icon?: IconType;
@@ -42,6 +42,6 @@ const InputField = ({
             />
         </div>
     );
-}
+};
  
 export default InputField;
