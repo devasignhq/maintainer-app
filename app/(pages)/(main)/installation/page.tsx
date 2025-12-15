@@ -12,7 +12,7 @@ import { MdOutlineCancel } from "react-icons/md";
 import { handleApiError } from "@/app/utils/helper";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
-type ReboundAction = "INSTALL" | "RELOAD" | "";
+type ReboundAction = "INSTALL" | "RETRY" | "";
 
 const Installation = () => {
     const router = useUnauthenticatedUserCheck();;
@@ -28,15 +28,14 @@ const Installation = () => {
         setInstallationList
     } = useInstallationStore();
 
-    useAsyncEffect(useLockFn(async () => {
+    const saveInstallation = async () => {
+        setIsProcessing(true);
         const user = await getCurrentUser();
 
         if (!installationId) {
-            if (user) {
-                router.push(ROUTES.TASKS);
-            } else {
-                router.push(ROUTES.ACCOUNT);
-            }
+            toast.error("Installation ID is missing.");
+            setReboundAction("INSTALL");
+            setIsProcessing(false);
             return;
         }
 
@@ -77,11 +76,13 @@ const Installation = () => {
             }
         } catch (error) {
             handleApiError(error, "Failed to save installation. Please reload page to try again.");
-            setReboundAction("RELOAD");
+            setReboundAction("RETRY");
         } finally {
             setIsProcessing(false);
         }
-    }), [router, installationId]);
+    };
+
+    useAsyncEffect(useLockFn(() => saveInstallation()), [router, installationId]);
 
     return isProcessing ? (
         <div className="fixed inset-0 z-[100] bg-[#0000004D] grid place-content-center backdrop-blur-[14px] pointer-events-none">
@@ -103,13 +104,13 @@ const Installation = () => {
                 </p>
                 <ButtonPrimary
                     format="OUTLINE"
-                    text={reboundAction === "INSTALL" ? "Reinstall GitHubApp" : "Reload Page"}
+                    text={reboundAction === "INSTALL" ? "Reinstall GitHub App" : "Refresh"}
                     attributes={{
                         onClick: () => {
                             if (reboundAction === "INSTALL") {
                                 router.push(ROUTES.INSTALLATION.NEW);
                             } else {
-                                window.location.reload();
+                                saveInstallation();
                             }
                         }
                     }}
