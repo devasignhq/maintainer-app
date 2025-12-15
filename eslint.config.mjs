@@ -44,6 +44,21 @@ const eslintConfig = [
             "@typescript-eslint/no-namespace": "off",
             "@typescript-eslint/no-empty-object-type": "off"
         }
+    },
+    {
+        ignores: [
+            "node_modules/**",
+            ".next/**",
+            "out/**",
+            "build/**",
+            "next-env.d.ts",
+            ".env",
+            ".env.*",
+            "no_git/",
+            "*.log",
+            ".git/",
+            ".vscode/"
+        ]
     }
 ];
 
