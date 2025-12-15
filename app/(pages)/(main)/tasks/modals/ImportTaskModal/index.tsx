@@ -476,7 +476,7 @@ const ImportTaskModal = ({
                                 showFields
                                 onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload, repoId)}
                                 uploadStatus={uploadedTasks.get(issue.id)}
-                                disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id))}
+                                disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id) === "CREATED")}
                             />
                         );
                     })
@@ -496,7 +496,7 @@ const ImportTaskModal = ({
                                     showFields={false}
                                     onToggleCheck={(taskPayload) => handleToggleCheck(issue.id, taskPayload, activeRepo?.id || "")}
                                     uploadStatus={uploadedTasks.get(issue.id)}
-                                    disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id))}
+                                    disableFields={uploadingTasks || Boolean(uploadedTasks.get(issue.id) === "CREATED")}
                                 />
                             ))
                         )}
