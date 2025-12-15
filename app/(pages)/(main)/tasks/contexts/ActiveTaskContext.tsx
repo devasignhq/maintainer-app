@@ -2,7 +2,9 @@
 import { TaskDto } from "@/app/models/task.model";
 import { createContext } from "react";
 
-export const ActiveTaskContext = createContext<{
+type ActiveTaskContextType = {
     activeTask: TaskDto | null;
     setActiveTask: React.Dispatch<React.SetStateAction<TaskDto | null>>
-}>({} as any);
+}
+
+export const ActiveTaskContext = createContext<ActiveTaskContextType>({} as ActiveTaskContextType);

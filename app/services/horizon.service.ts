@@ -81,7 +81,7 @@ export function useStreamAccountBalance(
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const reconnectAttempts = useRef(0);
     const previousBalances = useRef<{ xlm: number; usdc: number } | null>(null);
-    
+
     const updateBalances = async (balances: WalletBalance[]) => {
         const newXlmBalance = parseFloat(
             balances.find(balance => balance.asset_type === "native")?.balance || "0"
@@ -102,15 +102,11 @@ export function useStreamAccountBalance(
             if (xlmIncrease && !HorizonHelper.isRecentSwap("XLM", true)) {
                 try {
                     await WalletAPI.recordWalletTopups(installationId);
-                } catch (error) {
-                    console.error("Failed to record wallet topups:", error);
-                }
+                } catch {}
             } else if (usdcIncrease && !HorizonHelper.isRecentSwap("USDC", true)) {
                 try {
                     await WalletAPI.recordWalletTopups(installationId);
-                } catch (error) {
-                    console.error("Failed to record wallet topups:", error);
-                }
+                } catch {}
             }
         }
 
@@ -207,7 +203,7 @@ export function useStreamAccountBalance(
 
         connect();
         return cleanup;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [walletAddress, isTestnet, installationId]);
 
     const manualBalanceCheck = useCallback(async () => {

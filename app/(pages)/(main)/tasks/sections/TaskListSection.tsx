@@ -53,7 +53,7 @@ const TaskListSection = () => {
             }
 
             const pageToLoad = currentData ? (currentData.pagination as PaginationResponse).currentPage + 1 : 1;
-            let filters: FilterTasks = { 
+            let filters: FilterTasks = {
                 issueTitle: taskFilters.issueTitle,
                 status: taskFilters.status
             };
@@ -109,7 +109,7 @@ const TaskListSection = () => {
         loading: loadingResources,
         data: repoResources,
         run: fetchRepoResources
-    } = useRequest<GetRepositoryResourcesResponse, any>(
+    } = useRequest<GetRepositoryResourcesResponse, []>(
         () => {
             return InstallationAPI.getRepositoryResources(
                 activeInstallation!.id,
@@ -126,7 +126,7 @@ const TaskListSection = () => {
 
     useEffect(() => {
         if (taskFilters.repoUrl) {
-            fetchRepoResources();;
+            fetchRepoResources();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [taskFilters.repoUrl]);

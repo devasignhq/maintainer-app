@@ -27,8 +27,8 @@ export class HttpClient {
         try {
             const response = await axiosInstance.get<T>(url, config);
             return response.data;
-        } catch (error: any) {
-            throw error.response?.data || error;
+        } catch (error: unknown) {
+            throw (error as { response?: { data?: unknown } }).response?.data || error;
         }
     }
 
@@ -36,8 +36,8 @@ export class HttpClient {
         try {
             const response = await axiosInstance.post<T>(url, data, config);
             return response.data;
-        } catch (error: any) {
-            throw error.response?.data || error;
+        } catch (error: unknown) {
+            throw (error as { response?: { data?: unknown } }).response?.data || error;
         }
     }
 
@@ -45,8 +45,8 @@ export class HttpClient {
         try {
             const response = await axiosInstance.put<T>(url, data, config);
             return response.data;
-        } catch (error: any) {
-            throw error.response?.data || error;
+        } catch (error: unknown) {
+            throw (error as { response?: { data?: unknown } }).response?.data || error;
         }
     }
 
@@ -54,8 +54,8 @@ export class HttpClient {
         try {
             const response = await axiosInstance.patch<T>(url, data, config);
             return response.data;
-        } catch (error: any) {
-            throw error.response?.data || error;
+        } catch (error: unknown) {
+            throw (error as { response?: { data?: unknown } }).response?.data || error;
         }
     }
 
@@ -63,8 +63,8 @@ export class HttpClient {
         try {
             const response = await axiosInstance.delete<T>(url, config);
             return response.data;
-        } catch (error: any) {
-            throw error.response?.data || error;
+        } catch (error: unknown) {
+            throw (error as { response?: { data?: unknown } }).response?.data || error;
         }
     }
 }

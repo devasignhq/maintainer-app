@@ -4,9 +4,9 @@ import { TaskStatus } from "../models/task.model";
 
 export function formatDateTime(isoString: string): string {
     const date = new Date(isoString);
-    return date.toLocaleDateString("en-GB", { 
-        day: "numeric", 
-        month: "long", 
+    return date.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
         year: "numeric",
         hour: "numeric",
         minute: "2-digit",
@@ -16,10 +16,10 @@ export function formatDateTime(isoString: string): string {
 
 export function formatDate(isoString: string): string {
     const date = new Date(isoString);
-    return date.toLocaleDateString("en-GB", { 
-        day: "numeric", 
-        month: "long", 
-        year: "numeric" 
+    return date.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
     });
 }
 
@@ -38,7 +38,7 @@ export const enumToStringConverter = (value: string) => {
     const splittedValues = value.split("_");
 
     const newValue = splittedValues.reduce((acc, value) => {
-        return acc += `${value.slice(0, 1) + value.slice(1).toLowerCase()  } `;
+        return acc += `${value.slice(0, 1) + value.slice(1).toLowerCase()} `;
     }, "");
 
     return newValue.trim();
@@ -63,12 +63,12 @@ export const enumToStringConverter = (value: string) => {
  * moneyFormat(1234.56, 'en-US', 2, true) // Returns "1,235"
  */
 export function moneyFormat(
-    value: number | string | bigint, 
-    standard?: string | string[], 
+    value: number | string | bigint,
+    standard?: string | string[],
     dec?: number,
     noDecimals?: boolean
 ) {
-    const decimal = (noDecimals || dec === 0) 
+    const decimal = (noDecimals || dec === 0)
         ? 0
         : dec || 2;
 
@@ -96,11 +96,11 @@ export function moneyFormat(
  */
 export function convertGitHubApiUrlToWebUrlRegex(apiUrl: string): string {
     const match = apiUrl.match(/^https:\/\/api\.github\.com\/repos\/(.+)$/);
-    
+
     if (!match) {
         return apiUrl;
     }
-    
+
     return `https://github.com/${match[1]}`;
 }
 
@@ -123,8 +123,8 @@ export const openInNewTab = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
 };
 
-export const handleApiError = (err: any, altMessage: string) => {
-    const error = err as unknown as ErrorResponse;
+export const handleApiError = (err: unknown, altMessage: string) => {
+    const error = err as ErrorResponse;
     if (error.message) {
         toast.error(error.message);
         return;

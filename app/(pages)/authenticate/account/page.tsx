@@ -83,9 +83,8 @@ const Account = () => {
             // const credential = GithubAuthProvider.credentialFromResult(result);
 
             getUser(additionalInfo!.username!);
-        } catch (error) {
+        } catch {
             toast.error("GitHub sign-in failed. Please try again.");
-            console.error(error);
         }
     };
 

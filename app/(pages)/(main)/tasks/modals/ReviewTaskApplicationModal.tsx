@@ -22,22 +22,18 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
 
     useAsyncEffect(useLockFn(async () => {
         if (!taskActivity.viewed) {
-            try {
-                await TaskAPI.markActivityAsViewed(taskActivity.id);
-            } catch (error) {
-                console.error("Failed to mark activity as viewed:", error);
-            }
+            await TaskAPI.markActivityAsViewed(taskActivity.id);
         }
     }), [taskActivity]);
-    
+
     return (
-        <PopupModalLayout 
-            title="Review Task Application" 
+        <PopupModalLayout
+            title="Review Task Application"
             // extendedModalClassName="w-[900px]"
             toggleModal={toggleModal}
         >
             <p className="mt-2.5 text-body-medium text-dark-100">
-                Kindly review this task application. By accepting this developer, you’re delegating this 
+                Kindly review this task application. By accepting this developer, you’re delegating this
                 GitHub issue to them and can’t assign it to another developer till the timeline elapses.
             </p>
             <div className="w-full flex gap-2.5 text-light-100 mt-5 whitespace-nowrap">
@@ -74,8 +70,8 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                 <p className="grow text-body-medium font-bold text-light-100 truncate">
                     {activeTask?.issue.title}
                 </p>
-                <p 
-                    className="text-body-tiny font-bold tracking-[-3%] text-primary-100 whitespace-nowrap" 
+                <p
+                    className="text-body-tiny font-bold tracking-[-3%] text-primary-100 whitespace-nowrap"
                     style={{ lineHeight: "20px" }}
                 >
                     {moneyFormat(activeTask?.bounty || "")} USDC
@@ -118,16 +114,16 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                     />
                 </div>
             )}
-            
+
             {openApproveTaskDelegationModal && (
-                <ApproveTaskDelegationModal 
+                <ApproveTaskDelegationModal
                     taskActivity={taskActivity}
-                    toggleModal={toggleApproveTaskDelegationModal} 
-                    onSuccess={toggleModal} 
+                    toggleModal={toggleApproveTaskDelegationModal}
+                    onSuccess={toggleModal}
                 />
             )}
         </PopupModalLayout>
     );
 };
- 
+
 export default ReviewTaskApplicationModal;

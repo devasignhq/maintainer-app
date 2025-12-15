@@ -1,6 +1,6 @@
 import { HttpClient } from "@/lib/axiosInstance";
 import { ENDPOINTS } from "./_endpoints";
-import { 
+import {
     AddTeamMemberDto,
     AddTeamMemberResponseDto,
     CreateInstallationDto,
@@ -9,8 +9,12 @@ import {
     UpdateInstallationDto,
     UpdateTeamMemberDto
 } from "../models/installation.model";
-import { MessageResponse, MessageWithDataResponse, PartialSuccessResponse } from "../models/_global";
-import { PaginatedResponse } from "../models/_global";
+import {
+    MessageResponse,
+    MessageWithDataResponse,
+    PartialSuccessResponse,
+    PaginatedResponse
+} from "../models/_global";
 import {
     RepositoryDto,
     QueryRepositoryIssues,
@@ -37,7 +41,7 @@ export class InstallationAPI {
         return HttpClient.patch<Pick<InstallationDto, "htmlUrl" | "targetId" | "account" | "updatedAt">>(
             ENDPOINTS.INSTALLATION.UPDATE.replace("{installationId}", installationId), data);
     }
-    
+
     static async deleteInstallation(installationId: string) {
         return HttpClient.delete<MessageWithDataResponse<"refunded", string>>(
             ENDPOINTS.INSTALLATION.DELETE.replace("{installationId}", installationId));

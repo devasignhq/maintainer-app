@@ -36,7 +36,7 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
 
         let unsubscribeFromTaskMessages: (() => void) | null = null;
         let unsubscribeFromExtensionReplies: (() => void) | null = null;
-        
+
         const initializeMessages = async () => {
             try {
                 const initialMessages = await MessageAPI.getTaskMessages(taskId);
@@ -44,9 +44,9 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                 setLoading(false);
 
                 unsubscribeFromTaskMessages = MessageAPI.listenToTaskMessages(
-                    taskId, 
-                    contributorId, 
-                    (getLastUserMessage(initialMessages, contributorId)?.createdAt)?.toDate().toISOString() || "", 
+                    taskId,
+                    contributorId,
+                    (getLastUserMessage(initialMessages, contributorId)?.createdAt)?.toDate().toISOString() || "",
                     async (updatedMessages: MessageDto[]) => {
                         if (updatedMessages.length > 0) {
                             await updateMessage(updatedMessages);
@@ -54,8 +54,8 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                     }
                 );
                 unsubscribeFromExtensionReplies = MessageAPI.listenToExtensionReplies(
-                    taskId, 
-                    currentUser.userId, 
+                    taskId,
+                    currentUser.userId,
                     (getLastUserMessage(initialMessages, currentUser.userId)?.createdAt)?.toDate().toISOString() || "",
                     async (updatedMessages: MessageDto[]) => {
                         if (updatedMessages.length > 0) {
@@ -63,8 +63,8 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
                         }
                     }
                 );
-            } catch (error) {
-                console.error("Failed to load messages:", error);
+            } catch {
+                // console.error("Failed to load messages:", error);
                 setLoading(false);
             }
         };
@@ -97,16 +97,16 @@ export const formatDateLabel = (date: Date): string => {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
-    
+
     // Reset time to midnight for accurate day comparison
     const messageDate = new Date(date);
     const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const messageMidnight = new Date(messageDate.getFullYear(), messageDate.getMonth(), messageDate.getDate());
-    
+
     // Calculate days difference
     const timeDiff = todayMidnight.getTime() - messageMidnight.getTime();
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    
+
     if (daysDiff === 0) {
         return "Today";
     } else if (daysDiff === 1) {
@@ -120,7 +120,7 @@ export const formatDateLabel = (date: Date): string => {
         const day = messageDate.getDate();
         const month = messageDate.toLocaleString("en-US", { month: "long" });
         const year = messageDate.getFullYear();
-        
+
         // Add ordinal suffix to day
         const getOrdinalSuffix = (day: number): string => {
             if (day >= 11 && day <= 13) {
@@ -133,44 +133,44 @@ export const formatDateLabel = (date: Date): string => {
             default: return "th";
             }
         };
-        
+
         return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
     }
 };
 
 export const groupMessagesByDay = (messages: MessageDto[]): GroupedMessages => {
     const grouped: GroupedMessages = {};
-  
+
     messages.forEach(message => {
         // Handle both ISO string and Timestamp formats
         const messageDate = message.createdAt.toDate();
-        
+
         const dateLabel = formatDateLabel(messageDate);
-        
+
         if (!grouped[dateLabel]) {
             grouped[dateLabel] = [];
         }
-        
+
         grouped[dateLabel].push(message);
     });
-    
+
     return grouped;
 };
 
 export const getOrderedDateLabels = (groupedMessages: GroupedMessages): string[] => {
     const labels = Object.keys(groupedMessages);
-  
+
     // Custom sort function to maintain chronological order
     return labels.sort((a, b) => {
         // Get the first message from each group to determine the actual date
         const messagesA = groupedMessages[a];
         const messagesB = groupedMessages[b];
-        
+
         if (!messagesA.length || !messagesB.length) return 0;
-        
+
         const dateA = messagesA[0].createdAt.toDate();
         const dateB = messagesB[0].createdAt.toDate();
-        
+
         // Sort newest first (descending)
         return dateA.getTime() - dateB.getTime();
     });

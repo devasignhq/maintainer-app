@@ -46,8 +46,7 @@ export function useLogoutUser() {
             clearCache("");
             clearStores();
             router.push(ROUTES.ACCOUNT);
-        } catch(error) {
-            console.log(error);
+        } catch {
             alert("Something went wrong. Please try again.");
         }
     });
@@ -66,14 +65,14 @@ export const useUnauthenticatedUserCheck = () => {
             router.push(ROUTES.ACCOUNT);
         }
     }, [router]);
-    
+
     return router;
 };
 
 // Checks if the user is signed in (used in authentication pages to redirect signed in users)
 export const useAuthenticatedUserCheck = () => {
     const router = useRouter();
-    
+
     useAsyncEffect(async () => {
         const user = await getCurrentUser();
 
@@ -81,6 +80,6 @@ export const useAuthenticatedUserCheck = () => {
             router.push(ROUTES.TASKS);
         }
     }, [router]);
-    
+
     return router;
 };

@@ -43,13 +43,13 @@ export enum AssetType {
     liquidityPoolShares = "liquidity_pool_shares",
 }
 export enum MemoType {
-  None = "none",
-  ID = "id",
-  Text = "text",
-  Hash = "hash",
-  Return = "return",
+    None = "none",
+    ID = "id",
+    Text = "text",
+    Hash = "hash",
+    Return = "return",
 }
-  
+
 export interface ResponseLink {
     href: string;
     templated?: boolean;
@@ -146,7 +146,11 @@ export interface BalanceLineAsset<T extends AssetType.credit4 | AssetType.credit
     is_clawback_enabled: boolean;
     sponsor?: string;
 }
-type BalanceLine<T extends AssetType = AssetType> = T extends AssetType.native ? BalanceLineNative : T extends AssetType.credit4 | AssetType.credit12 ? BalanceLineAsset<T> : T extends AssetType.liquidityPoolShares ? BalanceLineLiquidityPool : BalanceLineNative | BalanceLineAsset | BalanceLineLiquidityPool;
+type BalanceLine<T extends AssetType = AssetType> =
+    T extends AssetType.native ? BalanceLineNative :
+    T extends AssetType.credit4 | AssetType.credit12 ? BalanceLineAsset<T> :
+    T extends AssetType.liquidityPoolShares ? BalanceLineLiquidityPool :
+    BalanceLineNative | BalanceLineAsset | BalanceLineLiquidityPool;
 export interface AssetAccounts {
     authorized: number;
     authorized_to_maintain_liabilities: number;

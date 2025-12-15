@@ -148,14 +148,14 @@ const ImportTaskModal = ({
             setCurrentPage(pageToLoad);
 
             return { list: issues, hasMore };
-        }, 
+        },
         {
             isNoMore: (data) => !data?.hasMore,
             reloadDeps: [activeRepo, ...Object.values(issueFilters)]
         }
     );
 
-    const { loading: loadingResources, data: repoResources } = useRequest<GetRepositoryResourcesResponse, any>(
+    const { loading: loadingResources, data: repoResources } = useRequest<GetRepositoryResourcesResponse, [string, string]>(
         () => {
             if (!activeRepo || !activeInstallation) {
                 return delayedEmptyResources();
@@ -217,7 +217,7 @@ const ImportTaskModal = ({
 
         await new Promise((resolve) => {
             toast.warn(
-                "Please do not leave this page or close this modal while your tasks are still processing.", 
+                "Please do not leave this page or close this modal while your tasks are still processing.",
                 { autoClose: 3000 }
             );
             setTimeout(() => resolve(null), 500);
@@ -241,12 +241,11 @@ const ImportTaskModal = ({
                 if (response && "message" in response) {
                     toast.warn(response.message);
                 }
-            } catch (error) {
+            } catch {
                 toast.error(`Task for issue #${task.payload.issue.number} failed to create.`);
                 setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "FAILED"));
                 hasErrors = true;
                 draftTasks.push(task.payload);
-                console.error(`Error creating task #${task.payload.issue.number}:`, error);
             }
         }
 
@@ -277,8 +276,8 @@ const ImportTaskModal = ({
     };
 
     return (
-        <PopupModalLayout 
-            title="Import from GitHub Issues" 
+        <PopupModalLayout
+            title="Import from GitHub Issues"
             toggleModal={toggleModal}
             disableCloseButton={uploadingTasks}
         >
@@ -357,9 +356,9 @@ const ImportTaskModal = ({
                             labels: value as string[]
                         }))}
                         extendedButtonClassName="py-[5px]"
-                        buttonAttributes={{ 
-                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }, 
-                            disabled: loadingResources || disableFilters 
+                        buttonAttributes={{
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                            disabled: loadingResources || disableFilters
                         }}
                     />
                     <FilterDropdown
@@ -372,9 +371,9 @@ const ImportTaskModal = ({
                             milestone: value as string
                         }))}
                         extendedButtonClassName="py-[5px]"
-                        buttonAttributes={{ 
-                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }, 
-                            disabled: loadingResources || disableFilters 
+                        buttonAttributes={{
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                            disabled: loadingResources || disableFilters
                         }}
                         noMultiSelect
                     />
@@ -393,9 +392,9 @@ const ImportTaskModal = ({
                             sort: value as "created" | "updated" | "comments"
                         }))}
                         extendedButtonClassName="py-[5px]"
-                        buttonAttributes={{ 
-                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }, 
-                            disabled: disableFilters 
+                        buttonAttributes={{
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                            disabled: disableFilters
                         }}
                         noMultiSelect
                     />
@@ -413,9 +412,9 @@ const ImportTaskModal = ({
                             direction: value as "asc" | "desc"
                         }))}
                         extendedButtonClassName="py-[5px]"
-                        buttonAttributes={{ 
-                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" }, 
-                            disabled: disableFilters || !issueFilters.sort 
+                        buttonAttributes={{
+                            style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
+                            disabled: disableFilters || !issueFilters.sort
                         }}
                         noMultiSelect
                     />

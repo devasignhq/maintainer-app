@@ -39,15 +39,14 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
             async (entries) => {
                 const [entry] = entries;
                 if (entry.isIntersecting) {
-                    try {
-                        await MessageAPI.markMessageAsRead(message.id);
-                        // Update local state to reflect the read status
-                        setMessages(prev => prev.map(msg =>
-                            msg.id === message.id ? { ...msg, read: true } : msg
-                        ));
-                    } catch (error) {
-                        console.error("Failed to mark message as read:", error);
-                    }
+                    // Mark message as read
+                    await MessageAPI.markMessageAsRead(message.id);
+
+                    // Update local state to reflect the read status
+                    setMessages(prev => prev.map(msg =>
+                        msg.id === message.id ? { ...msg, read: true } : msg
+                    ));
+
                     // Stop observing once marked as read
                     observer.disconnect();
                 }
@@ -61,7 +60,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
         observer.observe(messageRef.current);
 
         return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser?.userId]);
 
     const replyExtensionRequest = async () => {
@@ -111,10 +110,8 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
     return message.type === "GENERAL" ? (
         <div
             ref={messageRef}
-            className={`max-w-[78%] w-fit p-[15px] space-y-2.5 ${margin} 
-                ${message.userId === currentUser?.userId
-            ? "bg-dark-300 ml-auto"
-            : "bg-primary-300 mr-auto"}`
+            className={`${message.userId === currentUser?.userId ? "bg-dark-300 ml-auto" : "bg-primary-300 mr-auto"} 
+                max-w-[78%] w-fit p-[15px] space-y-2.5 ${margin}`
             }
         >
             <p className="text-body-medium text-light-100">{message.body}</p>
@@ -199,7 +196,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
 
             {openReplyModal && (
                 <PopupModalLayout
-                    title={`${replyMode === "approve" ? "Approve" : "Reject"  } Extension Request`}
+                    title={`${replyMode === "approve" ? "Approve" : "Reject"} Extension Request`}
                     toggleModal={toggleReplyModal}
                 >
                     <p className="mt-2.5 mb-5 text-body-medium text-dark-100">

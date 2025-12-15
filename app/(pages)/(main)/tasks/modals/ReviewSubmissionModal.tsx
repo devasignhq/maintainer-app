@@ -22,11 +22,7 @@ const ReviewSubmissionModal = ({ taskActivity, toggleModal }: ReviewSubmissionMo
 
     useAsyncEffect(useLockFn(async () => {
         if (!taskActivity.viewed) {
-            try {
-                await TaskAPI.markActivityAsViewed(taskActivity.id);
-            } catch (error) {
-                console.error("Failed to mark activity as viewed:", error);
-            }
+            await TaskAPI.markActivityAsViewed(taskActivity.id);
         }
     }), [taskActivity]);
 
