@@ -58,7 +58,7 @@ const Wallet = () => {
         loadingMore: loadingMoreTransactions,
         noMore: noMoreTransactions,
         loadMore: loadMoreTransactions,
-        reload: reloadTransactions,
+        reload: reloadTransactions
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             const pageToLoad = currentData ? currentPage + 1 : 1;
@@ -81,7 +81,7 @@ const Wallet = () => {
 
             return { 
                 list: response.transactions,
-                hasMore: response.hasMore,
+                hasMore: response.hasMore
             };
         }, 
         {
@@ -104,145 +104,145 @@ const Wallet = () => {
 
     return (
         <>
-        <div className="w-[80%] max-h-[calc(100dvh-123px)] mx-auto flex flex-col pb-5">
-            <section className="w-full space-y-5 mt-[30px] mb-[50px]">
-                <div className="flex items-start justify-between">
-                    <h1 className="text-display-small text-light-100">Project Wallet</h1>
-                    <div className="flex gap-2.5">
-                        <ButtonPrimary
-                            format="SOLID"
-                            text="Withdraw"
-                            sideItem={<FiArrowDownRight />}
-                            attributes={{ onClick: toggleWithdrawAssetModal }}
-                            extendedClassName="bg-primary-400"
-                        />
-                        <ButtonPrimary
-                            format="SOLID"
-                            text="Top Up"
-                            sideItem={<HiPlus />}
-                            attributes={{ onClick: toggleFundWalletModal }}
-                        />
-                    </div>
-                </div>
-                <div className="w-full grid grid-cols-2 gap-5">
-                    <div className="w-full p-5 border border-primary-200 flex items-start justify-between">
-                        <div className="space-y-2.5">
-                            <p className="text-body-small text-dark-100">XLM Balance</p>
-                            <p className="text-primary-400">
-                                <span className="text-display-large">{moneyFormat(xlmBalance).split(".")[0]}</span>
-                                <span className="text-body-medium">.{xlmBalance.split(".")[1] || "00"} XLM</span>
-                            </p>
+            <div className="w-[80%] max-h-[calc(100dvh-123px)] mx-auto flex flex-col pb-5">
+                <section className="w-full space-y-5 mt-[30px] mb-[50px]">
+                    <div className="flex items-start justify-between">
+                        <h1 className="text-display-small text-light-100">Project Wallet</h1>
+                        <div className="flex gap-2.5">
+                            <ButtonPrimary
+                                format="SOLID"
+                                text="Withdraw"
+                                sideItem={<FiArrowDownRight />}
+                                attributes={{ onClick: toggleWithdrawAssetModal }}
+                                extendedClassName="bg-primary-400"
+                            />
+                            <ButtonPrimary
+                                format="SOLID"
+                                text="Top Up"
+                                sideItem={<HiPlus />}
+                                attributes={{ onClick: toggleFundWalletModal }}
+                            />
                         </div>
-                        <button 
-                            className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                            onClick={() => handleOpenSwapAssetModal("XLM")}
-                        >
-                            <span>Swap to USDC</span>
-                            <LiaExchangeAltSolid className="text-[22px]" />
-                        </button>
                     </div>
-                    <div className="w-full p-5 border border-dark-200 flex items-start justify-between">
-                        <div className="space-y-2.5">
-                            <p className="text-body-small text-dark-100">USDC Balance</p>
-                            <p className="text-light-100">
-                                <span className="text-display-large">{moneyFormat(usdcBalance).split(".")[0]}</span>
-                                <span className="text-body-medium">.{usdcBalance.split(".")[1] || "00"} USDC</span>
-                            </p>
+                    <div className="w-full grid grid-cols-2 gap-5">
+                        <div className="w-full p-5 border border-primary-200 flex items-start justify-between">
+                            <div className="space-y-2.5">
+                                <p className="text-body-small text-dark-100">XLM Balance</p>
+                                <p className="text-primary-400">
+                                    <span className="text-display-large">{moneyFormat(xlmBalance).split(".")[0]}</span>
+                                    <span className="text-body-medium">.{xlmBalance.split(".")[1] || "00"} XLM</span>
+                                </p>
+                            </div>
+                            <button 
+                                className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                                onClick={() => handleOpenSwapAssetModal("XLM")}
+                            >
+                                <span>Swap to USDC</span>
+                                <LiaExchangeAltSolid className="text-[22px]" />
+                            </button>
                         </div>
-                        <button 
-                            className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                            onClick={() => handleOpenSwapAssetModal("USDC")}
-                        >
-                            <span>Swap to XLM</span>
-                            <LiaExchangeAltSolid className="text-[22px]" />
-                        </button>
+                        <div className="w-full p-5 border border-dark-200 flex items-start justify-between">
+                            <div className="space-y-2.5">
+                                <p className="text-body-small text-dark-100">USDC Balance</p>
+                                <p className="text-light-100">
+                                    <span className="text-display-large">{moneyFormat(usdcBalance).split(".")[0]}</span>
+                                    <span className="text-body-medium">.{usdcBalance.split(".")[1] || "00"} USDC</span>
+                                </p>
+                            </div>
+                            <button 
+                                className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                                onClick={() => handleOpenSwapAssetModal("USDC")}
+                            >
+                                <span>Swap to XLM</span>
+                                <LiaExchangeAltSolid className="text-[22px]" />
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </section>
-            <section>
-                <div className="flex gap-2.5 mb-[30px]">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.enum}
-                            className={`p-2 px-2.5 text-body-small border 
+                </section>
+                <section>
+                    <div className="flex gap-2.5 mb-[30px]">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.enum}
+                                className={`p-2 px-2.5 text-body-small border 
                                 ${activeTab.enum === tab.enum 
-                                    ? "border-transparent bg-light-100 text-dark-500 font-bold" 
-                                    : "border-dark-100 text-dark-100 hover:text-light-100"}`
-                            }
-                            onClick={() => setActiveTab(tab)}
-                        >
-                            {tab.title}
-                        </button>
-                    ))}
-                </div>
-            </section>
-            {activeTab.enum === "ALL" && (
-                <AllTable 
-                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                    loading={loadingTransactions}
-                    loadingMore={loadingMoreTransactions}
-                    noMore={noMoreTransactions}
-                    loadMore={loadMoreTransactions}
-                />
-            )}
-            {activeTab.enum === "BOUNTY" && (
-                <BountyTable 
-                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                    loading={loadingTransactions}
-                    loadingMore={loadingMoreTransactions}
-                    noMore={noMoreTransactions}
-                    loadMore={loadMoreTransactions}
-                />
-            )}
-            {activeTab.enum === "TOP_UP" && (
-                <TopUpTable 
-                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                    loading={loadingTransactions}
-                    loadingMore={loadingMoreTransactions}
-                    noMore={noMoreTransactions}
-                    loadMore={loadMoreTransactions}
-                />
-            )}
-            {activeTab.enum === "SWAP" && (
-                <SwapTable 
-                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                    loading={loadingTransactions}
-                    loadingMore={loadingMoreTransactions}
-                    noMore={noMoreTransactions}
-                    loadMore={loadMoreTransactions}
-                />
-            )}
-            {activeTab.enum === "WITHDRAWAL" && (
-                <WithdrawalTable 
-                    data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                    loading={loadingTransactions}
-                    loadingMore={loadingMoreTransactions}
-                    noMore={noMoreTransactions}
-                    loadMore={loadMoreTransactions}
-                />
-            )}
-        </div>
+                                ? "border-transparent bg-light-100 text-dark-500 font-bold" 
+                                : "border-dark-100 text-dark-100 hover:text-light-100"}`
+                                }
+                                onClick={() => setActiveTab(tab)}
+                            >
+                                {tab.title}
+                            </button>
+                        ))}
+                    </div>
+                </section>
+                {activeTab.enum === "ALL" && (
+                    <AllTable 
+                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
+                        loading={loadingTransactions}
+                        loadingMore={loadingMoreTransactions}
+                        noMore={noMoreTransactions}
+                        loadMore={loadMoreTransactions}
+                    />
+                )}
+                {activeTab.enum === "BOUNTY" && (
+                    <BountyTable 
+                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
+                        loading={loadingTransactions}
+                        loadingMore={loadingMoreTransactions}
+                        noMore={noMoreTransactions}
+                        loadMore={loadMoreTransactions}
+                    />
+                )}
+                {activeTab.enum === "TOP_UP" && (
+                    <TopUpTable 
+                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
+                        loading={loadingTransactions}
+                        loadingMore={loadingMoreTransactions}
+                        noMore={noMoreTransactions}
+                        loadMore={loadMoreTransactions}
+                    />
+                )}
+                {activeTab.enum === "SWAP" && (
+                    <SwapTable 
+                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
+                        loading={loadingTransactions}
+                        loadingMore={loadingMoreTransactions}
+                        noMore={noMoreTransactions}
+                        loadMore={loadMoreTransactions}
+                    />
+                )}
+                {activeTab.enum === "WITHDRAWAL" && (
+                    <WithdrawalTable 
+                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
+                        loading={loadingTransactions}
+                        loadingMore={loadingMoreTransactions}
+                        noMore={noMoreTransactions}
+                        loadMore={loadMoreTransactions}
+                    />
+                )}
+            </div>
         
-        {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
-        {openWithdrawAssetModal && (
-            <WithdrawAssetModal 
-                xlmBalance={xlmBalance} 
-                toggleModal={toggleWithdrawAssetModal} 
-                reloadTransactions={reloadTransactions} 
-            />
-        )}
-        {openSwapAssetModal && (
-            <SwapAssetModal 
-                from={swapAssetFrom}
-                xlmBalance={xlmBalance}
-                usdcBalance={usdcBalance}
-                toggleModal={toggleSwapAssetModal} 
-                reloadTransactions={handleSwapSuccess} 
-            />
-        )}
+            {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
+            {openWithdrawAssetModal && (
+                <WithdrawAssetModal 
+                    xlmBalance={xlmBalance} 
+                    toggleModal={toggleWithdrawAssetModal} 
+                    reloadTransactions={reloadTransactions} 
+                />
+            )}
+            {openSwapAssetModal && (
+                <SwapAssetModal 
+                    from={swapAssetFrom}
+                    xlmBalance={xlmBalance}
+                    usdcBalance={usdcBalance}
+                    toggleModal={toggleSwapAssetModal} 
+                    reloadTransactions={handleSwapSuccess} 
+                />
+            )}
         </>
-    )
-}
+    );
+};
  
 export default Wallet;
 
@@ -251,5 +251,5 @@ const tabs = [
     { title: "Bounty", enum: "BOUNTY" },
     { title: "Top Up", enum: "TOP_UP" },
     { title: "Swap", enum: "SWAP" },
-    { title: "Withdrawal", enum: "WITHDRAWAL" },
-]
+    { title: "Withdrawal", enum: "WITHDRAWAL" }
+];

@@ -8,10 +8,10 @@ export const ROUTES = {
     WALLET: "/wallet",
     SETTINGS: {
         MANAGE_TEAM: "/settings/manage-team",
-        PLANS_AND_BILLINGS: "/settings/plans-and-billings",
+        PLANS_AND_BILLINGS: "/settings/plans-and-billings"
     },
     INSTALLATION: {
         NEW: "https://github.com/apps/devasign-app/installations/new",
-        CREATE: "/installation",
+        CREATE: "/installation"
     }
 };

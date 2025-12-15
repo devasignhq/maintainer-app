@@ -16,7 +16,7 @@ const SubscriptionCard = ({
     active,
     cardAttributes,
     icon,
-    planState,
+    planState
 }: SubscriptionCardProps) => {
     return (
         <div 
@@ -39,14 +39,14 @@ const SubscriptionCard = ({
                         
                         {(!active && planState) && (
                             <>
-                            <GoDotFill className="text-[10px] text-light-100" />
-                            <button 
-                                className="flex items-center gap-[5px] text-primary-400 text-button-large font-extrabold hover:text-light-200"
-                                onClick={() => {}}
-                            >
-                                <span>{planState === "DOWNGRADE" ? "Downgrade" : "Buy Plan"}</span>
-                                <FiArrowUpRight className={`text-2xl ${planState === "DOWNGRADE" && "rotate-180"}`} />
-                            </button>
+                                <GoDotFill className="text-[10px] text-light-100" />
+                                <button 
+                                    className="flex items-center gap-[5px] text-primary-400 text-button-large font-extrabold hover:text-light-200"
+                                    onClick={() => {}}
+                                >
+                                    <span>{planState === "DOWNGRADE" ? "Downgrade" : "Buy Plan"}</span>
+                                    <FiArrowUpRight className={`text-2xl ${planState === "DOWNGRADE" && "rotate-180"}`} />
+                                </button>
                             </>
                         )}
                     </h6>
@@ -62,6 +62,6 @@ const SubscriptionCard = ({
             )}
         </div>
     );
-}
+};
  
 export default SubscriptionCard;

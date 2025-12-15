@@ -20,7 +20,7 @@ const Account = () => {
 
     const getInstallation = () => {
         if (installationId) {
-            router.push(ROUTES.INSTALLATION.CREATE + `?installation_id=${installationId}`);
+            router.push(`${ROUTES.INSTALLATION.CREATE}?installation_id=${installationId}`);
         }
     };
 
@@ -57,7 +57,7 @@ const Account = () => {
 
                 if (data?._count && data._count?.installations > 0) {
                     router.push(ROUTES.TASKS);
-                    return
+                    return;
                 }
                 router.push(ROUTES.ONBOARDING);
             },
@@ -65,11 +65,11 @@ const Account = () => {
                 const error = err as unknown as ErrorResponse;
                 if (error.code === "NOT_FOUND") {
                     createUser(params[0]);
-                    return
+                    return;
                 }
                 if (error.message) {
                     toast.error(error.message);
-                    return
+                    return;
                 }
                 toast.error("Failed to fetch user.");
             }
@@ -83,9 +83,8 @@ const Account = () => {
             // const credential = GithubAuthProvider.credentialFromResult(result);
 
             getUser(additionalInfo!.username!);
-        } catch (error) {
+        } catch {
             toast.error("GitHub sign-in failed. Please try again.");
-            console.error(error);
         }
     };
 
@@ -110,12 +109,12 @@ const Account = () => {
                 sideItem={<FaGithub />}
                 attributes={{
                     onClick: handleGitHubAuth,
-                    disabled: creatingUser || fetchingUser,
+                    disabled: creatingUser || fetchingUser
                 }}
                 extendedClassName="w-[264px]"
             />
         </div>
     );
-}
+};
 
 export default Account;

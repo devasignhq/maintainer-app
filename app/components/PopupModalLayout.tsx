@@ -15,7 +15,7 @@ const PopupModalLayout = ({
     title,
     toggleModal,
     extendedModalClassName,
-    disableCloseButton,
+    disableCloseButton
 }: PopupModalLayoutProps) => {
     return (
         <div className="fixed inset-0 z-[100] bg-[#0000004D] grid place-content-center backdrop-blur-[14px] pointer-events-none">
@@ -36,6 +36,6 @@ const PopupModalLayout = ({
             </div>
         </div>
     );
-}
+};
  
 export default PopupModalLayout;

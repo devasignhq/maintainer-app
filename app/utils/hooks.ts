@@ -76,7 +76,7 @@ export function usePopup() {
         menuRef,
         openMenu,
         toggleMenu
-    }
+    };
 }
 
 export function useClearStores() {
@@ -112,7 +112,7 @@ export function useGetInstallationRepositories() {
         }
     }, [activeInstallation]);
 
-    return { repositories, loading }
+    return { repositories, loading };
 }
 
 export function useEffectOnce(effect: EffectCallback, deps?: DependencyList) {

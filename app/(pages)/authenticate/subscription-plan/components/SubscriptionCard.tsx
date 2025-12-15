@@ -14,7 +14,7 @@ const SubscriptionCard = ({
     plan,
     active,
     cardAttributes,
-    icon,
+    icon
 }: SubscriptionCardProps) => {
     return (
         <div 
@@ -57,6 +57,6 @@ const SubscriptionCard = ({
             </div>
         </div>
     );
-}
+};
  
 export default SubscriptionCard;

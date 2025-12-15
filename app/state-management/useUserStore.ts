@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from "zustand/middleware";
 import { UserDto } from "../models/user.model";
 
 type UserStore = {
@@ -13,15 +13,15 @@ const useUserStore = create(
         (set) => ({
             currentUser: null,
             setCurrentUser: (data: UserDto) => {
-                set({ currentUser: data })
+                set({ currentUser: data });
             },
             clearUserStore: () => {
-                set({ currentUser: null })
-            },
+                set({ currentUser: null });
+            }
         }),
         {
-            name: '@user',
-            storage: createJSONStorage(() => localStorage),
+            name: "@user",
+            storage: createJSONStorage(() => localStorage)
         }
     )
 );

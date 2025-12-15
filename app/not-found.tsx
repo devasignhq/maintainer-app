@@ -31,7 +31,7 @@ export default function Home() {
                     format="OUTLINE"
                     text="Go To Tasks Page"
                     attributes={{
-                        onClick: () => router.push(ROUTES.TASKS),
+                        onClick: () => router.push(ROUTES.TASKS)
                     }}
                     extendedClassName="w-fit mx-auto"
                 />

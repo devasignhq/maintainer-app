@@ -45,15 +45,15 @@ const TaskListSection = () => {
         loadingMore: loadingMoreTasks,
         noMore: noMoreTasks,
         loadMore: loadMoreTasks,
-        reload: reloadTasks,
+        reload: reloadTasks
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             if (!activeInstallation) {
-                return { list: [], pagination: null }
+                return { list: [], pagination: null };
             }
 
             const pageToLoad = currentData ? (currentData.pagination as PaginationResponse).currentPage + 1 : 1;
-            let filters: FilterTasks = { 
+            let filters: FilterTasks = {
                 issueTitle: taskFilters.issueTitle,
                 status: taskFilters.status
             };
@@ -67,8 +67,8 @@ const TaskListSection = () => {
                 {
                     page: pageToLoad,
                     limit: 30,
-                    ...filters,
-                },
+                    ...filters
+                }
             );
 
             if (!searchParams.get("taskId") && !activeTask && response.data.length > 0) {
@@ -81,7 +81,7 @@ const TaskListSection = () => {
 
             return {
                 list: response.data,
-                pagination: response.pagination,
+                pagination: response.pagination
             };
         },
         {
@@ -109,7 +109,7 @@ const TaskListSection = () => {
         loading: loadingResources,
         data: repoResources,
         run: fetchRepoResources
-    } = useRequest<GetRepositoryResourcesResponse, any>(
+    } = useRequest<GetRepositoryResourcesResponse, []>(
         () => {
             return InstallationAPI.getRepositoryResources(
                 activeInstallation!.id,
@@ -126,7 +126,7 @@ const TaskListSection = () => {
 
     useEffect(() => {
         if (taskFilters.repoUrl) {
-            fetchRepoResources();;
+            fetchRepoResources();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [taskFilters.repoUrl]);
@@ -155,7 +155,7 @@ const TaskListSection = () => {
                                 setSearchValue(e.target.value);
                                 if (!displaySearchIcon) setDisplaySearchIcon(true);
                             },
-                            disabled: loadingTasks,
+                            disabled: loadingTasks
                         }}
                         extendedContainerClassName="w-full"
                         extendedInputClassName="text-body-tiny text-light-100"
@@ -192,7 +192,7 @@ const TaskListSection = () => {
                             }}
                             setField={(value) => setTaskFilters((prev) => ({
                                 ...prev,
-                                status: value as TaskStatus,
+                                status: value as TaskStatus
                             }))}
                             defaultValue={taskFilters.status}
                             noMultiSelect
@@ -211,7 +211,7 @@ const TaskListSection = () => {
                             setField={(value) => setTaskFilters((prev) => ({
                                 ...prev,
                                 repoUrl: value as string,
-                                issueLabels: undefined,
+                                issueLabels: undefined
                             }))}
                             noMultiSelect
                         />
@@ -277,7 +277,7 @@ const TaskListSection = () => {
             )}
         </>
     );
-}
+};
 
 export default TaskListSection;
 
@@ -285,5 +285,5 @@ const defaultTaskFilters: FilterTasks = {
     status: undefined,
     repoUrl: undefined,
     issueTitle: undefined,
-    issueLabels: undefined,
-}
+    issueLabels: undefined
+};

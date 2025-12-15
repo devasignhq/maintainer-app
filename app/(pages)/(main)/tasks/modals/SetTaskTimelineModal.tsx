@@ -102,13 +102,13 @@ const SetTaskTimelineModal = ({ toggleModal }: SetTaskTimelineModalProps) => {
                 sideItem={<FiArrowRight />}
                 attributes={{
                     onClick: updateTimeline,
-                    disabled: inValidForm || loading,
+                    disabled: inValidForm || loading
                 }}
                 extendedClassName="w-fit mt-5"
             />
         </PopupModalLayout>
     );
-}
+};
  
 export default SetTaskTimelineModal;
 

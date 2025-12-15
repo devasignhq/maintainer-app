@@ -76,7 +76,7 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
                         placeholder: "0.00",
                         className: "w-full p-2.5 pl-[42px] bg-dark-400 border border-dark-100 text-body-small text-light-100",
                         value: newBounty,
-                        disabled: loading,
+                        disabled: loading
                     }}
                     defaultValue={activeTask?.bounty}
                     setValue={(value) => setNewBounty(value)}
@@ -88,12 +88,12 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
                 sideItem={<FiArrowRight />}
                 attributes={{
                     onClick: updateBounty,
-                    disabled: Boolean(newBounty === activeTask?.bounty.toString() || !newBounty.trim()) || loading,
+                    disabled: Boolean(newBounty === activeTask?.bounty.toString() || !newBounty.trim()) || loading
                 }}
                 extendedClassName="w-fit mt-5"
             />
         </PopupModalLayout>
     );
-}
+};
  
 export default SetTaskBountyModal;

@@ -28,10 +28,10 @@ const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
             toast.success("Task deleted successfully.");
             
             if (response && "refunded" in response) {
-                toast.info(response.refunded + " refunded.");
+                toast.info(`${response.refunded  } refunded.`);
             }
             if (response && "data" in response) {
-                toast.info(response.data.refunded + " refunded.");
+                toast.info(`${response.data.refunded  } refunded.`);
                 toast.warn(response.message);
             }
 
@@ -60,7 +60,7 @@ const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
                         .map((name, index, array) => 
                             index === array.length - 1 ? name : `${name}, `
                         )
-                        .join('')}
+                        .join("")}
                 </div>
                 <p className="grow text-body-medium font-bold text-light-100 truncate">
                     {activeTask?.issue.title}
@@ -82,6 +82,6 @@ const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
             />
         </PopupModalLayout>
     );
-}
+};
  
 export default DeleteTaskModal;

@@ -1,5 +1,6 @@
 import { db } from "@/lib/firebase";
 import {
+    QueryConstraint,
     Timestamp,
     collection,
     doc,
@@ -12,7 +13,7 @@ import {
     updateDoc,
     where
 } from "firebase/firestore";
-import { MessageDto, CreateMessageDto } from "../models/message.model";
+import { MessageDto, CreateMessageDto, MessageMetadata } from "../models/message.model";
 
 const messagesCollection = collection(db, "messages");
 
@@ -33,7 +34,7 @@ export class MessageAPI {
         startDate: string,
         callback: (messages: MessageDto[]) => void
     ) {
-        const constraints: any[] = [
+        const constraints: QueryConstraint[] = [
             where("taskId", "==", taskId),
             where("userId", "==", userId)
         ];
@@ -61,7 +62,7 @@ export class MessageAPI {
         taskId,
         type = "GENERAL",
         body,
-        metadata = {} as any,
+        metadata = {} as MessageMetadata,
         attachments = []
     }: CreateMessageDto) {
         const messageRef = doc(messagesCollection);
@@ -152,10 +153,10 @@ export class MessageAPI {
         startDate: string,
         callback: (messages: MessageDto[]) => void
     ) {
-        const constraints: any[] = [
+        const constraints: QueryConstraint[] = [
             where("taskId", "==", taskId),
             where("userId", "==", userId),
-            where("type", "==", "TIMELINE_MODIFICATION"),
+            where("type", "==", "TIMELINE_MODIFICATION")
         ];
 
         if (startDate && startDate.trim()) {

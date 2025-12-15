@@ -13,7 +13,7 @@ type TaskActivityCardProps = {
 
 const TaskActivityCard = ({ 
     activity,
-    issueNumber,
+    issueNumber
 }: TaskActivityCardProps) => {
     const [viewed, setViewed] = useState(activity.viewed);
     const { updateSearchParams } = useCustomSearchParams();
@@ -68,6 +68,6 @@ const TaskActivityCard = ({
             />
         )}
     </>);
-}
+};
  
 export default TaskActivityCard;

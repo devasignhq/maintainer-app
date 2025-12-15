@@ -15,12 +15,12 @@ type RegularDropdownProps = {
 } & ({
     options: (string | number)[];
 } | {
-    options: Record<string, any>[];
+    options: Record<string, unknown>[];
     fieldName: string;
     fieldValue: string;
 })
 
-const RegularDropdown = ({ 
+const RegularDropdown = ({
     defaultName,
     options,
     onChange,
@@ -33,11 +33,13 @@ const RegularDropdown = ({
     const { menuButtonRef, menuRef, openMenu, toggleMenu } = usePopup();
     const [selectedItem, setSelectedItem] = useState<string | number>(defaultName || "");
 
-    const getContent = (option: string | number | Record<string, any>, field: string) => {
-        return typeof option === "object" ? option[(otherProps as any)[field]] : option;
+    const getContent = (option: string | number | Record<string, unknown>, field: "fieldName" | "fieldValue") => {
+        return typeof option === "object"
+            ? ((option as Record<string, unknown>)[(otherProps as { [key: string]: string })[field]] as string | number)
+            : option;
     };
 
-    const selectItem = (option: string | number | Record<string, any>) => {
+    const selectItem = (option: string | number | Record<string, unknown>) => {
         setSelectedItem(getContent(option, "fieldName"));
         if (onChange) onChange(getContent(option, "fieldValue"));
         toggleMenu();
@@ -45,7 +47,7 @@ const RegularDropdown = ({
 
     return (
         <div className={twMerge("relative whitespace-nowrap", extendedContainerClassName)}>
-            <button 
+            <button
                 type="button"
                 ref={menuButtonRef}
                 className={twMerge("py-[5px] pl-[15px] pr-2.5 border border-dark-200 text-body-tiny text-light-100 flex items-center gap-[5px]", extendedButtonClassName)}
@@ -61,14 +63,14 @@ const RegularDropdown = ({
                     className="fixed top-[var(--dropdown-top)] left-[var(--dropdown-left)] px-2.5 py-[15px] max-h-[350px] 
                     bg-dark-400 dropdown-box shadow-[-20px_4px_40px_0px_#000000] z-[110] overflow-y-auto"
                     style={{
-                        '--dropdown-top': `${menuButtonRef.current?.getBoundingClientRect().top}px`,
-                        '--dropdown-left': `${menuButtonRef.current?.getBoundingClientRect().right as number + 7}px`
+                        "--dropdown-top": `${menuButtonRef.current?.getBoundingClientRect().top}px`,
+                        "--dropdown-left": `${menuButtonRef.current?.getBoundingClientRect().right as number + 7}px`
                     } as React.CSSProperties}
                 >
                     <ul className="flex flex-col gap-3 list-none items-start">
                         {options.map((option, index) => (
-                            <li 
-                                key={index} 
+                            <li
+                                key={index}
                                 className="flex items-center gap-2.5"
                             >
                                 {selectedItem === getContent(option, "fieldName") ? (
@@ -76,7 +78,7 @@ const RegularDropdown = ({
                                 ) : (
                                     <MdOutlineCheckBoxOutlineBlank className="text-[18px] text-dark-100" />
                                 )}
-                                <button 
+                                <button
                                     type="button"
                                     className="text-body-small text-light-100 whitespace-nowrap"
                                     onClick={() => selectItem(option)}
@@ -90,6 +92,6 @@ const RegularDropdown = ({
             )}
         </div>
     );
-}
- 
+};
+
 export default RegularDropdown;

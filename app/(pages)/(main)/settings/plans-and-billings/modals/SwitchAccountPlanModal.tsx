@@ -36,7 +36,7 @@ const SwitchAccountPlanModal = ({ toggleModal }: SwitchAccountPlanModalProps) =>
                     format="OUTLINE"
                     text="Cancel"
                     attributes={{
-                        onClick: () => {},
+                        onClick: () => {}
                     }}
                 />
                 <ButtonPrimary
@@ -44,12 +44,12 @@ const SwitchAccountPlanModal = ({ toggleModal }: SwitchAccountPlanModalProps) =>
                     text="Proceed"
                     sideItem={<FiArrowRight />}
                     attributes={{
-                        onClick: () => {},
+                        onClick: () => {}
                     }}
                 />
             </div>
         </PopupModalLayout>
     );
-}
+};
  
 export default SwitchAccountPlanModal;

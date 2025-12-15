@@ -6,11 +6,11 @@ import { Suspense } from "react";
 
 const geistMono = Geist_Mono({
     subsets: ["latin"],
-    variable: "--font-geist-mono",
+    variable: "--font-geist-mono"
 });
 
 export default function RootLayout({
-    children,
+    children
 }: Readonly<{
     children: React.ReactNode;
 }>) {

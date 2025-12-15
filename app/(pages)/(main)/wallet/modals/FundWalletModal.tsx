@@ -127,6 +127,6 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
             </section>
         </PopupModalLayout>
     );
-}
+};
  
 export default FundWalletModal;

@@ -5,7 +5,7 @@ import { TaskActivity } from "@/app/models/task.model";
 import Link from "next/link";
 import { useContext } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { formatDateTime, handleApiError } from "@/app/utils/helper";
 import { TaskAPI } from "@/app/services/task.service";
@@ -27,7 +27,7 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
             onSuccess: (data) => {
                 toast.success("Task delegated successfully.");
                 if (data) {
-                    setActiveTask({ ...activeTask!, ...data })
+                    setActiveTask({ ...activeTask!, ...data });
                 }
                 toggleModal();
                 onSuccess();
@@ -94,6 +94,6 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
             </div>
         </PopupModalLayout>
     );
-}
+};
 
 export default ApproveTaskDelegationModal;

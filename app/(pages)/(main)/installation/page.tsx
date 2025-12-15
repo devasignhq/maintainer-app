@@ -12,7 +12,7 @@ import { MdOutlineCancel } from "react-icons/md";
 import { handleApiError } from "@/app/utils/helper";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
-type ReboundAction = "INSTALL" | "RELOAD" | "";
+type ReboundAction = "INSTALL" | "RETRY" | "";
 
 const Installation = () => {
     const router = useUnauthenticatedUserCheck();;
@@ -20,33 +20,32 @@ const Installation = () => {
     const installationId = searchParams.get("installation_id");
     const [isProcessing, setIsProcessing] = useState(true);
     const [reboundAction, setReboundAction] = useState<ReboundAction>("");
-    
-    const { 
-        activeInstallation, 
+
+    const {
+        activeInstallation,
         installationList,
         setActiveInstallation,
         setInstallationList
     } = useInstallationStore();
 
-    useAsyncEffect(useLockFn(async () => {
+    const saveInstallation = async () => {
+        setIsProcessing(true);
         const user = await getCurrentUser();
 
         if (!installationId) {
-            if (user) {
-                router.push(ROUTES.TASKS);
-            } else {
-                router.push(ROUTES.ACCOUNT);
-            }
-            return
+            toast.error("Installation ID is missing.");
+            setReboundAction("INSTALL");
+            setIsProcessing(false);
+            return;
         }
-        
+
         if (!user) {
-            router.push(ROUTES.ACCOUNT + `?installation_id=${installationId}`);
-            return
+            router.push(`${ROUTES.ACCOUNT}?installation_id=${installationId}`);
+            return;
         }
 
         // Check if installationId already exists in installationList
-        const existingInstallation = installationList.find( (inst) => inst.id === installationId);
+        const existingInstallation = installationList.find((inst) => inst.id === installationId);
         if (existingInstallation) {
             setActiveInstallation(existingInstallation);
             toast.info("Installation already exists.");
@@ -56,32 +55,34 @@ const Installation = () => {
 
         try {
             const response = await InstallationAPI.createInstallation({ installationId });
-            
+
             toast.success("Installation saved successfully.");
             const noCurrentInstallations = !activeInstallation && installationList.length === 0;
 
             if (response && "account" in response) {
                 setActiveInstallation(response);
-                setInstallationList([ ...installationList, response ]);
+                setInstallationList([...installationList, response]);
             }
             if (response && "message" in response) {
                 setActiveInstallation(response.installation);
-                setInstallationList([ ...installationList, response.installation ]);
+                setInstallationList([...installationList, response.installation]);
                 toast.warn(response.message);
             }
 
             if (noCurrentInstallations) {
-                router.push(ROUTES.ONBOARDING + "?newInstallation=true");
+                router.push(`${ROUTES.ONBOARDING}?newInstallation=true`);
             } else {
                 router.push(ROUTES.TASKS);
             }
         } catch (error) {
             handleApiError(error, "Failed to save installation. Please reload page to try again.");
-            setReboundAction("RELOAD");
+            setReboundAction("RETRY");
         } finally {
             setIsProcessing(false);
         }
-    }), [router, installationId]);
+    };
+
+    useAsyncEffect(useLockFn(() => saveInstallation()), [router, installationId]);
 
     return isProcessing ? (
         <div className="fixed inset-0 z-[100] bg-[#0000004D] grid place-content-center backdrop-blur-[14px] pointer-events-none">
@@ -103,21 +104,21 @@ const Installation = () => {
                 </p>
                 <ButtonPrimary
                     format="OUTLINE"
-                    text={reboundAction === "INSTALL" ? "Reinstall GitHubApp" : "Reload Page"}
+                    text={reboundAction === "INSTALL" ? "Reinstall GitHub App" : "Refresh"}
                     attributes={{
                         onClick: () => {
                             if (reboundAction === "INSTALL") {
                                 router.push(ROUTES.INSTALLATION.NEW);
                             } else {
-                                window.location.reload();
+                                saveInstallation();
                             }
-                        },
+                        }
                     }}
                     extendedClassName="w-fit mx-auto"
                 />
             </div>
         </div>
     );
-}
+};
 
 export default Installation;

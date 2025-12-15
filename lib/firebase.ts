@@ -1,8 +1,8 @@
-import { ROUTES } from '@/app/utils/data';
-import { useClearStores } from '@/app/utils/hooks';
-import { useLockFn, useAsyncEffect, clearCache } from 'ahooks';
-import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, GithubAuthProvider, User } from 'firebase/auth';
+import { ROUTES } from "@/app/utils/data";
+import { useClearStores } from "@/app/utils/hooks";
+import { useLockFn, useAsyncEffect, clearCache } from "ahooks";
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth, GithubAuthProvider, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { getFirestore } from "firebase/firestore";
 
@@ -46,11 +46,10 @@ export function useLogoutUser() {
             clearCache("");
             clearStores();
             router.push(ROUTES.ACCOUNT);
-        } catch(error) {
-            console.log(error)
+        } catch {
             alert("Something went wrong. Please try again.");
         }
-    })
+    });
 
     return logoutUser;
 };
@@ -63,24 +62,24 @@ export const useUnauthenticatedUserCheck = () => {
         const user = await getCurrentUser();
 
         if (!user) {
-            router.push(ROUTES.ACCOUNT)
+            router.push(ROUTES.ACCOUNT);
         }
     }, [router]);
-    
+
     return router;
-}
+};
 
 // Checks if the user is signed in (used in authentication pages to redirect signed in users)
 export const useAuthenticatedUserCheck = () => {
     const router = useRouter();
-    
+
     useAsyncEffect(async () => {
         const user = await getCurrentUser();
 
         if (user) {
-            router.push(ROUTES.TASKS)
+            router.push(ROUTES.TASKS);
         }
     }, [router]);
-    
+
     return router;
-}
+};

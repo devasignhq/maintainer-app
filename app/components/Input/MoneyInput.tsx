@@ -18,7 +18,7 @@ const MoneyInput = ({ attributes, setValue, defaultValue }: MoneyInputProps) => 
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        const newValue = value.replace(/,/g, '');
+        const newValue = value.replace(/,/g, "");
         
         if (/^\d*\.?\d*$/.test(newValue) && (Number(value) !== 0)) {
             if (value.includes(".")) {
@@ -29,21 +29,21 @@ const MoneyInput = ({ attributes, setValue, defaultValue }: MoneyInputProps) => 
                     const wholeValue = Number(splittedValues[0]) + decimalValue;
                     const formattedValue = new Intl.NumberFormat().format(wholeValue);
                     if (decimalValue === 0) {
-                        setValue(formattedValue + ".0");
+                        setValue(`${formattedValue  }.0`);
                     } else {
                         setValue(formattedValue);
                     }
-                    return
+                    return;
                 }
 
                 const formattedValue = new Intl.NumberFormat().format(Number(splittedValues[0]));
-                setValue(formattedValue + ".");
-                return
+                setValue(`${formattedValue  }.`);
+                return;
             }
 
             const formattedValue = new Intl.NumberFormat().format(Number(newValue));
             setValue(formattedValue);
-            return
+            return;
         }
 
         if (Number(value) == 0 || isDecimal(value)) {
@@ -58,7 +58,7 @@ const MoneyInput = ({ attributes, setValue, defaultValue }: MoneyInputProps) => 
             { ...attributes }
         />
     );
-}
+};
  
 export default MoneyInput;
 

@@ -39,29 +39,28 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
             async (entries) => {
                 const [entry] = entries;
                 if (entry.isIntersecting) {
-                    try {
-                        await MessageAPI.markMessageAsRead(message.id);
-                        // Update local state to reflect the read status
-                        setMessages(prev => prev.map(msg =>
-                            msg.id === message.id ? { ...msg, read: true } : msg
-                        ));
-                    } catch (error) {
-                        console.error('Failed to mark message as read:', error);
-                    }
+                    // Mark message as read
+                    await MessageAPI.markMessageAsRead(message.id);
+
+                    // Update local state to reflect the read status
+                    setMessages(prev => prev.map(msg =>
+                        msg.id === message.id ? { ...msg, read: true } : msg
+                    ));
+
                     // Stop observing once marked as read
                     observer.disconnect();
                 }
             },
             {
                 threshold: 0.5, // Mark as read when 50% of the message is visible
-                rootMargin: '0px 0px -50px 0px' // Add some margin to ensure message is well within view
+                rootMargin: "0px 0px -50px 0px" // Add some margin to ensure message is well within view
             }
         );
 
         observer.observe(messageRef.current);
 
         return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUser?.userId]);
 
     const replyExtensionRequest = async () => {
@@ -73,7 +72,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
                 {
                     accept: replyMode === "approve",
                     requestedTimeline: message.metadata!.requestedTimeline!,
-                    timelineType: message.metadata!.timelineType!,
+                    timelineType: message.metadata!.timelineType!
                 }
             );
 
@@ -82,9 +81,9 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
                     return {
                         ...msg,
                         metadata: { ...msg.metadata!, responded: true }
-                    } as MessageDto
+                    } as MessageDto;
                 } else {
-                    return msg
+                    return msg;
                 }
             }));
 
@@ -96,7 +95,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
                 toast.success("Request sent successfully.");
             } catch {
                 toast.success("Request sent successfully.");
-                toast.warn("Failed to mark extension request message as 'responded'.")
+                toast.warn("Failed to mark extension request message as 'responded'.");
             }
 
             setActiveTask({ ...activeTask!, ...response.task! });
@@ -111,10 +110,8 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
     return message.type === "GENERAL" ? (
         <div
             ref={messageRef}
-            className={`max-w-[78%] w-fit p-[15px] space-y-2.5 ${margin} 
-                ${message.userId === currentUser?.userId
-                    ? "bg-dark-300 ml-auto"
-                    : "bg-primary-300 mr-auto"}`
+            className={`${message.userId === currentUser?.userId ? "bg-dark-300 ml-auto" : "bg-primary-300 mr-auto"} 
+                max-w-[78%] w-fit p-[15px] space-y-2.5 ${margin}`
             }
         >
             <p className="text-body-medium text-light-100">{message.body}</p>
@@ -150,7 +147,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
                                         onClick: () => {
                                             setReplyMode("approve");
                                             toggleReplyModal();
-                                        },
+                                        }
                                     }}
                                 />
                                 <ButtonPrimary
@@ -160,7 +157,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
                                         onClick: () => {
                                             setReplyMode("reject");
                                             toggleReplyModal();
-                                        },
+                                        }
                                     }}
                                 />
                             </div>
@@ -199,7 +196,7 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
 
             {openReplyModal && (
                 <PopupModalLayout
-                    title={(replyMode === "approve" ? "Approve" : "Reject") + " Extension Request"}
+                    title={`${replyMode === "approve" ? "Approve" : "Reject"} Extension Request`}
                     toggleModal={toggleReplyModal}
                 >
                     <p className="mt-2.5 mb-5 text-body-medium text-dark-100">
@@ -227,6 +224,6 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
             )}
         </>
     );
-}
+};
 
 export default MessageBlock;

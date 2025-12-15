@@ -1,22 +1,22 @@
-import { MessageDto } from "./message.model"
-import { IssueDto, IssueLabel } from "./github.model"
-import { InstallationDto } from "./installation.model"
-import { UserDto } from "./user.model"
-import { TransactionDto } from "./wallet.model"
+import { MessageDto } from "./message.model";
+import { IssueDto, IssueLabel } from "./github.model";
+import { InstallationDto } from "./installation.model";
+import { UserDto } from "./user.model";
+import { TransactionDto } from "./wallet.model";
 
 export const TASK_STATUS = {
-    OPEN: 'OPEN',
-    IN_PROGRESS: 'IN_PROGRESS',
-    MARKED_AS_COMPLETED: 'MARKED_AS_COMPLETED',
-    COMPLETED: 'COMPLETED'
-}
+    OPEN: "OPEN",
+    IN_PROGRESS: "IN_PROGRESS",
+    MARKED_AS_COMPLETED: "MARKED_AS_COMPLETED",
+    COMPLETED: "COMPLETED"
+};
 
 export type TaskStatus = keyof typeof TASK_STATUS
 
 export const TIMELINE_TYPE = {
-  WEEK: 'WEEK',
-  DAY: 'DAY'
-}
+    WEEK: "WEEK",
+    DAY: "DAY"
+};
 
 export type TimelineType = keyof typeof TIMELINE_TYPE
 

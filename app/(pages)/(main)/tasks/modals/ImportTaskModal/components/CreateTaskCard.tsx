@@ -1,13 +1,13 @@
 "use client";
 import { IoIosCheckbox } from "react-icons/io";
 import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
-import Image from 'next/image';
+import Image from "next/image";
 import Link from "next/link";
 import RegularDropdown from "../../../../../../components/Dropdown/Regular";
 import { IssueDto } from "@/app/models/github.model";
 import { CreateTaskDto } from "@/app/models/task.model";
 import { useState } from "react";
-import { object, string, number } from 'yup';
+import { object, string, number } from "yup";
 import { useFormik } from "formik";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useUpdateEffect } from "ahooks";
@@ -24,7 +24,7 @@ const createTaskSchema = object({
     timeline: number().required("Required")
         .min(1, "Minimum: 1")
         .max(99, "Maximum: 99"),
-    timelineType: string().required("Required"),
+    timelineType: string().required("Required")
 });
 
 type CreateTaskCardProps = {
@@ -53,25 +53,25 @@ const CreateTaskCard = ({
         initialValues: {
             bounty: defaultSelected?.payload.bounty || "",
             timeline: defaultSelected?.payload.timeline || undefined,
-            timelineType: defaultSelected?.payload.timelineType || "WEEK",
+            timelineType: defaultSelected?.payload.timelineType || "WEEK"
         },
         validationSchema: createTaskSchema,
         validateOnMount: true,
         validateOnBlur: true,
-        onSubmit: () => {},
+        onSubmit: () => {}
     });
 
     const handleToggleCheck = (selected: boolean) => {
         if (!selected) {
             onToggleCheck(null);
-            return
+            return;
         }
 
         const taskPayload: CreateTaskDto = {
             installationId: activeInstallation!.id,
             issue: {
                 ...issue,
-                labels: issue.labels.nodes,
+                labels: issue.labels.nodes
             },
             bounty: formik.values.bounty.replace(/,/g, ""),
             timeline: formik.values.timeline,
@@ -96,12 +96,12 @@ const CreateTaskCard = ({
     return (
         <div className={twMerge(`w-full py-3 px-[15px] border 
                 ${selected 
-                    ? "bg-dark-400 border-primary-200" 
-                    : "border-dark-200 hover:border-light-100"}`,
-                uploadStatus === "CREATED" && "border-indicator-100 task-uploaded",
-                uploadStatus === "FAILED" && "border-indicator-500 task-uploaded",
-                uploadStatus === "PENDING" && "animate-pulse",
-            )
+            ? "bg-dark-400 border-primary-200" 
+            : "border-dark-200 hover:border-light-100"}`,
+        uploadStatus === "CREATED" && "border-indicator-100 task-uploaded",
+        uploadStatus === "FAILED" && "border-indicator-500 task-uploaded",
+        uploadStatus === "PENDING" && "animate-pulse"
+        )
         }>
             <div className="flex items-center gap-[15px]">
                 <p className="text-body-medium text-primary-400">#{issue.number}</p>
@@ -129,7 +129,7 @@ const CreateTaskCard = ({
                             .map((name, index, array) => 
                                 index === array.length - 1 ? name : `${name}, `
                             )
-                            .join('')}
+                            .join("")}
                     </p>
                 )}
             </div>
@@ -153,7 +153,7 @@ const CreateTaskCard = ({
                                         ${formik.touched.bounty && formik.errors.bounty && "border-indicator-500"}`,
                                     value: formik.values.bounty,
                                     onBlur: formik.handleBlur,
-                                    disabled: disableFields,
+                                    disabled: disableFields
                                 }}
                                 setValue={(value) => formik.setFieldValue("bounty", value)}
                             />
@@ -208,6 +208,6 @@ const CreateTaskCard = ({
             )}
         </div>
     );
-}
+};
  
 export default CreateTaskCard;

@@ -6,9 +6,11 @@ import { IoIosCheckbox, IoMdArrowDropdown } from "react-icons/io";
 import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
+type Option = Record<string, unknown>;
+
 type FilterDropdownProps = {
     title: string;
-    setField: (value: string | number | (string | number)[]) => void;
+    setField: (value: string | number | (string | number)[] | undefined) => void;
     extendedButtonClassName?: string;
     buttonAttributes?: React.ButtonHTMLAttributes<HTMLButtonElement>;
     extendedContainerClassName?: string;
@@ -17,7 +19,7 @@ type FilterDropdownProps = {
 } & ({
     options: (string | number)[];
 } | {
-    options: Record<string, any>[];
+    options: Option[];
     fieldName: string;
     fieldValue: string;
 })
@@ -42,7 +44,7 @@ const FilterDropdown = ({
 
             options.forEach((option, index) => {
                 const optionValue = typeof option === "object"
-                    ? option[(otherProps as any).fieldValue]
+                    ? ((option as Option)[(otherProps as { fieldValue: string }).fieldValue] as string | number)
                     : option;
 
                 if (defaultValues.includes(optionValue)) {
@@ -79,7 +81,7 @@ const FilterDropdown = ({
                 [key]: false
             }), {})
         );
-        setField(undefined as any);
+        setField(undefined);
         toggleMenu();
     };
 
@@ -89,10 +91,10 @@ const FilterDropdown = ({
             .map(key => {
                 const index = parseInt(key);
                 if (typeof options[0] === "object") {
-                    const option = options[index] as Record<string, any>;
-                    return option[(otherProps as any).fieldValue];
+                    const option = options[index] as Option;
+                    return option[(otherProps as { fieldValue: string }).fieldValue] as string | number;
                 } else {
-                    return options[index];
+                    return options[index] as string | number;
                 }
             });
 
@@ -114,7 +116,7 @@ const FilterDropdown = ({
 
             options.forEach((option, index) => {
                 const optionValue = typeof option === "object"
-                    ? option[(otherProps as any).fieldValue]
+                    ? ((option as Option)[(otherProps as { fieldValue: string }).fieldValue] as string | number)
                     : option;
 
                 if (defaultValues.includes(optionValue)) {
@@ -124,7 +126,7 @@ const FilterDropdown = ({
         }
 
         setSelectedItems(newState);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [options, defaultValue]);
 
     return (
@@ -148,8 +150,8 @@ const FilterDropdown = ({
                     className="fixed top-[var(--dropdown-top)] left-[var(--dropdown-left)] px-2.5 max-h-[350px] 
                     bg-dark-400 dropdown-box shadow-[-20px_4px_40px_0px_#000000] z-[110] overflow-y-auto"
                     style={{
-                        '--dropdown-top': `${menuButtonRef.current?.getBoundingClientRect().top}px`,
-                        '--dropdown-left': `${menuButtonRef.current?.getBoundingClientRect().right as number + 7}px`
+                        "--dropdown-top": `${menuButtonRef.current?.getBoundingClientRect().top}px`,
+                        "--dropdown-left": `${menuButtonRef.current?.getBoundingClientRect().right as number + 7}px`
                     } as React.CSSProperties}
                 >
                     <div className="w-full pb-3 pt-[15px] bg-dark-400 sticky top-0">
@@ -182,7 +184,9 @@ const FilterDropdown = ({
                                     className="text-body-small text-light-100"
                                     onClick={() => toggleItems(`${index}`)}
                                 >
-                                    {typeof option === "object" ? option[(otherProps as any).fieldName] : option}
+                                    {typeof option === "object"
+                                        ? ((option as Option)[(otherProps as { fieldName: string }).fieldName] as React.ReactNode)
+                                        : option}
                                 </button>
                             </li>
                         ))}
@@ -202,6 +206,6 @@ const FilterDropdown = ({
             )}
         </div>
     );
-}
+};
 
 export default FilterDropdown;

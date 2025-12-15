@@ -1,8 +1,8 @@
-import { UserInstallationPermissionDto } from "./permission.model"
-import { SubscriptionPlanDto } from "./subscription-plan.model"
-import { TaskDto, TaskSubmission } from "./task.model"
-import { UserDto } from "./user.model"
-import { TransactionDto } from "./wallet.model"
+import { UserInstallationPermissionDto } from "./permission.model";
+import { SubscriptionPlanDto } from "./subscription-plan.model";
+import { TaskDto, TaskSubmission } from "./task.model";
+import { UserDto } from "./user.model";
+import { TransactionDto } from "./wallet.model";
 
 export type InstallationDto = {
     id: string

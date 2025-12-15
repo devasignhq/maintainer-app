@@ -10,7 +10,7 @@ import {
     TaskDto,
     TimelineExtensionResponse,
     UpdateTaskBountyDto,
-    UpdateTaskTimelineDto,
+    UpdateTaskTimelineDto
 } from "../models/task.model";
 import {
     MessageWithDataResponse,

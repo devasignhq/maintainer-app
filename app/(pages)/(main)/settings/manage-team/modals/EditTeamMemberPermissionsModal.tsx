@@ -64,7 +64,7 @@ const EditTeamMemberPermissionsModal = ({ toggleModal }: EditTeamMemberPermissio
                     format="OUTLINE"
                     text="Cancel"
                     attributes={{
-                        onClick: () => {},
+                        onClick: () => {}
                     }}
                 />
                 <ButtonPrimary
@@ -72,13 +72,13 @@ const EditTeamMemberPermissionsModal = ({ toggleModal }: EditTeamMemberPermissio
                     text="Update"
                     sideItem={<FiCheck />}
                     attributes={{
-                        onClick: () => {},
+                        onClick: () => {}
                     }}
                 />
             </div>
         </PopupModalLayout>
     );
-}
+};
  
 export default EditTeamMemberPermissionsModal;
 
@@ -87,5 +87,5 @@ const permissions = [
     "View and edit tasks",
     "View and edit project settings",
     "View and edit project members",
-    "View and edit project billing",
+    "View and edit project billing"
 ];
