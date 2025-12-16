@@ -138,7 +138,7 @@ const Onboarding = () => {
                     </div>
                     <p className="text-body-tiny text-light-100">
                         Backed by Stellar Community Fund (SCF). We’re the infrastructure
-                        owering fair <br /> compensation for open-source contribution.
+                        powering fair <br /> compensation for open-source contribution.
                     </p>
                 </div>
             </div>

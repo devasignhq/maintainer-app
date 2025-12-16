@@ -15,9 +15,11 @@ import { TaskDto, TIMELINE_TYPE } from "@/app/models/task.model";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
+import { useCustomSearchParams } from "@/app/utils/hooks";
 
 const TaskOverviewSection = () => {
     const { activeTask } = useContext(ActiveTaskContext);
+    const { updateSearchParams } = useCustomSearchParams();
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
@@ -63,7 +65,7 @@ const TaskOverviewSection = () => {
                             {taskStatusFormatter(activeTask!.status)[0]}
                         </p>
                     </div>
-                    
+
                     {activeTask?.status !== "OPEN" && (
                         <div className="space-y-2.5">
                             <p className="text-body-tiny text-light-100">Developer</p>
@@ -84,7 +86,7 @@ const TaskOverviewSection = () => {
                                 <button onClick={toggleSetTaskBountyModal}>
                                     <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
                                 </button>
-                            ): null}
+                            ) : null}
                         </div>
                     </div>
 
@@ -99,7 +101,7 @@ const TaskOverviewSection = () => {
                                     <button onClick={toggleSetTaskTimelineModal}>
                                         <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
                                     </button>
-                                ): null}
+                                ) : null}
                             </div>
                         </div>
                     ) : (
@@ -114,10 +116,9 @@ const TaskOverviewSection = () => {
                             ) : (
                                 <>
                                     <p className="text-body-tiny text-light-100">Time Left</p>
-                                    <p className={`text-body-large ${
-                                        getTimeLeft(activeTask!).startsWith("Overdue") 
-                                            ? "text-indicator-500" 
-                                            : "text-light-200"}`
+                                    <p className={`text-body-large ${getTimeLeft(activeTask!).startsWith("Overdue")
+                                        ? "text-indicator-500"
+                                        : "text-light-200"}`
                                     }>
                                         {getTimeLeft(activeTask!)}
                                     </p>
@@ -139,7 +140,10 @@ const TaskOverviewSection = () => {
                 <div className="pt-[30px] pl-5 flex items-center justify-between">
                     <h6 className="text-headline-small text-light-100">Task Activities</h6>
                     <button
-                        onClick={reloadActivities}
+                        onClick={() => {
+                            reloadActivities();
+                            updateSearchParams({ refresh: "true" });
+                        }}
                         disabled={loadingActivities || loadingMoreActivities}
                         className={(loadingActivities || loadingMoreActivities) ? "rotate-loading" : ""}
                     >
