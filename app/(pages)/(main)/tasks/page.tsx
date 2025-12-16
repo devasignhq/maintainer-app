@@ -13,8 +13,9 @@ import { useUnauthenticatedUserCheck } from "@/lib/firebase";
 
 const Tasks = () => {
     useUnauthenticatedUserCheck();
-    const { searchParams } = useCustomSearchParams();
+    const { searchParams, removeSearchParams } = useCustomSearchParams();
     const taskId = searchParams.get("taskId");
+    const refresh = searchParams.get("refresh");
     const { activeInstallation } = useInstallationStore();
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
     const [loadingTask, setLoadingTask] = useState(false);
@@ -37,6 +38,17 @@ const Tasks = () => {
             setLoadingTask(false);
         }
     }), [taskId, activeInstallation]);
+
+    useAsyncEffect((async () => {
+        if (refresh !== "true" || !taskId || !activeInstallation) {
+            return;
+        }
+
+        const task = await TaskAPI.getInstallationTaskById(activeInstallation.id, taskId);
+        setActiveTask(task);
+
+        removeSearchParams("refresh");
+    }), [refresh]);
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">

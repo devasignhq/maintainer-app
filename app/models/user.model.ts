@@ -7,7 +7,7 @@ import { TransactionDto } from "./wallet.model";
 export type UserDto = {
     userId: string
     username: string
-    walletAddress: string
+    wallet: { address: string }
     addressBook: AddressBook[]
     createdAt: string
     updatedAt: string
@@ -24,8 +24,8 @@ export type UserDto = {
     taskSubmissions?: TaskSubmission[]
 }
 
-export type UserBasic = Pick<UserDto, "userId" | "username" | "walletAddress" | "addressBook" | "createdAt" | "updatedAt">
-export type UserProfile = Pick<UserDto, "userId" | "username" | "walletAddress" | "addressBook" | "createdAt" | "updatedAt" | "contributionSummary" | "assets">
+export type UserBasic = Pick<UserDto, "userId" | "username" | "wallet" | "addressBook" | "createdAt" | "updatedAt">
+export type UserProfile = Pick<UserDto, "userId" | "username" | "wallet" | "addressBook" | "createdAt" | "updatedAt" | "contributionSummary" | "assets">
 
 export type AddressBook = {
     name: string
@@ -38,7 +38,7 @@ export type ContributionSummary = {
     activeTasks: number
     totalEarnings: number
     userId: string
-    user?: Pick<UserDto, "username" | "userId" | "walletAddress" | "addressBook" | "createdAt" | "updatedAt">;
+    user?: Pick<UserDto, "username" | "userId" | "wallet" | "addressBook" | "createdAt" | "updatedAt">;
 }
 
 export type CreateUserPayloadDto = {
