@@ -3,7 +3,7 @@ import FilterDropdown from "@/app/components/Dropdown/Filter";
 import { useContext, useEffect, useState } from "react";
 import { HiPlus } from "react-icons/hi";
 import TaskCard from "../components/TaskCard";
-import ImportTaskModal from "../modals/ImportTaskModal";
+import CreateTaskModal from "../modals/CreateTaskModal";
 import { useInfiniteScroll, useRequest, useToggle } from "ahooks";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { FilterTasks, TASK_STATUS, TaskStatus } from "@/app/models/task.model";
@@ -16,15 +16,21 @@ import SearchBox from "../components/SearchBox";
 import { PaginationResponse } from "@/app/models/_global";
 import { enumToStringConverter } from "@/app/utils/helper";
 import { InstallationAPI } from "@/app/services/installation.service";
+import { useStreamAccountBalance } from "@/app/services/horizon.service";
 
 // ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
     const { activeInstallation } = useInstallationStore();
     const { activeTask } = useContext(ActiveTaskContext);
-    const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
+    const [openCreateTaskModal, { toggle: toggleCreateTaskModal }] = useToggle(false);
     const [taskFilters, setTaskFilters] = useState(defaultTaskFilters);
     const [searchValue, setSearchValue] = useState("");
     const [displaySearchIcon, setDisplaySearchIcon] = useState(true);
+    const { usdcBalance, manualBalanceCheck } = useStreamAccountBalance(
+        activeInstallation?.walletAddress,
+        true,
+        activeInstallation?.id
+    );
     const {
         searchParams,
         updateSearchParams,
@@ -138,9 +144,12 @@ const TaskListSection = () => {
                     <h6 className="text-headline-small text-light-100">Project Tasks</h6>
                     <button
                         className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                        onClick={toggleImportTaskModal}
+                        onClick={() => {
+                            toggleCreateTaskModal();
+                            manualBalanceCheck();
+                        }}
                     >
-                        <span>Import Tasks</span>
+                        <span>Create Bounty</span>
                         <HiPlus className="text-2xl" />
                     </button>
                 </div>
@@ -267,11 +276,12 @@ const TaskListSection = () => {
                 </div>
             </section>
 
-            {openImportTaskModal && (
-                <ImportTaskModal
+            {openCreateTaskModal && (
+                <CreateTaskModal
                     installationRepos={installationRepos}
                     loadingInstallationRepos={loadingInstallationRepos}
-                    toggleModal={toggleImportTaskModal}
+                    usdcBalance={usdcBalance}
+                    toggleModal={toggleCreateTaskModal}
                     onSuccess={reloadTasks}
                 />
             )}
