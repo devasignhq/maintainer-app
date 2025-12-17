@@ -3,7 +3,7 @@ import Image from "next/image";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
-import ImportTaskModal from "@/app/(pages)/(main)/tasks/modals/ImportTaskModal";
+import CreateTaskModal from "@/app/(pages)/(main)/tasks/modals/CreateTaskModal";
 import { useToggle } from "ahooks";
 import FundWalletModal from "@/app/(pages)/(main)/wallet/modals/FundWalletModal";
 import useUserStore from "@/app/state-management/useUserStore";
@@ -13,18 +13,25 @@ import useTaskStore from "@/app/state-management/useTaskStore";
 import { moneyFormat, openInNewTab } from "@/app/utils/helper";
 import { ROUTES } from "@/app/utils/data";
 import { useEffect } from "react";
-import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/utils/hooks";
+import { useGetInstallationRepositories } from "@/app/utils/hooks";
 import { useUnauthenticatedUserCheck } from "@/lib/firebase";
+import Link from "next/link";
 
 const Onboarding = () => {
     const router = useUnauthenticatedUserCheck();
-    const { searchParams } = useCustomSearchParams();
-    const newInstallation = searchParams.get("newInstallation");
     const { currentUser } = useUserStore();
     const { activeInstallation } = useInstallationStore();
     const { draftTasks } = useTaskStore();
-    const { xlmBalance, usdcBalance } = useStreamAccountBalance(activeInstallation?.walletAddress, true);
-    const [openImportTaskModal, { toggle: toggleImportTaskModal }] = useToggle(false);
+    const {
+        xlmBalance,
+        usdcBalance,
+        manualBalanceCheck
+    } = useStreamAccountBalance(
+        activeInstallation?.walletAddress,
+        true,
+        activeInstallation?.id
+    );
+    const [openCreateTaskModal, { toggle: toggleCreateTaskModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
 
     const {
@@ -33,11 +40,11 @@ const Onboarding = () => {
     } = useGetInstallationRepositories();
 
     useEffect(() => {
-        if (newInstallation === "true") {
-            toggleImportTaskModal();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [newInstallation]);
+        const interval = setInterval(() => {
+            manualBalanceCheck();
+        }, 10000);
+        return () => clearInterval(interval);
+    }, [manualBalanceCheck]);
 
     return (
         <>
@@ -93,61 +100,74 @@ const Onboarding = () => {
                         </div>
                     )}
                 </div>
-                {activeInstallation && (
-                    <div className="w-full draft-box relative py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between">
+                {activeInstallation ? (
+                    <div className="w-full draft-box relative py-[15px] px-5 my-[30px] bg-dark-400 flex items-center justify-between gap-[30px]">
                         <p className="flex items-center gap-[5px] text-title-large text-light-100">
                             <span>Draft: Issues Selected</span>
                             <span className="px-[5px] text-body-medium font-bold text-dark-500 bg-primary-100">
                                 {draftTasks.length}
                             </span>
                         </p>
-                        <button
-                            className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                            onClick={toggleImportTaskModal}
-                        >
-                            <span>Continue</span>
-                            <FiArrowUpRight className="text-2xl" />
-                        </button>
+                        <div className="flex items-center gap-[30px]">
+                            {Number(usdcBalance) > 0 && (
+                                <button
+                                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                                    onClick={toggleCreateTaskModal}
+                                >
+                                    <span>Create Bounty</span>
+                                    <HiPlus className="text-2xl" />
+                                </button>
+                            )}
+                            <Link
+                                className="flex items-center gap-[5px] text-light-200 text-button-large font-extrabold hover:text-light-100"
+                                href={ROUTES.TASKS}
+                            >
+                                <span>Skip</span>
+                                <FiArrowUpRight className="text-2xl" />
+                            </Link>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="w-full p-10 border border-primary-200 flex items-center justify-between gap-10 
+                        bg-[linear-gradient(130.86deg,_rgba(0,_26,_37,_0.5)_15.53%,_rgba(163,_82,_7,_0.5)_79.38%)]"
+                    >
+                        <div className="flex items-center gap-[5px]">
+                            <Image
+                                src="/davasign-logo.svg"
+                                alt="DevAsign"
+                                width={50}
+                                height={12.5}
+                                className="h-[12.5px] w-auto"
+                            />
+                            <Image
+                                src="/x.svg"
+                                alt="X"
+                                width={10}
+                                height={10}
+                                className="h-2.5 w-auto"
+                            />
+                            <Image
+                                src="/scf-logo.svg"
+                                alt="Stellar Community Fund"
+                                width={128}
+                                height={32}
+                                className="h-[32px] w-auto"
+                            />
+                        </div>
+                        <p className="text-body-tiny text-light-100">
+                            Backed by Stellar Community Fund (SCF). We’re the infrastructure
+                            powering fair <br /> compensation for open-source contribution.
+                        </p>
                     </div>
                 )}
-                <div className="w-full p-10 border border-primary-200 flex items-center justify-between gap-10 
-                bg-[linear-gradient(130.86deg,_rgba(0,_26,_37,_0.5)_15.53%,_rgba(163,_82,_7,_0.5)_79.38%)]"
-                >
-                    <div className="flex items-center gap-[5px]">
-                        <Image
-                            src="/davasign-logo.svg"
-                            alt="DevAsign"
-                            width={50}
-                            height={12.5}
-                            className="h-[12.5px] w-auto"
-                        />
-                        <Image
-                            src="/x.svg"
-                            alt="X"
-                            width={10}
-                            height={10}
-                            className="h-2.5 w-auto"
-                        />
-                        <Image
-                            src="/scf-logo.svg"
-                            alt="Stellar Community Fund"
-                            width={128}
-                            height={32}
-                            className="h-[32px] w-auto"
-                        />
-                    </div>
-                    <p className="text-body-tiny text-light-100">
-                        Backed by Stellar Community Fund (SCF). We’re the infrastructure
-                        powering fair <br /> compensation for open-source contribution.
-                    </p>
-                </div>
             </div>
 
-            {openImportTaskModal && (
-                <ImportTaskModal
+            {openCreateTaskModal && (
+                <CreateTaskModal
                     installationRepos={installationRepos}
                     loadingInstallationRepos={loadingInstallationRepos}
-                    toggleModal={toggleImportTaskModal}
+                    usdcBalance={usdcBalance}
+                    toggleModal={toggleCreateTaskModal}
                     onSuccess={() => router.push(ROUTES.TASKS)}
                 />
             )}

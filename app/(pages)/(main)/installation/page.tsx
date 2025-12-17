@@ -70,7 +70,7 @@ const Installation = () => {
             }
 
             if (noCurrentInstallations) {
-                router.push(`${ROUTES.ONBOARDING}?newInstallation=true`);
+                router.push(ROUTES.ONBOARDING);
             } else {
                 router.push(ROUTES.TASKS);
             }
