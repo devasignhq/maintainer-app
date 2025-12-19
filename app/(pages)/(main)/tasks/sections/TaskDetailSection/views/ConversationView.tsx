@@ -38,8 +38,6 @@ const ConversationView = () => {
         setSendingMessage(true);
 
         try {
-            console.log(activeTask!.id, "activeTask!.id");
-            console.log(currentUser!.userId, "currentUser!.userId");
             const newMessage = await MessageAPI.createMessage({
                 userId: currentUser!.userId,
                 taskId: activeTask!.id,
@@ -50,8 +48,7 @@ const ConversationView = () => {
             setMessages(prev => [...prev, newMessage!]);
             setBody("");
             setAttachments([]);
-        } catch (error) {
-            console.log(error, "error");
+        } catch {
             toast.error("Failed to send message. Please try again.");
         } finally {
             setSendingMessage(false);
