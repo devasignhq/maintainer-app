@@ -27,7 +27,7 @@ const Onboarding = () => {
         usdcBalance,
         manualBalanceCheck
     } = useStreamAccountBalance(
-        activeInstallation?.walletAddress,
+        activeInstallation?.wallet.address,
         true,
         activeInstallation?.id
     );

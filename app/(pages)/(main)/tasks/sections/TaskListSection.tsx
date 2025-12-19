@@ -27,7 +27,7 @@ const TaskListSection = () => {
     const [searchValue, setSearchValue] = useState("");
     const [displaySearchIcon, setDisplaySearchIcon] = useState(true);
     const { usdcBalance, manualBalanceCheck } = useStreamAccountBalance(
-        activeInstallation?.walletAddress,
+        activeInstallation?.wallet.address,
         true,
         activeInstallation?.id
     );
