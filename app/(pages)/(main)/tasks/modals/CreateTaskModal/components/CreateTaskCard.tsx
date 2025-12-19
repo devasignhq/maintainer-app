@@ -94,14 +94,12 @@ const CreateTaskCard = ({
     useUpdateEffect(() => handleToggleCheck(selected), [formik.isValid, formik.values]);
 
     return (
-        <div className={twMerge(`w-full py-3 px-[15px] border 
-                ${selected 
-            ? "bg-dark-400 border-primary-200" 
-            : "border-dark-200 hover:border-light-100"}`,
-        uploadStatus === "CREATED" && "border-indicator-100 task-uploaded",
-        uploadStatus === "FAILED" && "border-indicator-500 task-uploaded",
-        uploadStatus === "PENDING" && "animate-pulse"
-        )
+        <div className={
+            twMerge(`w-full py-3 px-[15px] border ${selected ? "bg-dark-400 border-primary-200" : "border-dark-200 hover:border-light-100"}`,
+                uploadStatus === "CREATED" && "border-indicator-100 task-uploaded",
+                uploadStatus === "FAILED" && "border-indicator-500 task-uploaded",
+                uploadStatus === "PENDING" && "animate-pulse"
+            )
         }>
             <div className="flex items-center gap-[15px]">
                 <p className="text-body-medium text-primary-400">#{issue.number}</p>

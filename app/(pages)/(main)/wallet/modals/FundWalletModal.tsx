@@ -20,10 +20,10 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
     const { activeInstallation } = useInstallationStore();
     const [totalBountiesInXLM, setTotalBountiesInXLM] = useState("");
     const [topUpAmount, setTopUpAmount] = useState("");
-    const { 
-        xlmPriceInUsdc, 
-        isLoading: priceLoading, 
-        error: priceError 
+    const {
+        xlmPriceInUsdc,
+        isLoading: priceLoading,
+        error: priceError
     } = useXLMUSDCFromStellarDEX(5000, !displayTopUpAmount);
 
     useEffect(() => {
@@ -42,7 +42,7 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
 
         setTopUpAmount((Number(totalBountiesInXLM) - Number(displayTopUpAmount?.xlmBalance)).toFixed(2));
     }, [displayTopUpAmount, totalBountiesInXLM]);
-    
+
     return (
         <PopupModalLayout title="Fund Wallet" toggleModal={toggleModal}>
             <p className="text-body-medium text-dark-100 mt-2.5">
@@ -79,11 +79,11 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
                         )}
                     </div>
                 </section>
-            ): null}
+            ) : null}
             <section className="w-full flex items-center gap-5 mt-5">
                 <div className="py-2.5">
-                    <QRCodeCanvas 
-                        value={activeInstallation!.walletAddress} 
+                    <QRCodeCanvas
+                        value={activeInstallation!.wallet.address}
                         width={116}
                         height={112}
                         bgColor="#FEF3C7"
@@ -99,9 +99,9 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
                     <div className="w-full p-2.5 wallet-info relative bg-dark-400 flex items-center justify-between">
                         <p className="text-body-small">
                             <span className="font-bold text-light-200">Address:</span>
-                            <span className="text-light-100 truncate">{" "}{activeInstallation!.walletAddress}</span>
+                            <span className="text-light-100 truncate">{" "}{activeInstallation!.wallet.address}</span>
                         </p>
-                        <CopyButton text={activeInstallation!.walletAddress} />
+                        <CopyButton text={activeInstallation!.wallet.address} />
                     </div>
                 </div>
             </section>
@@ -128,5 +128,5 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
         </PopupModalLayout>
     );
 };
- 
+
 export default FundWalletModal;

@@ -23,13 +23,13 @@ import { useUnauthenticatedUserCheck } from "@/lib/firebase";
 const Wallet = () => {
     useUnauthenticatedUserCheck();
     const { activeInstallation } = useInstallationStore();
-    const { 
-        xlmBalance, 
+    const {
+        xlmBalance,
         usdcBalance,
         manualBalanceCheck
     } = useStreamAccountBalance(
-        activeInstallation?.walletAddress, 
-        true, 
+        activeInstallation?.wallet.address,
+        true,
         activeInstallation?.id
     );
     const [activeTab, setActiveTab] = useState(tabs[0]);
@@ -51,7 +51,7 @@ const Wallet = () => {
         reloadTransactions();
         manualBalanceCheck();
     };
-        
+
     const {
         data: projectTransactions,
         loading: loadingTransactions,
@@ -63,27 +63,27 @@ const Wallet = () => {
         async (currentData) => {
             const pageToLoad = currentData ? currentPage + 1 : 1;
 
-            const category = activeTab.enum === "ALL" 
-                ? "" 
+            const category = activeTab.enum === "ALL"
+                ? ""
                 : activeTab.enum === "SWAP"
-                    ? "SWAP_XLM,SWAP_USDC" 
+                    ? "SWAP_XLM,SWAP_USDC"
                     : activeTab.enum;
-            
-            const response = await WalletAPI.getTransactions({ 
+
+            const response = await WalletAPI.getTransactions({
                 installationId: activeInstallation!.id,
-                page: pageToLoad, 
-                limit: 20, 
+                page: pageToLoad,
+                limit: 20,
                 sort: "desc",
                 ...(category && { categories: category })
             });
 
             setCurrentPage(pageToLoad);
 
-            return { 
+            return {
                 list: response.transactions,
                 hasMore: response.hasMore
             };
-        }, 
+        },
         {
             isNoMore: (data) => !data?.hasMore,
             reloadDeps: [activeInstallation, activeTab]
@@ -99,7 +99,7 @@ const Wallet = () => {
             if (processed > 0) {
                 reloadTransactions();
             }
-        } catch {}
+        } catch { }
     }), [activeInstallation]);
 
     return (
@@ -133,7 +133,7 @@ const Wallet = () => {
                                     <span className="text-body-medium">.{xlmBalance.split(".")[1] || "00"} XLM</span>
                                 </p>
                             </div>
-                            <button 
+                            <button
                                 className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
                                 onClick={() => handleOpenSwapAssetModal("XLM")}
                             >
@@ -149,7 +149,7 @@ const Wallet = () => {
                                     <span className="text-body-medium">.{usdcBalance.split(".")[1] || "00"} USDC</span>
                                 </p>
                             </div>
-                            <button 
+                            <button
                                 className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
                                 onClick={() => handleOpenSwapAssetModal("USDC")}
                             >
@@ -165,9 +165,9 @@ const Wallet = () => {
                             <button
                                 key={tab.enum}
                                 className={`p-2 px-2.5 text-body-small border 
-                                ${activeTab.enum === tab.enum 
-                                ? "border-transparent bg-light-100 text-dark-500 font-bold" 
-                                : "border-dark-100 text-dark-100 hover:text-light-100"}`
+                                ${activeTab.enum === tab.enum
+                                        ? "border-transparent bg-light-100 text-dark-500 font-bold"
+                                        : "border-dark-100 text-dark-100 hover:text-light-100"}`
                                 }
                                 onClick={() => setActiveTab(tab)}
                             >
@@ -177,7 +177,7 @@ const Wallet = () => {
                     </div>
                 </section>
                 {activeTab.enum === "ALL" && (
-                    <AllTable 
+                    <AllTable
                         data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                         loading={loadingTransactions}
                         loadingMore={loadingMoreTransactions}
@@ -186,7 +186,7 @@ const Wallet = () => {
                     />
                 )}
                 {activeTab.enum === "BOUNTY" && (
-                    <BountyTable 
+                    <BountyTable
                         data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                         loading={loadingTransactions}
                         loadingMore={loadingMoreTransactions}
@@ -195,7 +195,7 @@ const Wallet = () => {
                     />
                 )}
                 {activeTab.enum === "TOP_UP" && (
-                    <TopUpTable 
+                    <TopUpTable
                         data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                         loading={loadingTransactions}
                         loadingMore={loadingMoreTransactions}
@@ -204,7 +204,7 @@ const Wallet = () => {
                     />
                 )}
                 {activeTab.enum === "SWAP" && (
-                    <SwapTable 
+                    <SwapTable
                         data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                         loading={loadingTransactions}
                         loadingMore={loadingMoreTransactions}
@@ -213,7 +213,7 @@ const Wallet = () => {
                     />
                 )}
                 {activeTab.enum === "WITHDRAWAL" && (
-                    <WithdrawalTable 
+                    <WithdrawalTable
                         data={loadingTransactions ? [] : (projectTransactions?.list || [])}
                         loading={loadingTransactions}
                         loadingMore={loadingMoreTransactions}
@@ -222,28 +222,28 @@ const Wallet = () => {
                     />
                 )}
             </div>
-        
+
             {openFundWalletModal && <FundWalletModal toggleModal={toggleFundWalletModal} />}
             {openWithdrawAssetModal && (
-                <WithdrawAssetModal 
-                    xlmBalance={xlmBalance} 
-                    toggleModal={toggleWithdrawAssetModal} 
-                    reloadTransactions={reloadTransactions} 
+                <WithdrawAssetModal
+                    xlmBalance={xlmBalance}
+                    toggleModal={toggleWithdrawAssetModal}
+                    reloadTransactions={reloadTransactions}
                 />
             )}
             {openSwapAssetModal && (
-                <SwapAssetModal 
+                <SwapAssetModal
                     from={swapAssetFrom}
                     xlmBalance={xlmBalance}
                     usdcBalance={usdcBalance}
-                    toggleModal={toggleSwapAssetModal} 
-                    reloadTransactions={handleSwapSuccess} 
+                    toggleModal={toggleSwapAssetModal}
+                    reloadTransactions={handleSwapSuccess}
                 />
             )}
         </>
     );
 };
- 
+
 export default Wallet;
 
 const tabs = [

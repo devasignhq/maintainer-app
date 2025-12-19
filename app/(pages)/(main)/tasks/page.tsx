@@ -10,6 +10,7 @@ import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { ActiveTaskContext } from "./contexts/ActiveTaskContext";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 import { useUnauthenticatedUserCheck } from "@/lib/firebase";
+import Image from "next/image";
 
 const Tasks = () => {
     useUnauthenticatedUserCheck();
@@ -18,7 +19,7 @@ const Tasks = () => {
     const refresh = searchParams.get("refresh");
     const { activeInstallation } = useInstallationStore();
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
-    const [loadingTask, setLoadingTask] = useState(false);
+    const [loadingTask, setLoadingTask] = useState(true);
 
     // TODO: Implement caching
     useAsyncEffect((async () => {
@@ -54,19 +55,45 @@ const Tasks = () => {
         <div className="h-[calc(100dvh-123px)] flex">
             <ActiveTaskContext.Provider value={{ activeTask, setActiveTask }}>
                 <TaskListSection />
-                {!activeTask && !loadingTask && (
-                    <section className="grow border-x border-dark-200 grid place-content-center">
-                        <p className="text-body-medium text-light-100">
-                            {searchParams.get("taskId") ? "Task not found" : "No task selected"}
-                        </p>
-                    </section>
-                )}
-                {loadingTask && (
-                    <section className="grow border-x border-dark-200 grid place-content-center">
-                        <p className="text-body-medium text-light-100">Loading Task...</p>
-                    </section>
-                )}
-                {!loadingTask && activeTask && (
+                {!activeTask ? (
+                    <>
+                        <section className="grow border-x border-dark-200 grid place-content-center">
+                            <div className="flex flex-col items-center gap-[50px]">
+                                <p className="text-body-medium text-light-100 font-mono">
+                                    {loadingTask ? "Loading task..." : "No task to show"}
+                                </p>
+                                <Image
+                                    src="/task-empty-state.svg"
+                                    alt=""
+                                    width={0}
+                                    height={170.5}
+                                    className="w-auto"
+                                    priority={true}
+                                />
+                            </div>
+                        </section>
+                        <section className="min-w-[360px] w-[12%] h-full pt-[30px] flex flex-col">
+                            <div className="pl-5 pb-[30px] space-y-[30px] border-b border-dark-200">
+                                <h6 className="text-headline-small text-light-100">Task Overview</h6>
+                                <div className="space-y-2.5">
+                                    <p className="text-body-tiny text-light-100">Developer</p>
+                                    <p className="text-headline-large text-light-200">-</p>
+                                </div>
+                                <div className="space-y-2.5">
+                                    <p className="text-body-tiny text-light-100">Bounty</p>
+                                    <p className="text-headline-large text-light-200">-</p>
+                                </div>
+                                <div className="space-y-2.5">
+                                    <p className="text-body-tiny text-light-100">Time Left</p>
+                                    <p className="text-headline-large text-light-200">-</p>
+                                </div>
+                            </div>
+                            <div className="pt-[30px] pl-5 flex items-center justify-between">
+                                <h6 className="text-headline-small text-light-100">Task Activities</h6>
+                            </div>
+                        </section>
+                    </>
+                ) : (
                     <>
                         <TaskDetailSection />
                         <TaskOverviewSection />

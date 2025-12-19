@@ -10,7 +10,7 @@ export type InstallationDto = {
     targetId: number
     targetType: string
     account: InstallationAccount
-    walletAddress: string
+    wallet: { address: string }
     subscriptionPackageId: string | null
     createdAt: string
     updatedAt: string
