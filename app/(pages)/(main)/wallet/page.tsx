@@ -164,10 +164,9 @@ const Wallet = () => {
                         {tabs.map((tab) => (
                             <button
                                 key={tab.enum}
-                                className={`p-2 px-2.5 text-body-small border 
-                                ${activeTab.enum === tab.enum
-                                        ? "border-transparent bg-light-100 text-dark-500 font-bold"
-                                        : "border-dark-100 text-dark-100 hover:text-light-100"}`
+                                className={`p-2 px-2.5 text-body-small border ${activeTab.enum === tab.enum
+                                    ? "border-transparent bg-light-100 text-dark-500 font-bold"
+                                    : "border-dark-100 text-dark-100 hover:text-light-100"}`
                                 }
                                 onClick={() => setActiveTab(tab)}
                             >
