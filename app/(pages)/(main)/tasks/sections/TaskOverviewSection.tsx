@@ -1,4 +1,6 @@
 "use client";
+import { firestoreDB } from "@/lib/firebase";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight, FiEdit3 } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
@@ -8,7 +10,7 @@ import { useInfiniteScroll, useToggle } from "ahooks";
 import SetTaskBountyModal from "../modals/SetTaskBountyModal";
 import SetTaskTimelineModal from "../modals/SetTaskTimelineModal";
 import DeleteTaskModal from "../modals/DeleteTaskModal";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
 import { TaskDto, TIMELINE_TYPE } from "@/app/models/task.model";
@@ -16,10 +18,14 @@ import { HiOutlineRefresh } from "react-icons/hi";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import { useCustomSearchParams } from "@/app/utils/hooks";
+import useUserStore from "@/app/state-management/useUserStore";
+
+export const activityCollection = collection(firestoreDB, "activity");
 
 const TaskOverviewSection = () => {
     const { activeTask } = useContext(ActiveTaskContext);
     const { updateSearchParams } = useCustomSearchParams();
+    const { currentUser } = useUserStore();
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
@@ -54,6 +60,26 @@ const TaskOverviewSection = () => {
             reloadDeps: [activeTask]
         }
     );
+
+    useEffect(() => {
+        if (!activeTask || !currentUser) return;
+
+        const unsubscribe = onSnapshot(
+            query(
+                activityCollection,
+                where("userId", "==", currentUser.userId),
+                where("taskId", "==", activeTask.id),
+                where("type", "==", "task")
+            ),
+            (snapshot) => {
+                if (snapshot.docs.length > 0) {
+                    reloadActivities();
+                }
+            }
+        );
+
+        return () => unsubscribe();
+    }, [activeTask, activeTask?.id, currentUser, reloadActivities]);
 
     return (
         <>

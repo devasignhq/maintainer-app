@@ -1,4 +1,4 @@
-import { db } from "@/lib/firebase";
+import { firestoreDB } from "@/lib/firebase";
 import {
     QueryConstraint,
     Timestamp,
@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { MessageDto, CreateMessageDto, MessageMetadata } from "../models/message.model";
 
-const messagesCollection = collection(db, "messages");
+const messagesCollection = collection(firestoreDB, "messages");
 
 export class MessageAPI {
     static async getTaskMessages(taskId: string) {
@@ -85,7 +85,7 @@ export class MessageAPI {
     }
 
     static async updateMessage(messageId: string, data: Partial<MessageDto>) {
-        const messageRef = doc(db, "messages", messageId);
+        const messageRef = doc(firestoreDB, "messages", messageId);
         const messageSnap = await getDoc(messageRef);
 
         if (!messageSnap.exists()) {
@@ -107,7 +107,7 @@ export class MessageAPI {
     }
 
     static async markMessageAsRead(messageId: string) {
-        const messageRef = doc(db, "messages", messageId);
+        const messageRef = doc(firestoreDB, "messages", messageId);
         const messageSnap = await getDoc(messageRef);
 
         if (!messageSnap.exists()) {
