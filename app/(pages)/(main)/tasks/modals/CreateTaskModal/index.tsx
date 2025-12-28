@@ -20,7 +20,7 @@ import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { CreateTaskDto } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
-import { openInNewTab } from "@/app/utils/helper";
+import { moneyFormat, openInNewTab } from "@/app/utils/helper";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import SearchBox from "../../components/SearchBox";
 import { InstallationAPI } from "@/app/services/installation.service";
@@ -583,7 +583,7 @@ const CreateTaskModal = ({
                             {showSelectedTasks && (
                                 <div className="flex flex-col items-end">
                                     <p className={`text-headline-small font-semibold text-base ${totalBounty.valid ? "text-indicator-200" : "text-indicator-500"} tracking-[-0.5px] leading-1`}>
-                                        {totalBounty.value} USDC
+                                        {moneyFormat(totalBounty.value)} USDC
                                     </p>
                                     <p className="text-body-micro text-dark-100 font-medium text-[10px] leading-[16px] tracking-[-0.5px]">
                                         Total Bounty
@@ -592,7 +592,7 @@ const CreateTaskModal = ({
                             )}
                             <div className="flex flex-col items-end">
                                 <p className="text-headline-small font-semibold text-base text-indicator-100 tracking-[-0.5px] leading-1">
-                                    {usdcBalance} USDC
+                                    {moneyFormat(usdcBalance)} USDC
                                 </p>
                                 <p className="text-body-micro text-dark-100 font-medium text-[10px] leading-[16px] tracking-[-0.5px]">
                                     Wallet Balance
