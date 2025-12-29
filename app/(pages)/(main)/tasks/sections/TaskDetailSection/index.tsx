@@ -14,6 +14,8 @@ const TaskDetailSection = () => {
     const unread = searchParams.get("unread");
     const [activeView, setActiveView] = useState(viewOptions[0]);
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(Number(unread));
+
+    useEffect(() => setActiveView(viewOptions[0]), [activeTask?.id]);
     
     // Listen to unread messages count
     useEffect(() => {

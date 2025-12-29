@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unescaped-entities */
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
@@ -8,9 +9,10 @@ import useUserStore from "@/app/state-management/useUserStore";
 import { formatTime, handleApiError } from "@/app/utils/helper";
 import { useToggle } from "ahooks";
 import { useContext, useState, useEffect, useRef } from "react";
-import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
+import { FiArrowRight, FiCheckCircle, FiFile, FiDownload } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import { toast } from "react-toastify";
+import Link from "next/link";
 import { ActiveTaskContext } from "../../../contexts/ActiveTaskContext";
 import { MessageAPI } from "@/app/services/message.service";
 
@@ -115,6 +117,41 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
             }
         >
             <p className="text-body-medium text-light-100">{message.body}</p>
+
+            {message.attachments && message.attachments.length > 0 && (
+                <div className="flex flex-wrap gap-2.5">
+                    {message.attachments.map((url, index) => {
+                        const isImage = /\.(jpg|jpeg|png|gif|webp|svg)($|\?)/i.test(url);
+                        return (
+                            <Link
+                                key={index}
+                                href={url}
+                                target="_blank"
+                                className="relative block w-20 h-20 rounded-lg overflow-hidden border border-dark-200 hover:border-light-100 transition-colors bg-dark-400 group"
+                            >
+                                {isImage ? (
+                                    <img
+                                        src={url}
+                                        alt={`Attachment ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center p-2">
+                                        <FiFile className="text-2xl text-primary-100 mb-1" />
+                                        <span className="text-[10px] text-light-200 w-full truncate text-center">
+                                            FILE
+                                        </span>
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <FiDownload className="text-white text-xl" />
+                                </div>
+                            </Link>
+                        );
+                    })}
+                </div>
+            )}
+
             <small className="text-body-tiny font-bold text-dark-200">
                 {formatTime(message.createdAt.toDate().toISOString())}
             </small>
