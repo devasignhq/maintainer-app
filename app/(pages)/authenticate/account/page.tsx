@@ -9,7 +9,7 @@ import { ErrorResponse } from "@/app/models/_global";
 import useUserStore from "@/app/state-management/useUserStore";
 import { auth, githubProvider, useAuthenticatedUserCheck } from "@/lib/firebase";
 import { signInWithPopup, getAdditionalUserInfo } from "@firebase/auth";
-import { handleApiError } from "@/app/utils/helper";
+import { handleApiErrorResponse, handleApiSuccessResponse } from "@/app/utils/helper";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
 const Account = () => {
@@ -28,17 +28,20 @@ const Account = () => {
         useLockFn((githubUsername: string) => UserAPI.createUser({ githubUsername })),
         {
             manual: true,
-            onSuccess: (data, params) => {
-                toast.success("User created successfully.");
-                if (data) {
-                    setCurrentUser({ ...data, username: params[0] });
+            onSuccess: (response, params) => {
+                if (!response) {
+                    toast.error("Failed to create user. Please try again.");
+                    return;
                 }
 
+                handleApiSuccessResponse(response);
+                setCurrentUser({ ...response.data, username: params[0] });
                 getInstallation();
+
                 router.push(ROUTES.ONBOARDING);
             },
             onError: (error) => {
-                handleApiError(error, "Failed to create user.");
+                handleApiErrorResponse(error, "Failed to create user.");
             }
         }
     );
@@ -48,14 +51,17 @@ const Account = () => {
         useLockFn((githubUsername: string) => UserAPI.getUser({ view: "basic" })),
         {
             manual: true,
-            onSuccess: (data, params) => {
-                if (data) {
-                    setCurrentUser({ ...data, username: params[0] });
+            onSuccess: (response, params) => {
+                if (!response) {
+                    toast.error("Failed to fetch user. Please try again.");
+                    return;
                 }
 
+                handleApiSuccessResponse(response);
+                setCurrentUser({ ...response.data, username: params[0] });
                 getInstallation();
 
-                if (data?._count && data._count?.installations > 0) {
+                if (response.data._count && response.data._count.installations > 0) {
                     router.push(ROUTES.TASKS);
                     return;
                 }
@@ -67,11 +73,7 @@ const Account = () => {
                     createUser(params[0]);
                     return;
                 }
-                if (error.message) {
-                    toast.error(error.message);
-                    return;
-                }
-                toast.error("Failed to fetch user.");
+                handleApiErrorResponse(error, "Failed to fetch user.");
             }
         }
     );

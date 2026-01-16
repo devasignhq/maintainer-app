@@ -31,8 +31,11 @@ const Tasks = () => {
         setLoadingTask(true);
 
         try {
-            const task = await TaskAPI.getInstallationTaskById(activeInstallation.id, taskId);
-            setActiveTask(task);
+            const response = await TaskAPI.getInstallationTaskById(
+                activeInstallation.id,
+                taskId
+            );
+            setActiveTask(response.data);
         } catch {
             setActiveTask(null);
         } finally {
@@ -45,8 +48,11 @@ const Tasks = () => {
             return;
         }
 
-        const task = await TaskAPI.getInstallationTaskById(activeInstallation.id, taskId);
-        setActiveTask(task);
+        const response = await TaskAPI.getInstallationTaskById(
+            activeInstallation.id,
+            taskId
+        );
+        setActiveTask(response.data);
 
         removeSearchParams("refresh");
     }), [refresh]);

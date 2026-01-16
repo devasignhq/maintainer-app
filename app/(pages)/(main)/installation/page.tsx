@@ -9,7 +9,7 @@ import { useState } from "react";
 import { TbProgress } from "react-icons/tb";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { MdOutlineCancel } from "react-icons/md";
-import { handleApiError } from "@/app/utils/helper";
+import { handleApiErrorResponse, handleApiSuccessResponse } from "@/app/utils/helper";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type ReboundAction = "INSTALL" | "RETRY" | "";
@@ -55,19 +55,12 @@ const Installation = () => {
 
         try {
             const response = await InstallationAPI.createInstallation({ installationId });
-
-            toast.success("Installation saved successfully.");
+            
             const noCurrentInstallations = !activeInstallation && installationList.length === 0;
 
-            if (response && "account" in response) {
-                setActiveInstallation(response);
-                setInstallationList([...installationList, response]);
-            }
-            if (response && "message" in response) {
-                setActiveInstallation(response.installation);
-                setInstallationList([...installationList, response.installation]);
-                toast.warn(response.message);
-            }
+            setActiveInstallation(response.data);
+            setInstallationList([...installationList, response.data]);
+            handleApiSuccessResponse(response);
 
             if (noCurrentInstallations) {
                 router.push(ROUTES.ONBOARDING);
@@ -75,7 +68,10 @@ const Installation = () => {
                 router.push(ROUTES.TASKS);
             }
         } catch (error) {
-            handleApiError(error, "Failed to save installation. Please reload page to try again.");
+            handleApiErrorResponse(
+                error,
+                "Failed to save installation. Please reload page to try again."
+            );
             setReboundAction("RETRY");
         } finally {
             setIsProcessing(false);
