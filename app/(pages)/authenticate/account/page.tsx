@@ -57,7 +57,6 @@ const Account = () => {
                     return;
                 }
 
-                handleApiSuccessResponse(response);
                 setCurrentUser({ ...response.data, username: params[0] });
                 getInstallation();
 

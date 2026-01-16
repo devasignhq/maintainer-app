@@ -74,7 +74,7 @@ const CreateTaskCard = ({
                 labels: issue.labels.nodes
             },
             bounty: formik.values.bounty.replace(/,/g, ""),
-            timeline: formik.values.timeline || 1,
+            timeline: formik.values.timeline!,
             timelineType: formik.values.timelineType as TimelineType,
             bountyLabelId
         };
