@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { ErrorResponse } from "../models/_global";
+import { ApiResponse, ErrorResponse, PaginatedApiResponse } from "../models/_global";
 import { TaskStatus } from "../models/task.model";
 
 export function formatDateTime(isoString: string): string {
@@ -12,7 +12,7 @@ export function formatDateTime(isoString: string): string {
         minute: "2-digit",
         hour12: true
     });
-}
+};
 
 export function formatDate(isoString: string): string {
     const date = new Date(isoString);
@@ -21,7 +21,7 @@ export function formatDate(isoString: string): string {
         month: "long",
         year: "numeric"
     });
-}
+};
 
 export function formatTime(isoString: string): string {
     const date = new Date(isoString);
@@ -30,7 +30,29 @@ export function formatTime(isoString: string): string {
         minute: "2-digit",
         hour12: true
     });
-}
+};
+
+export function formatTimeline(timeline: number) {
+    const weeks = Math.floor(timeline / 7);
+    const days = timeline % 7;
+
+    let displayValue = "";
+
+    if (weeks === 0) {
+        displayValue = `${days} day${days !== 1 ? "s" : ""}`;
+    } else {
+        displayValue = `${weeks} week${weeks !== 1 ? "s" : ""}`;
+        if (days > 0) {
+            displayValue += ` and ${days} day${days !== 1 ? "s" : ""}`;
+        }
+    }
+
+    return {
+        displayValue,
+        weeks,
+        days
+    };
+};
 
 /** ie Converts `ELAPSED_CONTRACT` to `Elapsed Contract` */
 export const enumToStringConverter = (value: string) => {
@@ -87,7 +109,7 @@ export function moneyFormat(
         const nf = new Intl.NumberFormat("en-US", options);
         return (value || value === 0) ? nf.format(Number(value)) : "--";
     }
-}
+};
 
 /**
  * Converts a GitHub API URL to a GitHub web URL
@@ -102,7 +124,7 @@ export function convertGitHubApiUrlToWebUrlRegex(apiUrl: string): string {
     }
 
     return `https://github.com/${match[1]}`;
-}
+};
 
 export function taskStatusFormatter(status: TaskStatus) {
     switch (status) {
@@ -117,13 +139,22 @@ export function taskStatusFormatter(status: TaskStatus) {
     default:
         return status;
     }
-}
+};
 
 export const openInNewTab = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
 };
 
-export const handleApiError = (err: unknown, altMessage: string) => {
+export const handleApiSuccessResponse = (
+    response: ApiResponse<unknown> | PaginatedApiResponse<unknown>
+) => {
+    toast.success(response.message);
+    if (response.warning) {
+        toast.warning(response.warning);
+    }
+};
+
+export const handleApiErrorResponse = (err: unknown, altMessage: string) => {
     const error = err as ErrorResponse;
     if (error.message) {
         toast.error(error.message);

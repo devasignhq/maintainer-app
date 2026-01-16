@@ -106,7 +106,7 @@ export function useGetInstallationRepositories() {
                 activeInstallation.id
             );
 
-            setRepositories(response);
+            setRepositories(response.data);
         } catch { } finally {
             setLoading(false);
         }
