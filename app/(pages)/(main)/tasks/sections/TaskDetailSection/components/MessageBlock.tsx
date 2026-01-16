@@ -6,7 +6,7 @@ import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { MessageDto } from "@/app/models/message.model";
 import { TaskAPI } from "@/app/services/task.service";
 import useUserStore from "@/app/state-management/useUserStore";
-import { formatTime, handleApiError } from "@/app/utils/helper";
+import { formatTime, handleApiErrorResponse, handleApiSuccessResponse } from "@/app/utils/helper";
 import { useToggle } from "ahooks";
 import { useContext, useState, useEffect, useRef } from "react";
 import { FiArrowRight, FiCheckCircle, FiFile, FiDownload } from "react-icons/fi";
@@ -69,12 +69,11 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
         setReplying(true);
 
         try {
-            const response = await TaskAPI.replyTimelineModificationRequest(
+            const response = await TaskAPI.replyTimelineExtensionRequest(
                 activeTask!.id,
                 {
                     accept: replyMode === "approve",
-                    requestedTimeline: message.metadata!.requestedTimeline!,
-                    timelineType: message.metadata!.timelineType!
+                    requestedTimeline: message.metadata!.requestedTimeline
                 }
             );
 
@@ -94,16 +93,16 @@ const MessageBlock = ({ message, margin, setMessages }: MessageBlockProps) => {
                     metadata: { ...message.metadata!, responded: true }
                 });
 
-                toast.success("Request sent successfully.");
+                handleApiSuccessResponse(response);
             } catch {
-                toast.success("Request sent successfully.");
+                handleApiSuccessResponse(response);
                 toast.warn("Failed to mark extension request message as 'responded'.");
             }
 
-            setActiveTask({ ...activeTask!, ...response.task! });
+            setActiveTask({ ...activeTask!, ...response.data.task });
             toggleReplyModal();
         } catch (error) {
-            handleApiError(error, "Failed to submit task. Please try again.");
+            handleApiErrorResponse(error, "Failed to respond to extension request. Please try again.");
         } finally {
             setReplying(false);
         }
