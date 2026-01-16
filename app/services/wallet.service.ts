@@ -8,28 +8,42 @@ import {
     WithdrawAssetDto,
     RecordWalletTopupsResponse
 } from "../models/wallet.model";
-import { ItemWithPaginationResponse } from "../models/_global";
+import { ApiResponse, PaginatedApiResponse } from "../models/_global";
 
 export class WalletAPI {
     static async getWalletInfo(installationId: string) {
-        return HttpClient.get<AccountRecord>(ENDPOINTS.WALLET.GET_WALLET,  { params: { installationId } });
+        return HttpClient.get<ApiResponse<AccountRecord>>(
+            ENDPOINTS.WALLET.GET_WALLET,
+            { params: { installationId } }
+        );
     }
 
     static async withdrawAsset(data: WithdrawAssetDto) {
-        return HttpClient.post<AccountRecord>(ENDPOINTS.WALLET.WITHDRAW, data);
+        return HttpClient.post<ApiResponse<TransactionDto>>(
+            ENDPOINTS.WALLET.WITHDRAW,
+            data
+        );
     }
 
     static async swapAsset(data: SwapAssetDto) {
-        return HttpClient.post<AccountRecord>(ENDPOINTS.WALLET.SWAP, data);
+        return HttpClient.post<ApiResponse<TransactionDto>>(
+            ENDPOINTS.WALLET.SWAP,
+            data
+        );
     }
 
     static async getTransactions(query?: QueryTransactionDto) {
-        return HttpClient.get<ItemWithPaginationResponse<"transactions", TransactionDto[]>>(
-            ENDPOINTS.WALLET.TRANSACTIONS, { params: query });
+        return HttpClient.get<PaginatedApiResponse<TransactionDto>>(
+            ENDPOINTS.WALLET.TRANSACTIONS,
+            { params: query }
+        );
     }
 
     static async recordWalletTopups(installationId: string) {
-        return HttpClient.post<RecordWalletTopupsResponse>(
-            ENDPOINTS.WALLET.RECORD_WALLET_TOPUPS, undefined, { params: { installationId } });
+        return HttpClient.post<ApiResponse<RecordWalletTopupsResponse>>(
+            ENDPOINTS.WALLET.RECORD_WALLET_TOPUPS,
+            undefined,
+            { params: { installationId } }
+        );
     }
 }
