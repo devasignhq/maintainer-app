@@ -28,7 +28,6 @@ const Onboarding = () => {
         manualBalanceCheck
     } = useStreamAccountBalance(
         activeInstallation?.wallet.address,
-        true,
         activeInstallation?.id
     );
     const [openCreateTaskModal, { toggle: toggleCreateTaskModal }] = useToggle(false);

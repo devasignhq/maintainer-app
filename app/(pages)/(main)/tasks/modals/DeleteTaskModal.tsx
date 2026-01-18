@@ -4,9 +4,8 @@ import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { useContext, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
-import { handleApiError, moneyFormat } from "@/app/utils/helper";
+import { handleApiErrorResponse, handleApiSuccessResponse, moneyFormat } from "@/app/utils/helper";
 import { TaskAPI } from "@/app/services/task.service";
-import { toast } from "react-toastify";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type DeleteTaskModalProps = {
@@ -25,29 +24,20 @@ const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
             const response = await TaskAPI.deleteTask(activeTask!.id);
 
             setActiveTask(null);
-            toast.success("Task deleted successfully.");
-            
-            if (response && "refunded" in response) {
-                toast.info(`${response.refunded  } refunded.`);
-            }
-            if (response && "data" in response) {
-                toast.info(`${response.data.refunded  } refunded.`);
-                toast.warn(response.message);
-            }
-
+            handleApiSuccessResponse(response);
             updateSearchParams({ refresh: true }, true);
             toggleModal();
         } catch (error) {
-            handleApiError(error, "Failed to update task timeline.");
+            handleApiErrorResponse(error, "Failed to delete task.");
         } finally {
             setLoading(false);
         }
     };
-    
+
     return (
         <PopupModalLayout title="Delete Task" toggleModal={toggleModal}>
             <p className="mt-2.5 text-body-medium text-dark-100">
-                By deleting this task, the assigned bounty will be removed from the 
+                By deleting this task, the assigned bounty will be removed from the
                 corresponding GitHub Issue and the bounty amount will be refunded.
             </p>
             <div className="w-full p-[15px] border border-dark-200 flex items-start gap-2.5 my-5 whitespace-nowrap">
@@ -57,7 +47,7 @@ const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
                 <div className="py-0.5 px-[7px] bg-primary-300 text-body-tiny font-bold text-light-200 max-w-[150px] truncate">
                     {activeTask?.issue.labels
                         .map(label => label.name)
-                        .map((name, index, array) => 
+                        .map((name, index, array) =>
                             index === array.length - 1 ? name : `${name}, `
                         )
                         .join("")}
@@ -83,5 +73,5 @@ const DeleteTaskModal = ({ toggleModal }: DeleteTaskModalProps) => {
         </PopupModalLayout>
     );
 };
- 
+
 export default DeleteTaskModal;

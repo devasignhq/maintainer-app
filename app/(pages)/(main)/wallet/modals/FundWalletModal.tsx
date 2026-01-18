@@ -112,7 +112,7 @@ const FundWalletModal = ({ toggleModal, displayTopUpAmount }: FundWalletModalPro
                 </div>
                 <div className="flex items-center justify-between">
                     <p className="text-body-tiny font-bold text-primary-400">Arrival Time:</p>
-                    <p className="text-body-tiny text-light-200">10 seconds</p>
+                    <p className="text-body-tiny text-light-200">30 seconds</p>
                 </div>
                 {/* <div className="flex items-center justify-between">
                     <p className="text-body-tiny font-bold text-primary-400">Contract Address:</p>

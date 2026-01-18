@@ -29,11 +29,9 @@ const Wallet = () => {
         manualBalanceCheck
     } = useStreamAccountBalance(
         activeInstallation?.wallet.address,
-        true,
         activeInstallation?.id
     );
     const [activeTab, setActiveTab] = useState(tabs[0]);
-    const [currentPage, setCurrentPage] = useState(1);
     const [openWithdrawAssetModal, { toggle: toggleWithdrawAssetModal }] = useToggle(false);
     const [openFundWalletModal, { toggle: toggleFundWalletModal }] = useToggle(false);
     const [openSwapAssetModal, { toggle: toggleSwapAssetModal }] = useToggle(false);
@@ -61,7 +59,11 @@ const Wallet = () => {
         reload: reloadTransactions
     } = useInfiniteScroll<Data>(
         async (currentData) => {
-            const pageToLoad = currentData ? currentPage + 1 : 1;
+            if (!activeInstallation) {
+                return { list: [], pagination: null, pageToLoad: 1 };
+            }
+
+            const pageToLoad = currentData ? currentData.pageToLoad + 1 : 1;
 
             const category = activeTab.enum === "ALL"
                 ? ""
@@ -77,11 +79,10 @@ const Wallet = () => {
                 ...(category && { categories: category })
             });
 
-            setCurrentPage(pageToLoad);
-
             return {
-                list: response.transactions,
-                hasMore: response.hasMore
+                list: response.data,
+                pagination: response.pagination,
+                pageToLoad
             };
         },
         {
@@ -94,9 +95,9 @@ const Wallet = () => {
         if (!activeInstallation) return;
 
         try {
-            const { processed } = await WalletAPI.recordWalletTopups(activeInstallation.id);
+            const { data } = await WalletAPI.recordWalletTopups(activeInstallation.id);
 
-            if (processed > 0) {
+            if (data.processed > 0) {
                 reloadTransactions();
             }
         } catch { }

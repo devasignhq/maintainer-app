@@ -1,41 +1,23 @@
-export type PaginationResponse = {
-    currentPage: number
-    totalPages: number
-    totalItems: number
-    itemsPerPage: number
-    hasMore: boolean
+export type ApiResponse<T> = {
+    data: T;
+    message: string;
+    pagination?: Pagination;
+    warning?: string;
+    meta?: Record<string, unknown>;
 }
 
-export type PaginatedResponse<T> = {
-    data: T[]
-    pagination: PaginationResponse
+export type PaginatedApiResponse<T> = Omit<ApiResponse<T[]>, "data"> & {
+    data: T[];
+    pagination: Pagination;
 }
 
-export type ItemWithPaginationResponse<F extends string | number | symbol, T> = Partial<PaginationResponse> & {
-    [K in F]: T
+export type Pagination = {
+    hasMore: boolean;
 }
 
 export type ErrorResponse = {
-    name: string
-    code: string
-    message: string
-    details?: unknown
-    status: number
-}
-
-export type PartialSuccessResponse<F extends string | number | symbol, T> = {
-    error: unknown
-    message: string
-} & {
-    [K in F]: T
-}
-
-export type MessageResponse = {
-    message: string
-}
-
-export type MessageWithDataResponse<F extends string | number | symbol, T> = {
-    message: string
-} & {
-    [K in F]: T
+    name: string;
+    code: string;
+    message: string;
+    status: number;
 }

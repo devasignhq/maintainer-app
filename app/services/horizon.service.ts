@@ -27,12 +27,8 @@ interface PriceData {
 let recentSwaps: SwapTracker[] = [];
 
 export class HorizonHelper {
-    static getBaseUrl(isTestnet: boolean = false) {
-        const baseUrl = isTestnet
-            ? "https://horizon-testnet.stellar.org"
-            : "https://horizon.stellar.org";
-
-        return baseUrl;
+    static getBaseUrl() {
+        return process.env.NEXT_PUBLIC_STELLAR_URL!;
     }
 
     // Method to track swaps to prevent false topup detection
@@ -66,7 +62,6 @@ export class HorizonHelper {
 
 export function useStreamAccountBalance(
     walletAddress: string | undefined,
-    isTestnet: boolean = false,
     installationId?: string
 ) {
     const [state, setState] = useState<StreamState>({
@@ -82,7 +77,7 @@ export function useStreamAccountBalance(
     const reconnectAttempts = useRef(0);
     const previousBalances = useRef<{ xlm: number; usdc: number } | null>(null);
 
-    const updateBalances = async (balances: WalletBalance[]) => {
+    const updateBalances = useCallback(async (balances: WalletBalance[]) => {
         const newXlmBalance = parseFloat(
             balances.find(balance => balance.asset_type === "native")?.balance || "0"
         );
@@ -120,7 +115,7 @@ export function useStreamAccountBalance(
             lastUpdated: new Date(),
             error: null
         }));
-    };
+    }, [installationId]);
 
     useEffect(() => {
         if (!walletAddress) {
@@ -152,8 +147,7 @@ export function useStreamAccountBalance(
             cleanup();
 
             try {
-                const baseUrl = HorizonHelper.getBaseUrl(isTestnet);
-
+                const baseUrl = HorizonHelper.getBaseUrl();
                 const eventSource = new EventSource(`${baseUrl}/accounts/${walletAddress}`);
                 eventSourceRef.current = eventSource;
 
@@ -203,13 +197,12 @@ export function useStreamAccountBalance(
 
         connect();
         return cleanup;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [walletAddress, isTestnet, installationId]);
+    }, [walletAddress, installationId, updateBalances]);
 
     const manualBalanceCheck = useCallback(async () => {
         if (!walletAddress) return;
         try {
-            const baseUrl = HorizonHelper.getBaseUrl(isTestnet);
+            const baseUrl = HorizonHelper.getBaseUrl();
             const response = await fetch(`${baseUrl}/accounts/${walletAddress}`);
 
             if (!response.ok) {
@@ -244,8 +237,7 @@ export function useStreamAccountBalance(
 
 export function useAccountBalancePolling(
     walletAddress: string | undefined,
-    intervalMs: number = 10000,
-    isTestnet: boolean = false
+    intervalMs: number = 10000
 ) {
     const [state, setState] = useState<Omit<StreamState, "isConnected">>({
         xlmBalance: "0.00",
@@ -259,11 +251,10 @@ export function useAccountBalancePolling(
 
     const fetchBalance = useCallback(async () => {
         if (!walletAddress) return;
-
         setIsLoading(true);
-        const baseUrl = HorizonHelper.getBaseUrl(isTestnet);
 
         try {
+            const baseUrl = HorizonHelper.getBaseUrl();
             const response = await fetch(`${baseUrl}/accounts/${walletAddress}`);
 
             if (!response.ok) {
@@ -298,7 +289,7 @@ export function useAccountBalancePolling(
         } finally {
             setIsLoading(false);
         }
-    }, [walletAddress, isTestnet]);
+    }, [walletAddress]);
 
     useEffect(() => {
         if (walletAddress) {
@@ -337,7 +328,7 @@ export function useXLMUSDCFromStellarDEX(intervalMs: number = 10000, pause: bool
                 "selling_asset_type=native&" +
                 "buying_asset_type=credit_alphanum4&" +
                 "buying_asset_code=USDC&" +
-                "buying_asset_issuer=GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN"
+                `buying_asset_issuer=${process.env.NEXT_PUBLIC_STELLAR_USDC_ASSET_ID}`
             );
 
             if (!response.ok) {

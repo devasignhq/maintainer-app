@@ -44,12 +44,6 @@ export type GitHubUser = {
     url: string;
 }
 
-export type GetRepositoryIssuesResponse = {
-    issues: IssueDto[];
-    hasMore: boolean;
-    pagination: { page: number, perPage: number };
-}
-
 export type GetRepositoryResourcesResponse = {
     labels: IssueLabel[];
     milestones: IssueMilestone[];

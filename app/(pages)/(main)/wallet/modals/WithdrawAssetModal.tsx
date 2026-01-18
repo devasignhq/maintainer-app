@@ -5,7 +5,7 @@ import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { SiStellar } from "react-icons/si";
 import { LiaExchangeAltSolid } from "react-icons/lia";
 import { useXLMUSDCFromStellarDEX } from "@/app/services/horizon.service";
-import { handleApiError, moneyFormat } from "@/app/utils/helper";
+import { handleApiErrorResponse, handleApiSuccessResponse, moneyFormat } from "@/app/utils/helper";
 import { object, string } from "yup";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useFormik } from "formik";
@@ -45,18 +45,18 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
             }
 
             try {
-                await WalletAPI.withdrawAsset({
+                const response = await WalletAPI.withdrawAsset({
                     ...values,
                     amount: values.amount.replace(/,/g, ""),
                     installationId: activeInstallation!.id,
                     assetType: "XLM"
                 });
 
-                toast.success("Asset withdrawn successfully.");
+                handleApiSuccessResponse(response);
                 reloadTransactions();
                 toggleModal();
             } catch (error) {
-                handleApiError(
+                handleApiErrorResponse(
                     error,
                     "An error occured while withdrawing asset. Please try again."
                 );

@@ -1,4 +1,4 @@
-import { db } from "@/lib/firebase";
+import { firestoreDB, storage } from "@/lib/firebase";
 import {
     QueryConstraint,
     Timestamp,
@@ -13,9 +13,10 @@ import {
     updateDoc,
     where
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { MessageDto, CreateMessageDto, MessageMetadata } from "../models/message.model";
 
-const messagesCollection = collection(db, "messages");
+const messagesCollection = collection(firestoreDB, "messages");
 
 export class MessageAPI {
     static async getTaskMessages(taskId: string) {
@@ -85,7 +86,7 @@ export class MessageAPI {
     }
 
     static async updateMessage(messageId: string, data: Partial<MessageDto>) {
-        const messageRef = doc(db, "messages", messageId);
+        const messageRef = doc(firestoreDB, "messages", messageId);
         const messageSnap = await getDoc(messageRef);
 
         if (!messageSnap.exists()) {
@@ -107,7 +108,7 @@ export class MessageAPI {
     }
 
     static async markMessageAsRead(messageId: string) {
-        const messageRef = doc(db, "messages", messageId);
+        const messageRef = doc(firestoreDB, "messages", messageId);
         const messageSnap = await getDoc(messageRef);
 
         if (!messageSnap.exists()) {
@@ -175,5 +176,23 @@ export class MessageAPI {
             } as MessageDto));
             callback(messages);
         });
+    }
+
+    static async uploadFile(file: File, taskId: string) {
+        // Path must match the pattern in your rules: tasks/{taskId}/{fileName}
+        const storageRef = ref(storage, `tasks/${taskId}/${Date.now()}_${file.name}`);
+
+        // Add metadata so the browser knows how to handle the file
+        const metadata = {
+            contentType: file.type
+        };
+
+        // Upload with metadata
+        const snapshot = await uploadBytes(storageRef, file, metadata);
+
+        // Get the public-tokenized URL
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        return downloadURL;
     }
 }

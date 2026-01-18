@@ -13,7 +13,7 @@ import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { useCustomSearchParams, useGetInstallationRepositories } from "@/app/utils/hooks";
 import { GetRepositoryResourcesResponse } from "@/app/models/github.model";
 import SearchBox from "../components/SearchBox";
-import { PaginationResponse } from "@/app/models/_global";
+import { ApiResponse } from "@/app/models/_global";
 import { enumToStringConverter } from "@/app/utils/helper";
 import { InstallationAPI } from "@/app/services/installation.service";
 import { useStreamAccountBalance } from "@/app/services/horizon.service";
@@ -27,8 +27,7 @@ const TaskListSection = () => {
     const [searchValue, setSearchValue] = useState("");
     const [displaySearchIcon, setDisplaySearchIcon] = useState(true);
     const { usdcBalance, manualBalanceCheck } = useStreamAccountBalance(
-        activeInstallation?.wallet.address,
-        true,
+        activeInstallation?.wallet?.address,
         activeInstallation?.id
     );
     const {
@@ -55,10 +54,10 @@ const TaskListSection = () => {
     } = useInfiniteScroll<Data>(
         async (currentData) => {
             if (!activeInstallation) {
-                return { list: [], pagination: null };
+                return { list: [], hasMore: false, pageToLoad: 1 };
             }
 
-            const pageToLoad = currentData ? (currentData.pagination as PaginationResponse).currentPage + 1 : 1;
+            const pageToLoad = currentData ? currentData.pageToLoad + 1 : 1;
             let filters: FilterTasks = {
                 issueTitle: taskFilters.issueTitle,
                 status: taskFilters.status
@@ -87,11 +86,12 @@ const TaskListSection = () => {
 
             return {
                 list: response.data,
-                pagination: response.pagination
+                hasMore: response.pagination.hasMore,
+                pageToLoad
             };
         },
         {
-            isNoMore: (data) => !data?.pagination?.hasMore,
+            isNoMore: (response) => !response?.hasMore,
             reloadDeps: [activeInstallation?.id, ...Object.values(taskFilters)]
         }
     );
@@ -115,12 +115,12 @@ const TaskListSection = () => {
         loading: loadingResources,
         data: repoResources,
         run: fetchRepoResources
-    } = useRequest<GetRepositoryResourcesResponse, []>(
+    } = useRequest<ApiResponse<GetRepositoryResourcesResponse>, []>(
         () => {
             return InstallationAPI.getRepositoryResources(
                 activeInstallation!.id,
                 taskFilters.repoUrl!
-            ) as Promise<GetRepositoryResourcesResponse>;
+            ) as Promise<ApiResponse<GetRepositoryResourcesResponse>>;
         },
         {
             manual: true,
@@ -226,7 +226,7 @@ const TaskListSection = () => {
                         />
                         <FilterDropdown
                             title="Labels"
-                            options={repoResources?.labels || []}
+                            options={repoResources?.data.labels || []}
                             fieldName="name"
                             fieldValue="name"
                             extendedContainerClassName="w-full"

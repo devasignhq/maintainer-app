@@ -25,14 +25,18 @@ const Tasks = () => {
     useAsyncEffect((async () => {
         if (!taskId || !activeInstallation) {
             setActiveTask(null);
+            setLoadingTask(false);
             return;
         }
 
         setLoadingTask(true);
 
         try {
-            const task = await TaskAPI.getInstallationTaskById(activeInstallation.id, taskId);
-            setActiveTask(task);
+            const response = await TaskAPI.getInstallationTaskById(
+                activeInstallation.id,
+                taskId
+            );
+            setActiveTask(response.data);
         } catch {
             setActiveTask(null);
         } finally {
@@ -45,8 +49,11 @@ const Tasks = () => {
             return;
         }
 
-        const task = await TaskAPI.getInstallationTaskById(activeInstallation.id, taskId);
-        setActiveTask(task);
+        const response = await TaskAPI.getInstallationTaskById(
+            activeInstallation.id,
+            taskId
+        );
+        setActiveTask(response.data);
 
         removeSearchParams("refresh");
     }), [refresh]);
@@ -67,7 +74,7 @@ const Tasks = () => {
                                     alt=""
                                     width={0}
                                     height={170.5}
-                                    className="w-auto"
+                                    className="w-auto" 
                                     priority={true}
                                 />
                             </div>

@@ -8,43 +8,42 @@ export const TASK_STATUS = {
     OPEN: "OPEN",
     IN_PROGRESS: "IN_PROGRESS",
     MARKED_AS_COMPLETED: "MARKED_AS_COMPLETED",
-    COMPLETED: "COMPLETED"
+    COMPLETED: "COMPLETED",
+    ARCHIVED: "ARCHIVED"
 };
-
 export type TaskStatus = keyof typeof TASK_STATUS
 
 export const TIMELINE_TYPE = {
     WEEK: "WEEK",
     DAY: "DAY"
 };
-
 export type TimelineType = keyof typeof TIMELINE_TYPE
 
 export type TaskDto = {
-    id: string
-    number: number
-    issue: TaskIssue
-    timeline: number | null
-    timelineType: TimelineType | null
-    bounty: number
-    status: TaskStatus
-    settled: boolean
-    acceptedAt: string | null
-    completedAt: string | null
-    creatorId: string
-    contributorId: string | null
-    installationId: string
-    createdAt: string
-    updatedAt: string
-    _count?: { taskActivities: number }
+    id: string;
+    number: number;
+    issue: TaskIssue;
+    timeline: number;
+    bounty: number;
+    status: TaskStatus;
+    escrowTransactions: EscrowTransaction[];
+    settled: boolean;
+    acceptedAt: string | null;
+    completedAt: string | null;
+    creatorId: string;
+    contributorId: string | null;
+    installationId: string;
+    createdAt: string;
+    updatedAt: string;
+    _count?: { taskActivities: number };
     
-    applications?: UserDto[]
-    creator?: UserDto
-    contributor?: UserDto | null
-    installation?: InstallationDto
-    transactions?: TransactionDto[]
-    taskSubmissions?: TaskSubmission[]
-    taskActivities?: TaskActivity[]
+    applications?: UserDto[];
+    creator?: UserDto;
+    contributor?: UserDto | null;
+    installation?: InstallationDto;
+    transactions?: TransactionDto[];
+    taskSubmissions?: TaskSubmission[];
+    taskActivities?: TaskActivity[];
 }
 
 export type TaskIssue = Omit<IssueDto, "labels"> & {
@@ -52,43 +51,52 @@ export type TaskIssue = Omit<IssueDto, "labels"> & {
     bountyCommentId?: string;
 }
 
+export type EscrowTransaction = {
+    txHash: string;
+    method: "creation" 
+        | "increase_bounty" 
+        | "decrease_bounty"
+        | "assign_contributor"
+        | "bounty_payout";
+}
+
 export type TaskSubmission = {
-    id: string
-    userId: string
-    taskId: string
-    installationId: string
-    pullRequest: string
-    attachmentUrl: string | null
-    createdAt: string
-    updatedAt: string
+    id: string;
+    userId: string;
+    taskId: string;
+    installationId: string;
+    pullRequest: string;
+    attachmentUrl: string | null;
+    createdAt: string;
+    updatedAt: string;
     
-    user?: UserDto
-    task?: TaskDto
-    installation?: InstallationDto
+    user?: UserDto;
+    task?: TaskDto;
+    installation?: InstallationDto;
 }
 
 export type TaskActivity = {
-    id: string
-    taskId: string
-    userId: string | null
-    taskSubmissionId: string | null
-    viewed: boolean
-    createdAt: string
-    updatedAt: string
+    id: string;
+    taskId: string;
+    userId: string | null;
+    taskSubmissionId: string | null;
+    viewed: boolean;
+    createdAt: string;
+    updatedAt: string;
     
-    task?: TaskDto
-    user?: UserDto | null
-    taskSubmission?: TaskSubmission | null
+    task?: TaskDto;
+    user?: UserDto | null;
+    taskSubmission?: TaskSubmission | null;
 }
 
 export type CreateTaskDto = {
-    installationId: string
-    issue: TaskIssue
-    timeline?: number
-    timelineType?: TimelineType
-    bounty: string
-    bountyLabelId: string
-    repoId?: string // For internal tracking during task creation
+    installationId: string;
+    issue: TaskIssue;
+    timeline: number;
+    timelineType?: TimelineType;
+    bounty: string;
+    bountyLabelId: string;
+    repoId?: string; // For internal tracking during task creation
 }
 
 export type AddBountyCommentId = {
@@ -96,40 +104,38 @@ export type AddBountyCommentId = {
 }
 
 export type UpdateTaskBountyDto = {
-    newBounty: string
+    newBounty: string;
 }
 
 export type UpdateTaskTimelineDto = {
-    newTimeline: number
-    newTimelineType: TimelineType
+    newTimeline: number;
 }
 
 export type ReplyTimelineExtensionRequestDto = {
-    accept: boolean
-    requestedTimeline: number 
-    timelineType: TimelineType
+    accept: boolean;
+    requestedTimeline: number;
 }
 
 export type QueryTaskDto = {
-    status?: TaskStatus
-    detailed?: boolean
-    page?: number
-    limit?: number
-    sort?: "asc" | "desc"
-    repoUrl?: string
-    issueTitle?: string
-    issueLabels?: string[]
+    status?: TaskStatus;
+    detailed?: boolean;
+    page?: number;
+    limit?: number;
+    sort?: "asc" | "desc";
+    repoUrl?: string;
+    issueTitle?: string;
+    issueLabels?: string[];
 }
 
 export type QueryTaskActivityDto = {
-    page?: number
-    limit?: number
-    sort?: "asc" | "desc"
+    page?: number;
+    limit?: number;
+    sort?: "asc" | "desc";
 }
 
-export type FilterTasks = Pick<QueryTaskDto, "status" | "repoUrl" | "issueTitle" | "issueLabels">
+export type FilterTasks = Pick<QueryTaskDto, "status" | "repoUrl" | "issueTitle" | "issueLabels">;
 
 export type TimelineExtensionResponse = {
-    comment: MessageDto;
-    task?: Pick<TaskDto, "timeline" | "timelineType" | "status" | "updatedAt">;
+    message: MessageDto;
+    task?: Pick<TaskDto, "timeline" | "status" | "updatedAt">;
 }

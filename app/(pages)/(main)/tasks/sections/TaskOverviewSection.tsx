@@ -1,4 +1,6 @@
 "use client";
+import { firestoreDB } from "@/lib/firebase";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight, FiEdit3 } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
@@ -8,18 +10,22 @@ import { useInfiniteScroll, useToggle } from "ahooks";
 import SetTaskBountyModal from "../modals/SetTaskBountyModal";
 import SetTaskTimelineModal from "../modals/SetTaskTimelineModal";
 import DeleteTaskModal from "../modals/DeleteTaskModal";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
-import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
-import { TaskDto, TIMELINE_TYPE } from "@/app/models/task.model";
+import { formatTimeline, moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
+import { TaskDto } from "@/app/models/task.model";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import { useCustomSearchParams } from "@/app/utils/hooks";
+import useUserStore from "@/app/state-management/useUserStore";
+
+export const activityCollection = collection(firestoreDB, "activity");
 
 const TaskOverviewSection = () => {
     const { activeTask } = useContext(ActiveTaskContext);
     const { updateSearchParams } = useCustomSearchParams();
+    const { currentUser } = useUserStore();
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
@@ -54,6 +60,28 @@ const TaskOverviewSection = () => {
             reloadDeps: [activeTask]
         }
     );
+
+    useEffect(() => {
+        if (!activeTask || !currentUser) return;
+
+        const unsubscribe = onSnapshot(
+            query(
+                activityCollection,
+                where("userId", "==", currentUser.userId),
+                where("taskId", "==", activeTask.id),
+                where("type", "==", "task")
+            ),
+            (snapshot) => {
+                if (snapshot.docs.length > 0) {
+                    reloadActivities();
+                    updateSearchParams({ refresh: "true" });
+                }
+            }
+        );
+
+        return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTask, activeTask?.id, currentUser]);
 
     return (
         <>
@@ -95,7 +123,7 @@ const TaskOverviewSection = () => {
                             <p className="text-body-tiny text-light-100">Timeline</p>
                             <div className="flex items-center gap-1">
                                 <p className="text-body-large text-light-200">
-                                    {formatTimeline(activeTask!)}
+                                    {formatTimeline(activeTask.timeline).displayValue}
                                 </p>
                                 {(activeTask._count && activeTask._count?.taskActivities < 1) ? (
                                     <button onClick={toggleSetTaskTimelineModal}>
@@ -110,7 +138,7 @@ const TaskOverviewSection = () => {
                                 <>
                                     <p className="text-body-tiny text-light-100">Completed In</p>
                                     <p className="text-body-large text-light-200">
-                                        {getCompletionTime(activeTask!)}
+                                        {getCompletionTime(activeTask)}
                                     </p>
                                 </>
                             ) : (
@@ -187,16 +215,6 @@ const TaskOverviewSection = () => {
 
 export default TaskOverviewSection;
 
-function formatTimeline(task: TaskDto) {
-    if (!Number.isInteger(task.timeline!)) {
-        const [weeks, days] = task.timeline!.toString().split(".");
-        const totalDays = (Number(weeks) * 7) + Number(days);
-        return formatTimeLeft(totalDays);
-    }
-
-    return `${task.timeline} ${task.timelineType?.toLowerCase()}(s)`;
-}
-
 /**
  * Calculates the time left for a task based on its timeline, timelineType, and acceptedAt date
  * @param task - The task object containing timeline information
@@ -204,7 +222,7 @@ function formatTimeline(task: TaskDto) {
  */
 export const getTimeLeft = (task: TaskDto): string => {
     // If no timeline is set, return empty string or a default message
-    if (!task.timeline || !task.timelineType) {
+    if (!task.timeline) {
         return "No deadline set";
     }
 
@@ -213,18 +231,7 @@ export const getTimeLeft = (task: TaskDto): string => {
     const now = new Date();
 
     // Calculate total days for the timeline
-    let totalTimelineDays: number;
-
-    if (task.timelineType === TIMELINE_TYPE.WEEK) {
-        // Handle float values for weeks (e.g., 2.5 = 2 weeks + 5 days)
-        const weeks = Math.floor(task.timeline);
-        const extraDays = Math.round((task.timeline - weeks) * 10); // 0.5 * 10 = 5 days
-        totalTimelineDays = (weeks * 7) + extraDays;
-    } else if (task.timelineType === TIMELINE_TYPE.DAY) {
-        totalTimelineDays = task.timeline;
-    } else {
-        return "Invalid timeline type";
-    }
+    const totalTimelineDays = task.timeline;
 
     // Calculate the deadline
     const deadline = new Date(acceptedAt);
@@ -277,7 +284,7 @@ const formatTimeLeft = (totalDays: number): string => {
  * Alternative version that returns an object with more detailed information
  */
 export const getDetailedTimeLeft = (task: TaskDto) => {
-    if (!task.timeline || !task.timelineType) {
+    if (!task.timeline) {
         return {
             isValid: false,
             isOverdue: false,
@@ -292,25 +299,7 @@ export const getDetailedTimeLeft = (task: TaskDto) => {
     const acceptedAt = new Date(task.acceptedAt!);
     const now = new Date();
 
-    let totalTimelineDays: number;
-
-    if (task.timelineType === TIMELINE_TYPE.WEEK) {
-        const weeks = Math.floor(task.timeline);
-        const extraDays = Math.round((task.timeline - weeks) * 10);
-        totalTimelineDays = (weeks * 7) + extraDays;
-    } else if (task.timelineType === TIMELINE_TYPE.DAY) {
-        totalTimelineDays = task.timeline;
-    } else {
-        return {
-            isValid: false,
-            isOverdue: false,
-            totalDays: 0,
-            weeks: 0,
-            days: 0,
-            formatted: "Invalid timeline type",
-            deadline: null
-        };
-    }
+    const totalTimelineDays = task.timeline;
 
     const deadline = new Date(acceptedAt);
     deadline.setDate(deadline.getDate() + totalTimelineDays);
@@ -350,22 +339,12 @@ export const getDetailedTimeLeft = (task: TaskDto) => {
  * Helper function to get the deadline date for a task
  */
 export const getTaskDeadline = (task: TaskDto): Date | null => {
-    if (!task.timeline || !task.timelineType) {
+    if (!task.timeline) {
         return null;
     }
 
     const acceptedAt = new Date(task.acceptedAt!);
-    let totalTimelineDays: number;
-
-    if (task.timelineType === TIMELINE_TYPE.WEEK) {
-        const weeks = Math.floor(task.timeline);
-        const extraDays = Math.round((task.timeline - weeks) * 10);
-        totalTimelineDays = (weeks * 7) + extraDays;
-    } else if (task.timelineType === TIMELINE_TYPE.DAY) {
-        totalTimelineDays = task.timeline;
-    } else {
-        return null;
-    }
+    const totalTimelineDays = task.timeline;
 
     const deadline = new Date(acceptedAt);
     deadline.setDate(deadline.getDate() + totalTimelineDays);

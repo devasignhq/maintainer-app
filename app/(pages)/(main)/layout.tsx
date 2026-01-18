@@ -14,6 +14,7 @@ import { TbLogout } from "react-icons/tb";
 import { useLogoutUser } from "@/lib/firebase";
 import { FiSettings } from "react-icons/fi";
 import { openInNewTab } from "@/app/utils/helper";
+import { toast } from "react-toastify";
 
 export default function MainLayout({
     children
@@ -38,7 +39,10 @@ export default function MainLayout({
             retryCount: 2,
             cacheKey: "installation-list",
             onSuccess: (response) => {
-                if (!response) return;
+                if (!response) {
+                    toast.error("Failed to fetch installations. Please reload page to try again");
+                    return;
+                };
                 
                 setInstallationList(response.data);
                 if (!activeInstallation) {

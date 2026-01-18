@@ -17,15 +17,16 @@ import {
     GetRepositoryResourcesResponse
 } from "@/app/models/github.model";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
-import { CreateTaskDto } from "@/app/models/task.model";
+import { CreateTaskDto, TIMELINE_TYPE } from "@/app/models/task.model";
 import { toast } from "react-toastify";
 import { TaskAPI } from "@/app/services/task.service";
-import { openInNewTab } from "@/app/utils/helper";
+import { moneyFormat, openInNewTab } from "@/app/utils/helper";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import SearchBox from "../../components/SearchBox";
 import { InstallationAPI } from "@/app/services/installation.service";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { LuRocket } from "react-icons/lu";
+import { ApiResponse } from "@/app/models/_global";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -45,7 +46,6 @@ type CreateTaskModalProps = {
 };
 
 // TODO: Transfer logic to custom hook
-// TODO: Disable all buttons and links when tasks are being uploaded
 const CreateTaskModal = ({
     installationRepos,
     loadingInstallationRepos,
@@ -60,11 +60,9 @@ const CreateTaskModal = ({
     const [issueFilters, setIssueFilters] = useState<IssueFilters>(defaultIssueFilters);
     const [searchValue, setSearchValue] = useState("");
     const [displaySearchIcon, setDisplaySearchIcon] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
     const [showSelectedTasks, setShowSelectedTasks] = useState(false);
     const [uploadingTasks, setUploadingTasks] = useState(false);
     const [validBountyLabel, setValidBountyLabel] = useState<Map<string, string>>(new Map());
-    // const [totalBounties, setTotalBounties] = useState(false);
     const [uploadedTasks, setUploadedTasks] = useState<Map<string, UploadStatus>>(new Map());
     const [selectedTasks, setSelectedTasks] = useState<Map<string, TaskPayload>>(() => {
         const initialMap = new Map();
@@ -118,7 +116,7 @@ const CreateTaskModal = ({
                     activeInstallation.id,
                     repo.id
                 );
-                return { repoId: repo.id, labelId: response.bountyLabel.id };
+                return { repoId: repo.id, labelId: response.data.bountyLabel.id };
             } catch {
                 return null;
             }
@@ -145,13 +143,12 @@ const CreateTaskModal = ({
         reload: reloadIssues
     } = useInfiniteScroll<Data>(
         async (currentData) => {
-            const pageToLoad = currentData ? currentPage + 1 : 1;
-
             if (!activeRepo || !activeInstallation) {
-                return { list: [], hasMore: false };
+                return { list: [], hasMore: false, pageToLoad: 1 };
             }
 
-            const { issues, hasMore } = await InstallationAPI.getRepositoryIssues(
+            const pageToLoad = currentData ? currentData.pageToLoad + 1 : 1;
+            const response = await InstallationAPI.getRepositoryIssues(
                 activeInstallation.id,
                 {
                     repoUrl: activeRepo.url,
@@ -160,17 +157,22 @@ const CreateTaskModal = ({
                 }
             );
 
-            setCurrentPage(pageToLoad);
-
-            return { list: issues, hasMore };
+            return {
+                list: response.data,
+                hasMore: response.pagination.hasMore,
+                pageToLoad
+            };
         },
         {
-            isNoMore: (data) => !data?.hasMore,
+            isNoMore: (response) => !response?.hasMore,
             reloadDeps: [activeRepo, ...Object.values(issueFilters)]
         }
     );
 
-    const { loading: loadingResources, data: repoResources } = useRequest<GetRepositoryResourcesResponse, [string, string]>(
+    const { 
+        loading: loadingResources, 
+        data: repoResources 
+    } = useRequest<ApiResponse<GetRepositoryResourcesResponse>, [string, string]>(
         () => {
             if (!activeRepo || !activeInstallation) {
                 return delayedEmptyResources();
@@ -178,7 +180,7 @@ const CreateTaskModal = ({
             return InstallationAPI.getRepositoryResources(
                 activeInstallation.id,
                 activeRepo.url
-            ) as Promise<GetRepositoryResourcesResponse>;
+            ) as Promise<ApiResponse<GetRepositoryResourcesResponse>>;
         },
         {
             retryCount: 1,
@@ -224,8 +226,6 @@ const CreateTaskModal = ({
         }
 
         // TODO: Check if user USDC balance is enough (open fund wallet modal if it ain't enough)
-        // const totalBounties = Array.from(selectedTasks.values())
-        //     .reduce((total, task) => total + Number(task.payload.bounty), 0);
 
         setUploadingTasks(true);
         taskBoxRef!.current!.scrollTop = 0;
@@ -248,13 +248,19 @@ const CreateTaskModal = ({
 
             try {
                 delete task.payload.repoId;
+                
+                task.payload.timeline = task.payload.timelineType === TIMELINE_TYPE.WEEK 
+                    ? task.payload.timeline * 7 
+                    : task.payload.timeline;
+                delete task.payload.timelineType;
+
                 const response = await TaskAPI.createTask({ payload: task.payload });
 
                 toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
                 setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "CREATED"));
 
-                if (response && "message" in response) {
-                    toast.warn(response.message);
+                if (response.warning) {
+                    toast.warn(response.warning);
                 }
             } catch {
                 toast.error(`Task for issue #${task.payload.issue.number} failed to create.`);
@@ -372,7 +378,7 @@ const CreateTaskModal = ({
                         <div className="flex items-center gap-2.5">
                             <FilterDropdown
                                 title="Labels"
-                                options={repoResources?.labels || []}
+                                options={repoResources?.data.labels || []}
                                 fieldName="name"
                                 fieldValue="name"
                                 setField={(value) => setIssueFilters((prev) => ({
@@ -387,7 +393,7 @@ const CreateTaskModal = ({
                             />
                             <FilterDropdown
                                 title="Milestones"
-                                options={repoResources?.milestones || []}
+                                options={repoResources?.data.milestones || []}
                                 fieldName="title"
                                 fieldValue="title"
                                 setField={(value) => setIssueFilters((prev) => ({
@@ -567,7 +573,10 @@ const CreateTaskModal = ({
                                 sideItem={showSelectedTasks ? <LuRocket /> : <FiArrowRight />}
                                 attributes={{
                                     onClick: createTasks,
-                                    disabled: selectedTasks.size === 0 || uploadingTasks || (!validPayload && showSelectedTasks)
+                                    disabled: selectedTasks.size === 0 
+                                        || uploadingTasks 
+                                        || (!validPayload && showSelectedTasks) 
+                                        || !totalBounty.valid
                                 }}
                             />
                             <ButtonPrimary
@@ -575,7 +584,9 @@ const CreateTaskModal = ({
                                 text="Save Draft"
                                 attributes={{
                                     onClick: saveDraft,
-                                    disabled: uploadingTasks || !validPayload
+                                    disabled: uploadingTasks 
+                                        || !validPayload 
+                                        || !totalBounty.valid
                                 }}
                             />
                         </div>
@@ -583,7 +594,7 @@ const CreateTaskModal = ({
                             {showSelectedTasks && (
                                 <div className="flex flex-col items-end">
                                     <p className={`text-headline-small font-semibold text-base ${totalBounty.valid ? "text-indicator-200" : "text-indicator-500"} tracking-[-0.5px] leading-1`}>
-                                        {totalBounty.value} USDC
+                                        {moneyFormat(totalBounty.value)} USDC
                                     </p>
                                     <p className="text-body-micro text-dark-100 font-medium text-[10px] leading-[16px] tracking-[-0.5px]">
                                         Total Bounty
@@ -592,7 +603,7 @@ const CreateTaskModal = ({
                             )}
                             <div className="flex flex-col items-end">
                                 <p className="text-headline-small font-semibold text-base text-indicator-100 tracking-[-0.5px] leading-1">
-                                    {usdcBalance} USDC
+                                    {moneyFormat(usdcBalance)} USDC
                                 </p>
                                 <p className="text-body-micro text-dark-100 font-medium text-[10px] leading-[16px] tracking-[-0.5px]">
                                     Wallet Balance
@@ -608,10 +619,14 @@ const CreateTaskModal = ({
 
 export default CreateTaskModal;
 
-const delayedEmptyResources = (): Promise<GetRepositoryResourcesResponse> => {
+const delayedEmptyResources = (): Promise<ApiResponse<GetRepositoryResourcesResponse>> => {
     return new Promise((resolve) => {
         setTimeout(() => {
-            resolve({ labels: [], milestones: [] });
+            resolve({ 
+                data: { labels: [], milestones: [] }, 
+                message: "", 
+                pagination: { hasMore: false } 
+            });
         }, 1000);
     });
 };

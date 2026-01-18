@@ -5,11 +5,15 @@ import { TaskActivity } from "@/app/models/task.model";
 import Link from "next/link";
 import { useContext } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
-import { toast } from "react-toastify";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
-import { formatDateTime, handleApiError } from "@/app/utils/helper";
+import { 
+    formatDateTime,
+    handleApiErrorResponse,
+    handleApiSuccessResponse
+} from "@/app/utils/helper";
 import { TaskAPI } from "@/app/services/task.service";
 import { useRequest, useLockFn } from "ahooks";
+import { toast } from "react-toastify";
 
 type ApproveTaskDelegationModalProps = {
     taskActivity: TaskActivity;
@@ -24,16 +28,19 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
         useLockFn(() => TaskAPI.acceptTaskApplication(activeTask!.id, taskActivity.user!.userId)),
         {
             manual: true,
-            onSuccess: (data) => {
-                toast.success("Task delegated successfully.");
-                if (data) {
-                    setActiveTask({ ...activeTask!, ...data });
+            onSuccess: (response) => {
+                if (!response) {
+                    toast.error("Failed to delegate task. Please try again.");
+                    return;
                 }
+
+                setActiveTask({ ...activeTask!, ...response.data });
+                handleApiSuccessResponse(response);
                 toggleModal();
                 onSuccess();
             },
             onError: (error) => {
-                handleApiError(
+                handleApiErrorResponse(
                     error,
                     "Failed to delegate task. Please try again."
                 );

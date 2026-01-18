@@ -1,5 +1,4 @@
 import { Timestamp } from "firebase/firestore";
-import { TimelineType } from "./task.model";
 
 export type MessageDto = {
     id: string;
@@ -16,9 +15,8 @@ export type MessageDto = {
 
 export type MessageMetadata = {
     requestedTimeline: number;
-    timelineType: TimelineType;
-    reason?: string
-    responded?: boolean
+    reason?: string;
+    responded?: boolean;
 }
 
 export const MESSAGE_TYPE = {

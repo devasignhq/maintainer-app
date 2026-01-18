@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import RegularDropdown from "../../../../../../components/Dropdown/Regular";
 import { IssueDto } from "@/app/models/github.model";
-import { CreateTaskDto } from "@/app/models/task.model";
+import { CreateTaskDto, TimelineType } from "@/app/models/task.model";
 import { useState } from "react";
 import { object, string, number } from "yup";
 import { useFormik } from "formik";
@@ -24,7 +24,7 @@ const createTaskSchema = object({
     timeline: number().required("Required")
         .min(1, "Minimum: 1")
         .max(99, "Maximum: 99"),
-    timelineType: string().required("Required")
+    timelineType: string().oneOf(["WEEK", "DAY"]).required("Required")
 });
 
 type CreateTaskCardProps = {
@@ -74,8 +74,8 @@ const CreateTaskCard = ({
                 labels: issue.labels.nodes
             },
             bounty: formik.values.bounty.replace(/,/g, ""),
-            timeline: formik.values.timeline,
-            timelineType: formik.values.timelineType as "DAY" | "WEEK",
+            timeline: formik.values.timeline!,
+            timelineType: formik.values.timelineType as TimelineType,
             bountyLabelId
         };
         onToggleCheck({ payload: taskPayload, valid: formik.isValid });
@@ -113,13 +113,19 @@ const CreateTaskCard = ({
                 </button>
             </div>
             <div className="max-w-[90%] flex item-center gap-[5px] mt-1">
-                <Link 
-                    href={issue.url || ""} 
-                    target="_blank" 
-                    className="text-body-micro text-light-200 mt-[5px] max-w-[50%] truncate"
-                >
-                    {issue.url || ""}
-                </Link>
+                {disableFields ? (
+                    <p className="text-body-micro text-light-200 mt-[5px] max-w-[50%] truncate">
+                        {issue.url || ""}
+                    </p>
+                ) : (
+                    <Link 
+                        href={issue.url || ""} 
+                        target="_blank" 
+                        className="text-body-micro text-light-200 mt-[5px] max-w-[50%] truncate"
+                    >
+                        {issue.url || ""}
+                    </Link>
+                )}
                 {issue.labels?.nodes?.length > 0 && (
                     <p className="py-0.5 px-[7px] bg-primary-300 text-primary-100 text-body-tiny font-bold max-w-[50%] truncate">
                         {issue.labels.nodes

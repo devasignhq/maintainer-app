@@ -11,7 +11,7 @@ import MoneyInput from "@/app/components/Input/MoneyInput";
 import { WalletAPI } from "@/app/services/wallet.service";
 import { toast } from "react-toastify";
 import { useXLMUSDCFromStellarDEX } from "@/app/services/horizon.service";
-import { handleApiError, moneyFormat } from "@/app/utils/helper";
+import { handleApiErrorResponse, handleApiSuccessResponse, moneyFormat } from "@/app/utils/helper";
 
 const swapAssetSchema = object({
     fromAmount: string().required("Required"),
@@ -58,18 +58,17 @@ const SwapAssetModal = ({
             }
 
             try {
-                await WalletAPI.swapAsset({
+                const response = await WalletAPI.swapAsset({
                     installationId: activeInstallation!.id,
                     toAssetType: from === "XLM" ? "USDC" : "XLM",
-                    amount: values.fromAmount.replace(/,/g, ""),
-                    equivalentAmount: values.toAmount.replace(/,/g, "")
+                    amount: values.fromAmount.replace(/,/g, "")
                 });
 
-                toast.success("Asset swapped successfully.");
+                handleApiSuccessResponse(response);
                 reloadTransactions();
                 toggleModal();
             } catch (error) {
-                handleApiError(
+                handleApiErrorResponse(
                     error,
                     "An error occured while swapping asset. Please try again."
                 );

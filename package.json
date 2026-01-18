@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "legacy": "npm i --legacy-peer-deps"
+    "legacy": "npm i --legacy-peer-deps",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch"
   },
   "dependencies": {
     "@firebase/auth": "^1.10.0",

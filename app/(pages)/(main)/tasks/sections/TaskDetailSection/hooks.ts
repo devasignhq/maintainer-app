@@ -78,6 +78,22 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
     }, [contributorId, currentUser, taskId]);
 
     useEffect(() => {
+        const handleFocus = () => {
+            setMessages((prevMessages) => {
+                const uniqueMessages = new Map();
+                prevMessages.forEach((msg) => uniqueMessages.set(msg.id, msg));
+                return Array.from(uniqueMessages.values());
+            });
+        };
+
+        window.addEventListener("focus", handleFocus);
+
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+        };
+    }, []);
+
+    useEffect(() => {
         if (messageBoxRef.current) {
             messageBoxRef.current.scrollTop = messageBoxRef.current.scrollHeight;
         }

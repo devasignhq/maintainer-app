@@ -7,8 +7,7 @@ import { FiArrowRight } from "react-icons/fi";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import Image from "next/image";
 import { TaskAPI } from "@/app/services/task.service";
-import { handleApiError } from "@/app/utils/helper";
-import { toast } from "react-toastify";
+import { handleApiErrorResponse, handleApiSuccessResponse } from "@/app/utils/helper";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type SetTaskBountyModalProps = {
@@ -20,37 +19,31 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
     const { updateSearchParams } = useCustomSearchParams();
     const [newBounty, setNewBounty] = useState("");
     const [loading, setLoading] = useState(false);
-    
+
     const updateBounty = async () => {
         setLoading(true);
 
         try {
             const response = await TaskAPI.updateTaskBounty(
-                activeTask!.id, 
+                activeTask!.id,
                 { newBounty: newBounty.replace(/,/g, "") }
             );
-            
-            toast.success("Bounty updated successfully.");
-            if (response && "bounty" in response) {
-                setActiveTask({ ...activeTask!, ...response });
-            }
-            if (response && "message" in response) {
-                setActiveTask({ ...activeTask!, ...response.task });
-                toast.warn(response.message);
-            }
+
+            setActiveTask({ ...activeTask!, ...response.data });
+            handleApiSuccessResponse(response);
             updateSearchParams({ refresh: true });
             toggleModal();
         } catch (error) {
-            handleApiError(error, "Failed to update task bounty.");
+            handleApiErrorResponse(error, "Failed to update task bounty.");
         } finally {
             setLoading(false);
         }
     };
-    
+
     return (
         <PopupModalLayout title="Set Task Bounty" toggleModal={toggleModal}>
             <p className="mt-2.5 text-body-medium text-dark-100">
-                Set bounty for this task (issue) for contributors to take on. 
+                Set bounty for this task (issue) for contributors to take on.
                 Reload the GitHub issue URL to see bounty update.
             </p>
             <div className="w-full p-[15px] border border-primary-200 bg-dark-400 flex items-start gap-2.5 mt-5 mb-2.5">
@@ -62,14 +55,14 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
                 </p>
             </div>
             <div className="relative">
-                <Image 
-                    src="/usdc.svg" 
-                    alt="$" 
+                <Image
+                    src="/usdc.svg"
+                    alt="$"
                     width={16}
                     height={16}
-                    className="absolute top-1/2 -translate-y-1/2 left-2.5" 
+                    className="absolute top-1/2 -translate-y-1/2 left-2.5"
                 />
-                <MoneyInput 
+                <MoneyInput
                     attributes={{
                         id: "bounty",
                         name: "bounty",
@@ -95,5 +88,5 @@ const SetTaskBountyModal = ({ toggleModal }: SetTaskBountyModalProps) => {
         </PopupModalLayout>
     );
 };
- 
+
 export default SetTaskBountyModal;
