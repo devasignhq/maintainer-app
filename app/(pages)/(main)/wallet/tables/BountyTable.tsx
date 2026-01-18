@@ -19,6 +19,8 @@ const BountyTable = ({
     noMore,
     loadMore
 }: BountyTableProps) => {
+    const isMainnet = process.env.NEXT_PUBLIC_STELLAR_NETWORK === "public";
+
     return (
         <>
             <thead>
@@ -47,7 +49,9 @@ const BountyTable = ({
                         </td>
                         <td className="w-[33%] text-light-200 underline">
                             <Link
-                                href={`https://stellar.expert/explorer/testnet/tx/${transaction.txHash}`}
+                                href={`${isMainnet 
+                                    ? "https://stellar.expert/explorer/public/tx/" 
+                                    : "https://stellar.expert/explorer/testnet/tx/"}${transaction.txHash}`}
                                 target="_blank"
                             >
                                 {transaction.txHash}

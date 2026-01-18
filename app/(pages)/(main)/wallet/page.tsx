@@ -29,7 +29,6 @@ const Wallet = () => {
         manualBalanceCheck
     } = useStreamAccountBalance(
         activeInstallation?.wallet.address,
-        true,
         activeInstallation?.id
     );
     const [activeTab, setActiveTab] = useState(tabs[0]);
