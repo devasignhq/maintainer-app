@@ -25,6 +25,7 @@ const Tasks = () => {
     useAsyncEffect((async () => {
         if (!taskId || !activeInstallation) {
             setActiveTask(null);
+            setLoadingTask(false);
             return;
         }
 
@@ -73,7 +74,7 @@ const Tasks = () => {
                                     alt=""
                                     width={0}
                                     height={170.5}
-                                    className="w-auto"
+                                    className="w-auto" 
                                     priority={true}
                                 />
                             </div>

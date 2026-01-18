@@ -74,12 +74,14 @@ const TaskOverviewSection = () => {
             (snapshot) => {
                 if (snapshot.docs.length > 0) {
                     reloadActivities();
+                    updateSearchParams({ refresh: "true" });
                 }
             }
         );
 
         return () => unsubscribe();
-    }, [activeTask, activeTask?.id, currentUser, reloadActivities]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTask, activeTask?.id, currentUser]);
 
     return (
         <>

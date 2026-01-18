@@ -131,11 +131,11 @@ export function taskStatusFormatter(status: TaskStatus) {
     case "OPEN":
         return ["Open", "bg-indicator-200 text-dark-500"];
     case "IN_PROGRESS":
-        return ["In Progress", "bg-indicator-300 text-dark-500"];
+        return ["In Progress", "bg-indicator-400 text-dark-500"];
     case "MARKED_AS_COMPLETED":
-        return ["Submitted", "bg-primary-100 text-dark-500"];
+        return ["Review", "bg-light-100 text-dark-500"];
     case "COMPLETED":
-        return ["Completed", "bg-indicator-100 text-dark-500"];
+        return ["Bounty Paid", "bg-indicator-100 text-dark-500"];
     default:
         return status;
     }

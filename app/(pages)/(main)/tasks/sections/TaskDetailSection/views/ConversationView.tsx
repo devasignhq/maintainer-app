@@ -10,6 +10,7 @@ import { useManageMessages } from "../hooks";
 import { MessageAPI } from "@/app/services/message.service";
 import { toast } from "react-toastify";
 import useUserStore from "@/app/state-management/useUserStore";
+import { TiMessages } from "react-icons/ti";
 
 const ConversationView = () => {
     const { currentUser } = useUserStore();
@@ -83,6 +84,7 @@ const ConversationView = () => {
         <>
             {loadingInitialMessages ? (
                 <div className="grow grid place-content-center text-body-medium text-light-100">
+                    <TiMessages className="text-3xl mx-auto mb-2" />
                     <p>Loading Messages...</p>
                 </div>
             ) : (
@@ -192,7 +194,7 @@ const ConversationView = () => {
                                     onClick={() => fileInputRef.current?.click()}
                                     disabled={loadingInitialMessages || sendingMessage}
                                 >
-                                    <span>Add Files</span>
+                                    <span>Upload File</span>
                                     <HiPlus className="text-2xl" />
                                 </button>
                             </>
