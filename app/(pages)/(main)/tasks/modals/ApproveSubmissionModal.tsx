@@ -10,6 +10,8 @@ import { useContext } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { toast } from "react-toastify";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
+import Tooltip from "@/app/components/Tooltip";
 
 type ApproveSubmissionModalProps = {
     taskActivity: TaskActivity;
@@ -18,6 +20,7 @@ type ApproveSubmissionModalProps = {
 };
 
 const ApproveSubmissionModal = ({ taskActivity, toggleModal, onSuccess }: ApproveSubmissionModalProps) => {
+    const { activeInstallation } = useInstallationStore();
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
 
     const { loading: approving, run: approveSubmission } = useRequest(
@@ -29,7 +32,7 @@ const ApproveSubmissionModal = ({ taskActivity, toggleModal, onSuccess }: Approv
                     toast.error("Failed to approve task submission. Please try again.");
                     return;
                 }
-                
+
                 setActiveTask({ ...activeTask!, ...response.data });
                 handleApiSuccessResponse(response);
                 toggleModal();
@@ -100,15 +103,20 @@ const ApproveSubmissionModal = ({ taskActivity, toggleModal, onSuccess }: Approv
                         disabled: approving
                     }}
                 />
-                <ButtonPrimary
-                    format="SOLID"
-                    text={approving ? "Approving..." : "Pay Contributor"}
-                    sideItem={<FiArrowUpRight />}
-                    attributes={{
-                        onClick: approveSubmission,
-                        disabled: approving
-                    }}
-                />
+                <Tooltip
+                    message="Reinstall or unsuspend DevAsign app on GitHub to approve a submission"
+                    disabled={activeInstallation?.status === "ACTIVE"}
+                >
+                    <ButtonPrimary
+                        format="SOLID"
+                        text={approving ? "Approving..." : "Pay Contributor"}
+                        sideItem={<FiArrowUpRight />}
+                        attributes={{
+                            onClick: approveSubmission,
+                            disabled: approving || activeInstallation?.status !== "ACTIVE"
+                        }}
+                    />
+                </Tooltip>
             </div>
         </PopupModalLayout>
     );

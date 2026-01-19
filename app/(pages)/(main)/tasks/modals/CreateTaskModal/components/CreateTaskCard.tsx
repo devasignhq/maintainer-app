@@ -13,6 +13,7 @@ import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useUpdateEffect } from "ahooks";
 import { twMerge } from "tailwind-merge";
 import MoneyInput from "@/app/components/Input/MoneyInput";
+import Tooltip from "@/app/components/Tooltip";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -30,8 +31,8 @@ const createTaskSchema = object({
 type CreateTaskCardProps = {
     issue: IssueDto;
     bountyLabelId: string;
-    defaultSelected: TaskPayload | undefined; 
-    showFields: boolean; 
+    defaultSelected: TaskPayload | undefined;
+    showFields: boolean;
     onToggleCheck: (taskPayload: TaskPayload | null) => void;
     disableFields: boolean;
     uploadStatus?: "PENDING" | "CREATED" | "FAILED";
@@ -48,7 +49,7 @@ const CreateTaskCard = ({
 }: CreateTaskCardProps) => {
     const { activeInstallation } = useInstallationStore();
     const [selected, setSelected] = useState(Boolean(defaultSelected));
-        
+
     const formik = useFormik({
         initialValues: {
             bounty: defaultSelected?.payload.bounty || "",
@@ -58,7 +59,7 @@ const CreateTaskCard = ({
         validationSchema: createTaskSchema,
         validateOnMount: true,
         validateOnBlur: true,
-        onSubmit: () => {}
+        onSubmit: () => { }
     });
 
     const handleToggleCheck = (selected: boolean) => {
@@ -118,9 +119,9 @@ const CreateTaskCard = ({
                         {issue.url || ""}
                     </p>
                 ) : (
-                    <Link 
-                        href={issue.url || ""} 
-                        target="_blank" 
+                    <Link
+                        href={issue.url || ""}
+                        target="_blank"
                         className="text-body-micro text-light-200 mt-[5px] max-w-[50%] truncate"
                     >
                         {issue.url || ""}
@@ -130,7 +131,7 @@ const CreateTaskCard = ({
                     <p className="py-0.5 px-[7px] bg-primary-300 text-primary-100 text-body-tiny font-bold max-w-[50%] truncate">
                         {issue.labels.nodes
                             .map(label => label.name)
-                            .map((name, index, array) => 
+                            .map((name, index, array) =>
                                 index === array.length - 1 ? name : `${name}, `
                             )
                             .join("")}
@@ -140,69 +141,75 @@ const CreateTaskCard = ({
             {showFields && (
                 <div className="flex items-start gap-5 mt-2.5">
                     <div>
-                        <div className="relative">
-                            <Image 
-                                src="/usdc.svg" 
-                                alt="$" 
-                                width={16}
-                                height={16}
-                                className="absolute top-1/2 -translate-y-1/2 left-2.5" 
-                            />
-                            <MoneyInput 
-                                attributes={{
-                                    id: "bounty",
-                                    name: "bounty",
-                                    placeholder: "0.00",
-                                    className: `w-[115px] h-[40px] py-[7px] pl-[36px] pr-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100 
+                        <Tooltip message="Bounty amount">
+                            <div className="relative">
+                                <Image
+                                    src="/usdc.svg"
+                                    alt="$"
+                                    width={16}
+                                    height={16}
+                                    className="absolute top-1/2 -translate-y-1/2 left-2.5"
+                                />
+                                <MoneyInput
+                                    attributes={{
+                                        id: "bounty",
+                                        name: "bounty",
+                                        placeholder: "0.00",
+                                        className: `w-[115px] h-[40px] py-[7px] pl-[36px] pr-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100 
                                         ${formik.touched.bounty && formik.errors.bounty && "border-indicator-500"}`,
-                                    value: formik.values.bounty,
-                                    onBlur: formik.handleBlur,
-                                    disabled: disableFields
-                                }}
-                                setValue={(value) => formik.setFieldValue("bounty", value)}
-                            />
-                        </div>
+                                        value: formik.values.bounty,
+                                        onBlur: formik.handleBlur,
+                                        disabled: disableFields
+                                    }}
+                                    setValue={(value) => formik.setFieldValue("bounty", value)}
+                                />
+                            </div>
+                        </Tooltip>
                         {formik.touched.bounty && formik.errors.bounty && (
                             <p className="text-indicator-500 text-body-tiny mt-1">{formik.errors.bounty}</p>
                         )}
                     </div>
                     <div className="relative flex gap-[7px]">
                         <div>
-                            <input
-                                id="timeline"
-                                name="timeline"
-                                type="number"
-                                placeholder="1-99"
-                                step="1"
-                                className={`w-[80px] h-[40px] py-[7px] px-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100 
-                                    ${formik.touched.timeline && formik.errors.timeline && "border-indicator-500"}`
-                                }
-                                value={formik.values.timeline}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                disabled={disableFields}
-                            />
+                            <Tooltip message="Number of days/weeks to complete the task">
+                                <input
+                                    id="timeline"
+                                    name="timeline"
+                                    type="number"
+                                    placeholder="1-99"
+                                    step="1"
+                                    className={`w-[80px] h-[40px] py-[7px] px-[15px] bg-dark-400 border border-dark-200 text-body-tiny text-light-100 
+                                        ${formik.touched.timeline && formik.errors.timeline && "border-indicator-500"}`
+                                    }
+                                    value={formik.values.timeline}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    disabled={disableFields}
+                                />
+                            </Tooltip>
                             {formik.touched.timeline && formik.errors.timeline && (
                                 <p className="text-indicator-500 text-body-tiny mt-1">{formik.errors.timeline}</p>
                             )}
                         </div>
                         <div>
-                            <RegularDropdown
-                                defaultName={
-                                    (defaultSelected?.payload.timelineType === "DAY") ? "Day(s)" : "Week(s)"
-                                }
-                                options={[
-                                    { label: "Week(s)", value: "WEEK" },
-                                    { label: "Day(s)", value: "DAY" }
-                                ]}
-                                fieldName="label"
-                                fieldValue="value"
-                                buttonAttributes={{ 
-                                    style: { height: "40px", fontSize: "12px", lineHeight: "16px" },
-                                    disabled: disableFields
-                                }}
-                                onChange={(value) => formik.setFieldValue("timelineType", value)}
-                            />
+                            <Tooltip message="Time unit for the timeline">
+                                <RegularDropdown
+                                    defaultName={
+                                        (defaultSelected?.payload.timelineType === "DAY") ? "Day(s)" : "Week(s)"
+                                    }
+                                    options={[
+                                        { label: "Week(s)", value: "WEEK" },
+                                        { label: "Day(s)", value: "DAY" }
+                                    ]}
+                                    fieldName="label"
+                                    fieldValue="value"
+                                    buttonAttributes={{
+                                        style: { height: "40px", fontSize: "12px", lineHeight: "16px" },
+                                        disabled: disableFields
+                                    }}
+                                    onChange={(value) => formik.setFieldValue("timelineType", value)}
+                                />
+                            </Tooltip>
                             {formik.touched.timelineType && formik.errors.timelineType && (
                                 <p className="text-indicator-500 text-body-tiny mt-1">{formik.errors.timelineType}</p>
                             )}
@@ -213,5 +220,5 @@ const CreateTaskCard = ({
         </div>
     );
 };
- 
+
 export default CreateTaskCard;

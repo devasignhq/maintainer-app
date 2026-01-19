@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useContext } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
-import { 
+import {
     formatDateTime,
     handleApiErrorResponse,
     handleApiSuccessResponse
@@ -14,6 +14,8 @@ import {
 import { TaskAPI } from "@/app/services/task.service";
 import { useRequest, useLockFn } from "ahooks";
 import { toast } from "react-toastify";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
+import Tooltip from "@/app/components/Tooltip";
 
 type ApproveTaskDelegationModalProps = {
     taskActivity: TaskActivity;
@@ -22,6 +24,7 @@ type ApproveTaskDelegationModalProps = {
 };
 
 const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: ApproveTaskDelegationModalProps) => {
+    const { activeInstallation } = useInstallationStore();
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
 
     const { loading: delegating, run: delegateTask } = useRequest(
@@ -89,15 +92,20 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
                         disabled: delegating
                     }}
                 />
-                <ButtonPrimary
-                    format="SOLID"
-                    text={delegating ? "Delegating..." : "Yes, Delegate Task"}
-                    sideItem={<FiArrowUpRight />}
-                    attributes={{
-                        onClick: delegateTask,
-                        disabled: delegating
-                    }}
-                />
+                <Tooltip
+                    message="Reinstall or unsuspend DevAsign app on GitHub to delegate a task"
+                    disabled={activeInstallation?.status === "ACTIVE"}
+                >
+                    <ButtonPrimary
+                        format="SOLID"
+                        text={delegating ? "Delegating..." : "Yes, Delegate Task"}
+                        sideItem={<FiArrowUpRight />}
+                        attributes={{
+                            onClick: delegateTask,
+                            disabled: delegating || activeInstallation?.status !== "ACTIVE"
+                        }}
+                    />
+                </Tooltip>
             </div>
         </PopupModalLayout>
     );

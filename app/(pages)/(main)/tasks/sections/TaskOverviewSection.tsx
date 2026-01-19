@@ -19,13 +19,15 @@ import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import { useCustomSearchParams } from "@/app/utils/hooks";
 import useUserStore from "@/app/state-management/useUserStore";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 
 export const activityCollection = collection(firestoreDB, "activity");
 
 const TaskOverviewSection = () => {
     const { activeTask } = useContext(ActiveTaskContext);
-    const { updateSearchParams } = useCustomSearchParams();
     const { currentUser } = useUserStore();
+    const { activeInstallation } = useInstallationStore();
+    const { updateSearchParams } = useCustomSearchParams();
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
@@ -80,7 +82,7 @@ const TaskOverviewSection = () => {
         );
 
         return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTask, activeTask?.id, currentUser]);
 
     return (
@@ -110,11 +112,15 @@ const TaskOverviewSection = () => {
                         <p className="text-body-tiny text-light-100">Bounty</p>
                         <div className="flex items-center gap-1">
                             <p className="text-body-large text-light-200">{moneyFormat(activeTask?.bounty || "")} USDC</p>
-                            {(activeTask?.status === "OPEN" && activeTask?._count && activeTask._count.taskActivities < 1) ? (
-                                <button onClick={toggleSetTaskBountyModal}>
-                                    <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
-                                </button>
-                            ) : null}
+                            {(activeTask?.status === "OPEN" && 
+                                activeTask?._count && 
+                                activeTask._count.taskActivities < 1 && 
+                                activeInstallation?.status === "ACTIVE"
+                            ) ? (
+                                    <button onClick={toggleSetTaskBountyModal}>
+                                        <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
+                                    </button>
+                                ) : null}
                         </div>
                     </div>
 
@@ -125,7 +131,7 @@ const TaskOverviewSection = () => {
                                 <p className="text-body-large text-light-200">
                                     {formatTimeline(activeTask.timeline).displayValue}
                                 </p>
-                                {(activeTask._count && activeTask._count?.taskActivities < 1) ? (
+                                {(activeTask._count && activeTask._count?.taskActivities < 1 && activeInstallation?.status === "ACTIVE") ? (
                                     <button onClick={toggleSetTaskTimelineModal}>
                                         <FiEdit3 className="text-2xl text-primary-100 hover:text-light-100" />
                                     </button>
@@ -155,7 +161,7 @@ const TaskOverviewSection = () => {
                         </div>
                     )}
 
-                    {activeTask?.status === "OPEN" && (
+                    {(activeTask?.status === "OPEN" && activeInstallation?.status === "ACTIVE") && (
                         <ButtonPrimary
                             format="OUTLINE"
                             text="Delete Task"
@@ -167,16 +173,18 @@ const TaskOverviewSection = () => {
                 </div>
                 <div className="pt-[30px] pl-5 flex items-center justify-between">
                     <h6 className="text-headline-small text-light-100">Task Activities</h6>
-                    <button
-                        onClick={() => {
-                            reloadActivities();
-                            updateSearchParams({ refresh: "true" });
-                        }}
-                        disabled={loadingActivities || loadingMoreActivities}
-                        className={(loadingActivities || loadingMoreActivities) ? "rotate-loading" : ""}
-                    >
-                        <HiOutlineRefresh className="text-2xl text-light-200 hover:text-light-100" />
-                    </button>
+                    {activeInstallation?.status === "ACTIVE" && (
+                        <button
+                            onClick={() => {
+                                reloadActivities();
+                                updateSearchParams({ refresh: "true" });
+                            }}
+                            disabled={loadingActivities || loadingMoreActivities}
+                            className={(loadingActivities || loadingMoreActivities) ? "rotate-loading" : ""}
+                        >
+                            <HiOutlineRefresh className="text-2xl text-light-200 hover:text-light-100" />
+                        </button>
+                    )}
                 </div>
                 <div className="pl-5 pb-5 mt-[30px] overflow-y-auto space-y-[15px]">
                     {activities?.list?.map((activity) => (

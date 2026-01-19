@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { useGetInstallationRepositories } from "@/app/utils/hooks";
 import { useUnauthenticatedUserCheck } from "@/lib/firebase";
 import Link from "next/link";
+import Tooltip from "@/app/components/Tooltip";
 
 const Onboarding = () => {
     const router = useUnauthenticatedUserCheck();
@@ -109,13 +110,19 @@ const Onboarding = () => {
                         </p>
                         <div className="flex items-center gap-[30px]">
                             {Number(usdcBalance) > 0 && (
-                                <button
-                                    className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                                    onClick={toggleCreateTaskModal}
+                                <Tooltip
+                                    message="Reinstall or unsuspend DevAsign app on GitHub to create new tasks"
+                                    disabled={activeInstallation?.status === "ACTIVE"}
                                 >
-                                    <span>Create Bounty</span>
-                                    <HiPlus className="text-2xl" />
-                                </button>
+                                    <button
+                                        className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                                        onClick={toggleCreateTaskModal}
+                                        disabled={activeInstallation?.status !== "ACTIVE"}
+                                    >
+                                        <span>Create Bounty</span>
+                                        <HiPlus className="text-2xl" />
+                                    </button>
+                                </Tooltip>
                             )}
                             <Link
                                 className="flex items-center gap-[5px] text-light-200 text-button-large font-extrabold hover:text-light-100"

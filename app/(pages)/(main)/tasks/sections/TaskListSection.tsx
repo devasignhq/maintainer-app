@@ -17,6 +17,7 @@ import { ApiResponse } from "@/app/models/_global";
 import { enumToStringConverter } from "@/app/utils/helper";
 import { InstallationAPI } from "@/app/services/installation.service";
 import { useStreamAccountBalance } from "@/app/services/horizon.service";
+import Tooltip from "@/app/components/Tooltip";
 
 // ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
@@ -142,16 +143,22 @@ const TaskListSection = () => {
             <section className="min-w-[366px] w-[12%] h-full pt-[30px] flex flex-col">
                 <div className="pr-5 flex items-center justify-between">
                     <h6 className="text-headline-small text-light-100">Project Tasks</h6>
-                    <button
-                        className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                        onClick={() => {
-                            toggleCreateTaskModal();
-                            manualBalanceCheck();
-                        }}
+                    <Tooltip 
+                        message="Reinstall or unsuspend DevAsign app on GitHub to create new tasks"
+                        disabled={activeInstallation?.status === "ACTIVE"}
                     >
-                        <span>Create Bounty</span>
-                        <HiPlus className="text-2xl" />
-                    </button>
+                        <button
+                            className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
+                            onClick={() => {
+                                toggleCreateTaskModal();
+                                manualBalanceCheck();
+                            }}
+                            disabled={activeInstallation?.status !== "ACTIVE"}
+                        >
+                            <span>Create Bounty</span>
+                            <HiPlus className="text-2xl" />
+                        </button>
+                    </Tooltip>
                 </div>
                 <div className="space-y-2.5 pr-5 my-[30px]">
                     <SearchBox
@@ -188,9 +195,10 @@ const TaskListSection = () => {
                     <div className="flex items-center gap-2.5">
                         <FilterDropdown
                             title="Status"
-                            options={Object.entries(TASK_STATUS).map(
-                                ([key, value]) => ({ name: enumToStringConverter(key), value })
-                            )}
+                            options={Object.entries(TASK_STATUS)
+                                .filter(([_key, value]) => value !== "ARCHIVED")
+                                .map(([key, value]) => ({ name: enumToStringConverter(key), value }))
+                            }
                             fieldName="name"
                             fieldValue="value"
                             extendedContainerClassName="w-full"
@@ -215,7 +223,9 @@ const TaskListSection = () => {
                             extendedButtonClassName="w-full py-[5px]"
                             buttonAttributes={{
                                 style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
-                                disabled: loadingTasks || loadingInstallationRepos
+                                disabled: loadingTasks || 
+                                    loadingInstallationRepos ||
+                                    activeInstallation?.status !== "ACTIVE"
                             }}
                             setField={(value) => setTaskFilters((prev) => ({
                                 ...prev,

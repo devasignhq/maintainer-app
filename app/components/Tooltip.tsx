@@ -7,14 +7,16 @@ interface TooltipProps {
     position?: "top" | "bottom" | "left" | "right";
     delay?: number;
     className?: string;
+    disabled?: boolean;
 }
 
 const Tooltip = ({ 
     children, 
     message = "Press Enter to search after typing your search term",
     position = "top",
-    delay = 500,
-    className = ""
+    delay = 200,
+    className = "",
+    disabled = false
 }: TooltipProps) => {
     const [isVisible, setIsVisible] = useState(false);
     const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
@@ -74,9 +76,9 @@ const Tooltip = ({
         >
             {children}
             
-            {isVisible && (
+            {isVisible && !disabled && (
                 <div
-                    className={`absolute z-50 px-3 py-2 text-sm text-white bg-gray-800 rounded-md shadow-lg whitespace-nowrap ${getPositionClasses()}`}
+                    className={`absolute z-50 px-3 py-2 text-sm text-white bg-dark-300 rounded-md shadow-lg whitespace-nowrap ${getPositionClasses()}`}
                     role="tooltip"
                 >
                     {message}

@@ -66,9 +66,11 @@ export default function MainLayout({
                                 <span className="flex items-center gap-[15px] text-headline-small">
                                     {activeInstallation.account.login}
                                 </span>
-                                <div className="px-2.5 py-[7px] bg-dark-300 text-table-header">
-                                    {activeInstallation.subscriptionPackage?.name}
-                                </div>
+                                {activeInstallation.status !== "ACTIVE" && (
+                                    <div className="px-2.5 py-[7px] bg-dark-300 text-table-header">
+                                        Inactive
+                                    </div>
+                                )}
                                 <button 
                                     ref={menuButtonRef}
                                     onClick={toggleMenu}
@@ -101,13 +103,14 @@ export default function MainLayout({
                                                     >
                                                         <div className="flex items-center gap-2.5">
                                                             <p className="text-body-medium text-light-100">{installation.account.login}</p>
-                                                            <div className={`px-2.5 py-[7px] text-body-small 
-                                                                ${installation.subscriptionPackage?.price === 0 
-                                                        ? "text-light-100 bg-dark-300" 
-                                                        : "text-dark-500 bg-primary-100"}` 
-                                                            }>
-                                                                {installation.subscriptionPackage?.name}
-                                                            </div>
+                                                            {installation.status !== "ACTIVE" && (
+                                                                <div className={`px-2.5 py-[7px] text-body-small ${installation.subscriptionPackage?.price === 0 
+                                                                    ? "text-light-100 bg-dark-300" 
+                                                                    : "text-dark-500 bg-primary-100"}` 
+                                                                }>
+                                                                    Inactive
+                                                                </div>
+                                                            )}
                                                         </div>
                                                         <FaCheck className="text-xl text-light-100" />
                                                     </button>

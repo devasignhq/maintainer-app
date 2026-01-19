@@ -11,9 +11,11 @@ import { MessageAPI } from "@/app/services/message.service";
 import { toast } from "react-toastify";
 import useUserStore from "@/app/state-management/useUserStore";
 import { TiMessages } from "react-icons/ti";
+import useInstallationStore from "@/app/state-management/useInstallationStore";
 
 const ConversationView = () => {
     const { currentUser } = useUserStore();
+    const { activeInstallation } = useInstallationStore();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { activeTask } = useContext(ActiveTaskContext);
@@ -101,18 +103,29 @@ const ConversationView = () => {
                                 height={24}
                                 className="mx-auto"
                             />
-                            {activeTask?.status !== "COMPLETED" ? (<>
-                                <h6 className="text-body-large text-light-100">Say “Hi” to the contributor</h6>
-                                <p className="text-body-tiny text-dark-100">
-                                    Send your first message and the developer will get
-                                    <br /> it via email even while offline.
-                                </p>
-                            </>) : (<>
-                                <h6 className="text-body-large text-light-100">Task already completed</h6>
-                                <p className="text-body-tiny text-dark-100">
-                                    There was no conversation during the task timeline.
-                                </p>
-                            </>)}
+                            {activeTask?.status === "COMPLETED" ? (
+                                <>
+                                    <h6 className="text-body-large text-light-100">Task already completed</h6>
+                                    <p className="text-body-tiny text-dark-100">
+                                        There was no conversation during the task timeline.
+                                    </p>
+                                </>
+                            ) : activeInstallation?.status === "ACTIVE" ? (
+                                <>
+                                    <h6 className="text-body-large text-light-100">Say “Hi” to the contributor</h6>
+                                    <p className="text-body-tiny text-dark-100">
+                                        Send your first message and the developer will get
+                                        <br /> it via email even while offline.
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <h6 className="text-body-large text-light-100">Installation not active</h6>
+                                    <p className="text-body-tiny text-dark-100">
+                                        Reinstall or unsuspend DevAsign app on GitHub to continue.
+                                    </p>
+                                </>
+                            )}
                         </div>
                     ) : (
                         orderedDateLabels.map((dateLabel) => (
@@ -178,7 +191,10 @@ const ConversationView = () => {
                             className="w-full resize-none text-light-100 min-h-[20px]"
                             value={body}
                             onChange={(e) => setBody(e.target.value)}
-                            disabled={loadingInitialMessages || sendingMessage}
+                            disabled={loadingInitialMessages ||
+                                sendingMessage ||
+                                activeInstallation?.status !== "ACTIVE"
+                            }
                         />
                         <div className="flex items-center justify-between">
                             <>
@@ -192,7 +208,10 @@ const ConversationView = () => {
                                 <button
                                     className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
                                     onClick={() => fileInputRef.current?.click()}
-                                    disabled={loadingInitialMessages || sendingMessage}
+                                    disabled={loadingInitialMessages ||
+                                        sendingMessage ||
+                                        activeInstallation?.status !== "ACTIVE"
+                                    }
                                 >
                                     <span>Upload File</span>
                                     <HiPlus className="text-2xl" />
@@ -201,7 +220,11 @@ const ConversationView = () => {
                             <button
                                 className="h-[30px] w-[30px] text-dark-500 bg-primary-400 hover:bg-light-100 grid place-items-center"
                                 onClick={addNewMessage}
-                                disabled={loadingInitialMessages || sendingMessage || (!body.trim() && attachments.length < 1)}
+                                disabled={loadingInitialMessages ||
+                                    sendingMessage ||
+                                    activeInstallation?.status !== "ACTIVE" ||
+                                    (!body.trim() && attachments.length < 1)
+                                }
                             >
                                 <FiArrowUp className="text-2xl" />
                             </button>

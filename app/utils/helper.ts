@@ -136,6 +136,8 @@ export function taskStatusFormatter(status: TaskStatus) {
         return ["Review", "bg-light-100 text-dark-500"];
     case "COMPLETED":
         return ["Bounty Paid", "bg-indicator-100 text-dark-500"];
+    case "ARCHIVED":
+        return ["Archived", "bg-dark-200 text-dark-500"];
     default:
         return status;
     }
