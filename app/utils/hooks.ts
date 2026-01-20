@@ -19,8 +19,8 @@ export function useCustomSearchParams() {
     const searchParams = useSearchParams();
 
     const updateSearchParams = (params: Record<string, string | number | boolean>, override = false) => {
-        const currentSearchParams = override 
-            ? new URLSearchParams() 
+        const currentSearchParams = override
+            ? new URLSearchParams()
             : new URLSearchParams(searchParams);
 
         if (Object.keys(params).length === 0) {
@@ -122,8 +122,26 @@ export function useEffectOnce(effect: EffectCallback, deps?: DependencyList) {
         if (hasRun.current) return;
         hasRun.current = true;
         effect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, deps);
-};
+}
+
+export function useViewPort() {
+    const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setViewPortWidth(window.innerWidth);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+    return viewPortWidth;
+}
 
 // export function useAsyncEffectOnce

@@ -170,6 +170,13 @@ body {
   @apply max-sm:px-5 xl:w-[92%] max-xl:w-[90%] max-sm:w-full max-w-[1300px] mx-auto
 }
 
+.mobile-tablet-only {
+  @apply xl:hidden;
+}
+.desktop-only {
+  @apply hidden xl:block;
+}
+
 button {
   @apply cursor-pointer
 }

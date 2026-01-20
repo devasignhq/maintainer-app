@@ -10,7 +10,7 @@ import { useCustomSearchParams, usePopup } from "@/app/utils/hooks";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { InstallationAPI } from "@/app/services/installation.service";
 import { useRequest } from "ahooks";
-import { TbLogout } from "react-icons/tb";
+import { TbBrowser, TbLogout } from "react-icons/tb";
 import { useLogoutUser } from "@/lib/firebase";
 import { FiSettings } from "react-icons/fi";
 import { openInNewTab } from "@/app/utils/helper";
@@ -169,10 +169,9 @@ export default function MainLayout({
                         <Link
                             key={item.name}
                             href={item.path}
-                            className={`px-[5px] py-[20px] 
-                                ${checkPath(item.path) 
-                            ? "text-light-100 border-b border-light-100" 
-                            : "hover:text-[#F0C298]"}`
+                            className={`px-[5px] py-[20px] ${checkPath(item.path) 
+                                ? "text-light-100 border-b border-light-100" 
+                                : "hover:text-[#F0C298]"}`
                             }
                         >
                             {item.name}
@@ -181,8 +180,24 @@ export default function MainLayout({
                 </nav>
                 <hr className="h-[0.5px] w-full text-dark-200" />
             </>)}
-              
-            {children}
+
+            <section className="desktop-only grow">
+                {children}
+            </section>
+
+            <div className="mobile-tablet-only grow grid place-content-center">
+                <div className="mb-14">
+                    <TbBrowser className="text-3xl text-primary-100 mx-auto" />
+                    <h2 className="text-body-medium text-light-200 my-5 text-center">
+                        Switch to Desktop
+                    </h2>
+                    <p className="text-body-tiny text-light-100 text-center">
+                        DevAsign is only accessible via desktop <br />
+                        browsers for now. Tablet and mobile view will <br />
+                        be available soon.
+                    </p>
+                </div>
+            </div>
         </main>
     );
 }

@@ -90,12 +90,12 @@ const Account = () => {
     };
 
     return (
-        <div className="pt-[105px]">
+        <div className="sm:pt-[105px] pt-[80px]">
             <h1 className="text-display-large text-light-100">Get Started</h1>
-            <p className="text-body-medium text-dark-100 pt-[42px] pb-10">
-                Login with your GitHub account to access your public <br />
-                repositories and import your issues/tasks to DevAsign. After <br />
-                importing, you can add bounties and manage contributor <br />
+            <p className="text-body-medium text-dark-100 sm:pt-[42px] pt-6 sm:pb-10 pb-8">
+                Login with your GitHub account to access your public  <br className="max-sm:hidden" />
+                repositories and import your issues/tasks to DevAsign. After  <br className="max-sm:hidden" />
+                importing, you can add bounties and manage contributor  <br className="max-sm:hidden" />
                 payouts seamlessly.
             </p>
             <ButtonPrimary
