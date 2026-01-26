@@ -127,12 +127,14 @@ export function useEffectOnce(effect: EffectCallback, deps?: DependencyList) {
 }
 
 export function useViewPort() {
-    const [viewPortWidth, setViewPortWidth] = useState(window.innerWidth);
+    const [viewPortWidth, setViewPortWidth] = useState(0);
 
     useEffect(() => {
         const handleResize = () => {
             setViewPortWidth(window.innerWidth);
         };
+
+        handleResize();
 
         window.addEventListener("resize", handleResize);
 
