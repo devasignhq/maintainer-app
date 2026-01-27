@@ -7,7 +7,9 @@ import { TransactionDto } from "./wallet.model";
 export type UserDto = {
     userId: string;
     username: string;
+    verified: boolean;
     wallet: { address: string };
+    techStack: string[];
     addressBook: AddressBook[];
     createdAt: string;
     updatedAt: string;

@@ -52,7 +52,7 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
     );
 
     return (
-        <PopupModalLayout title="Approve Task Delegation" toggleModal={toggleModal}>
+        <PopupModalLayout title="Approve Bounty Application" toggleModal={toggleModal}>
             <div className="space-y-[5px] text-body-tiny mt-5">
                 <div className="w-full flex items-center justify-between gap-10">
                     <p className="text-primary-400">Developer:</p>
@@ -98,7 +98,7 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
                 >
                     <ButtonPrimary
                         format="SOLID"
-                        text={delegating ? "Delegating..." : "Yes, Delegate Task"}
+                        text={delegating ? "Approving..." : "Yes, Proceed"}
                         sideItem={<FiArrowUpRight />}
                         attributes={{
                             onClick: delegateTask,

@@ -10,6 +10,8 @@ import { moneyFormat, formatDateTime } from "@/app/utils/helper";
 import { useAsyncEffect, useLockFn, useToggle } from "ahooks";
 import ApproveTaskDelegationModal from "./ApproveTaskDelegationModal";
 import { TaskAPI } from "@/app/services/task.service";
+import { MdCancel, MdVerified } from "react-icons/md";
+import Tooltip from "@/app/components/Tooltip";
 
 type ReviewTaskApplicationModalProps = {
     taskActivity: TaskActivity;
@@ -22,45 +24,58 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
 
     useAsyncEffect(useLockFn(async () => {
         if (!taskActivity.viewed) {
-            await TaskAPI.markActivityAsViewed(taskActivity.id);
+            await TaskAPI.markActivityAsViewed(taskActivity.id); 
         }
     }), [taskActivity]);
 
     return (
         <PopupModalLayout
-            title="Review Task Application"
+            title="Review Bounty Application"
             // extendedModalClassName="w-[900px]"
             toggleModal={toggleModal}
         >
-            <p className="mt-2.5 text-body-medium text-dark-100">
-                Kindly review this task application. By accepting this developer, you’re delegating this
-                GitHub issue to them and can’t assign it to another developer till the timeline elapses.
-            </p>
-            <div className="w-full flex gap-2.5 text-light-100 mt-5 whitespace-nowrap">
-                <div className="w-[40%] p-[15px] border border-dark-200 space-y-2.5">
+            <div className="w-full grid grid-cols-4 gap-2.5 text-light-100 mt-5 whitespace-nowrap">
+                <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
                     <p className="text-body-micro">Developer</p>
-                    <p className="text-headline-medium font-normal flex items-center gap-1 text-light-200">
+                    <p className="text-body-medium flex items-center gap-1 text-light-200">
                         <span className="truncate">@{taskActivity.user?.username}</span>
                         <Link href={`https://github.com/${taskActivity.user?.username}`} target="_blank">
                             <FiArrowUpRight className="text-2xl text-primary-100 hover:text-light-100" />
                         </Link>
                     </p>
                 </div>
-                {/* <div className="w-[26%] p-[15px] border border-dark-200 space-y-2.5">
-                    <p className="text-body-micro">Platform Earnings</p>
-                    <p className="text-headline-medium font-normal truncate">4,786 USDC</p>
-                </div> */}
-                <div className="w-[28%] p-[15px] border border-dark-200 space-y-2.5">
-                    <p className="text-body-micro">Tasks Done</p>
-                    <p className="text-headline-medium font-normal">
+                <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
+                    <p className="text-body-micro">KYC Status</p>
+                    <p className="text-body-medium flex items-center justify-between text-light-200">
+                        <span>{taskActivity.user?.verified ? "Verified" : "Not Verified"}</span>
+                        {taskActivity.user?.verified ? (
+                            <MdVerified className="text-xl text-indicator-100 hover:text-light-100" />
+                        ) : (
+                            <MdCancel className="text-xl text-indicator-500 hover:text-light-100" />
+                        )}
+                    </p>
+                </div>
+                <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
+                    <p className="text-body-micro">Completed Bounties</p>
+                    <p className="text-body-medium text-light-200">
                         {taskActivity.user?.contributionSummary?.tasksCompleted}
                     </p>
                 </div>
-                <div className="w-[28%] p-[15px] border border-dark-200 space-y-2.5">
-                    <p className="text-body-micro">Active Tasks</p>
-                    <p className="text-headline-medium font-normal">
-                        {taskActivity.user?.contributionSummary?.activeTasks}
-                    </p>
+                <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
+                    <p className="text-body-micro">Tech</p>
+                    <Tooltip
+                        message={
+                            taskActivity.user?.techStack?.map((tech, index, array) =>
+                                index === array.length - 1 ? tech : `${tech}, `
+                            ).join(", ") || ""
+                        }
+                    >
+                        <p className="text-body-medium text-light-200 truncate">
+                            {taskActivity.user?.techStack?.map((tech, index, array) =>
+                                index === array.length - 1 ? tech : `${tech}, `
+                            )}
+                        </p>
+                    </Tooltip>
                 </div>
             </div>
             <div className="w-full p-[15px] border border-dark-200 flex items-start gap-2.5 my-5">
