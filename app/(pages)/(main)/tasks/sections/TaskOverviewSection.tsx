@@ -17,17 +17,15 @@ import { TaskDto } from "@/app/models/task.model";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
-import { useCustomSearchParams } from "@/app/utils/hooks";
 import useUserStore from "@/app/state-management/useUserStore";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 
 export const activityCollection = collection(firestoreDB, "activity");
 
 const TaskOverviewSection = () => {
-    const { activeTask } = useContext(ActiveTaskContext);
+    const { activeTask, refreshActiveTask } = useContext(ActiveTaskContext);
     const { currentUser } = useUserStore();
     const { activeInstallation } = useInstallationStore();
-    const { updateSearchParams } = useCustomSearchParams();
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
     const [openSetTaskTimelineModal, { toggle: toggleSetTaskTimelineModal }] = useToggle(false);
     const [openDeleteTaskModal, { toggle: toggleDeleteTaskModal }] = useToggle(false);
@@ -76,7 +74,7 @@ const TaskOverviewSection = () => {
             (snapshot) => {
                 if (snapshot.docs.length > 0) {
                     reloadActivities();
-                    updateSearchParams({ refresh: "true" });
+                    refreshActiveTask();
                 }
             }
         );
@@ -112,9 +110,9 @@ const TaskOverviewSection = () => {
                         <p className="text-body-tiny text-light-100">Bounty</p>
                         <div className="flex items-center gap-1">
                             <p className="text-body-large text-light-200">{moneyFormat(activeTask?.bounty || "")} USDC</p>
-                            {(activeTask?.status === "OPEN" && 
-                                activeTask?._count && 
-                                activeTask._count.taskActivities < 1 && 
+                            {(activeTask?.status === "OPEN" &&
+                                activeTask?._count &&
+                                activeTask._count.taskActivities < 1 &&
                                 activeInstallation?.status === "ACTIVE"
                             ) ? (
                                     <button onClick={toggleSetTaskBountyModal}>
@@ -177,7 +175,7 @@ const TaskOverviewSection = () => {
                         <button
                             onClick={() => {
                                 reloadActivities();
-                                updateSearchParams({ refresh: "true" });
+                                refreshActiveTask();
                             }}
                             disabled={loadingActivities || loadingMoreActivities}
                             className={(loadingActivities || loadingMoreActivities) ? "rotate-loading" : ""}

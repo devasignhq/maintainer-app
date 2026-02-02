@@ -14,12 +14,23 @@ import Image from "next/image";
 
 const Tasks = () => {
     useUnauthenticatedUserCheck();
-    const { searchParams, removeSearchParams } = useCustomSearchParams();
+    const { searchParams } = useCustomSearchParams();
     const taskId = searchParams.get("taskId");
-    const refresh = searchParams.get("refresh");
     const { activeInstallation } = useInstallationStore();
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
     const [loadingTask, setLoadingTask] = useState(true);
+
+    const refreshActiveTask = async () => {
+        if (!taskId || !activeInstallation) {
+            return;
+        }
+
+        const response = await TaskAPI.getInstallationTaskById(
+            activeInstallation.id,
+            taskId
+        );
+        setActiveTask(response.data);
+    };
 
     // TODO: Implement caching
     useAsyncEffect((async () => {
@@ -44,23 +55,9 @@ const Tasks = () => {
         }
     }), [taskId, activeInstallation]);
 
-    useAsyncEffect((async () => {
-        if (refresh !== "true" || !taskId || !activeInstallation) {
-            return;
-        }
-
-        const response = await TaskAPI.getInstallationTaskById(
-            activeInstallation.id,
-            taskId
-        );
-        setActiveTask(response.data);
-
-        removeSearchParams("refresh");
-    }), [refresh]);
-
     return (
         <div className="h-[calc(100dvh-123px)] flex">
-            <ActiveTaskContext.Provider value={{ activeTask, setActiveTask }}>
+            <ActiveTaskContext.Provider value={{ activeTask, setActiveTask, refreshActiveTask }}>
                 <TaskListSection />
                 {!activeTask ? (
                     <>
@@ -74,7 +71,7 @@ const Tasks = () => {
                                     alt=""
                                     width={0}
                                     height={170.5}
-                                    className="w-auto" 
+                                    className="w-auto"
                                     priority={true}
                                 />
                             </div>
