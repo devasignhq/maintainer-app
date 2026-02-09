@@ -24,6 +24,7 @@ export const activityCollection = collection(firestoreDB, "activity");
 
 const TaskOverviewSection = () => {
     const { activeTask, refreshActiveTask } = useContext(ActiveTaskContext);
+    const activeTaskId = activeTask?.id;
     const { currentUser } = useUserStore();
     const { activeInstallation } = useInstallationStore();
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
@@ -62,7 +63,7 @@ const TaskOverviewSection = () => {
     );
 
     useEffect(() => {
-        if (!activeTask || !currentUser) return;
+        if (!activeTaskId || !currentUser) return;
 
         const unsubscribe = onSnapshot(
             query(
@@ -81,7 +82,7 @@ const TaskOverviewSection = () => {
 
         return () => unsubscribe();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTask, activeTask?.id, currentUser]);
+    }, [activeTaskId, currentUser]);
 
     return (
         <>

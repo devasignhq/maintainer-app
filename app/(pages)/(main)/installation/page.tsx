@@ -58,6 +58,7 @@ const Installation = () => {
             
             const noCurrentInstallations = !activeInstallation && installationList.length === 0;
 
+            setReboundAction("");
             setActiveInstallation(response.data);
             setInstallationList([...installationList, response.data]);
             handleApiSuccessResponse(response);
