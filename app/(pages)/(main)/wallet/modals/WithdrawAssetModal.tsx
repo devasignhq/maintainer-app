@@ -2,45 +2,49 @@
 import { FiArrowDownRight } from "react-icons/fi";
 import ButtonPrimary from "../../../../components/ButtonPrimary";
 import PopupModalLayout from "../../../../components/PopupModalLayout";
-import { SiStellar } from "react-icons/si";
-import { LiaExchangeAltSolid } from "react-icons/lia";
-import { useXLMUSDCFromStellarDEX } from "@/app/services/horizon.service";
 import { handleApiErrorResponse, handleApiSuccessResponse, moneyFormat } from "@/app/utils/helper";
 import { object, string } from "yup";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { useFormik } from "formik";
 import MoneyInput from "@/app/components/Input/MoneyInput";
-import { useEffect, useState } from "react";
 import { WalletAPI } from "@/app/services/wallet.service";
 import { toast } from "react-toastify";
+import RegularDropdown from "@/app/components/Dropdown/Regular";
 
 const withdrawAssetSchema = object({
+    assetType: string().oneOf(["XLM", "USDC"]).required("Required"),
     amount: string().required("Required"),
     walletAddress: string().required("Required")
 });
 
 type WithdrawAssetModalProps = {
     xlmBalance: string;
+    usdcBalance: string;
     toggleModal: () => void;
     reloadTransactions: () => void;
 };
 
-const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: WithdrawAssetModalProps) => {
+const WithdrawAssetModal = ({
+    xlmBalance,
+    usdcBalance,
+    toggleModal,
+    reloadTransactions
+}: WithdrawAssetModalProps) => {
     const { activeInstallation } = useInstallationStore();
-    const [amountInUsdc, setAmountInUsdc] = useState("");
 
     const formik = useFormik({
         initialValues: {
+            assetType: "XLM",
             amount: "",
             walletAddress: ""
         },
         validationSchema: withdrawAssetSchema,
         onSubmit: async (values) => {
             const withdrawAmount = parseFloat(values.amount.replace(/,/g, ""));
-            const balance = parseFloat(xlmBalance);
+            const balance = values.assetType === "XLM" ? parseFloat(xlmBalance) : parseFloat(usdcBalance);
 
             if (withdrawAmount > balance) {
-                toast.error("Insufficient XLM balance for this withdrawal.");
+                toast.error(`Insufficient ${values.assetType} balance for this withdrawal.`);
                 return;
             }
 
@@ -49,7 +53,7 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                     ...values,
                     amount: values.amount.replace(/,/g, ""),
                     installationId: activeInstallation!.id,
-                    assetType: "XLM"
+                    assetType: values.assetType as "XLM" | "USDC"
                 });
 
                 handleApiSuccessResponse(response);
@@ -64,56 +68,60 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
         }
     });
 
-    const {
-        xlmPriceInUsdc,
-        isLoading: priceLoading
-    } = useXLMUSDCFromStellarDEX(10000, formik.isSubmitting);
-
-    useEffect(() => {
-        if (!xlmPriceInUsdc || !formik.values.amount) return;
-
-        const formattedAmount = formik.values.amount.replace(/,/g, "");
-        setAmountInUsdc(moneyFormat(parseFloat(formattedAmount) * parseFloat(xlmPriceInUsdc)));
-    }, [formik.values.amount, xlmPriceInUsdc]);
+    const currentBalance = formik.values.assetType === "XLM" ? xlmBalance : usdcBalance;
 
     return (
         <PopupModalLayout title="Withdraw Asset" toggleModal={toggleModal}>
             <section className="my-[30px] space-y-[5px]">
-                <p className="text-body-tiny font-bold text-light-100">XLM Balance</p>
+                <p className="text-body-tiny font-bold text-light-100">{formik.values.assetType} Balance</p>
                 <p className="text-primary-400">
-                    <span className="text-display-large">{moneyFormat(xlmBalance).split(".")[0]}</span>
-                    <span className="text-body-medium">.{xlmBalance.split(".")[1] || "00"} XLM</span>
+                    <span className="text-display-large">{moneyFormat(currentBalance).split(".")[0]}</span>
+                    <span className="text-body-medium">.{currentBalance.split(".")[1] || "00"} {formik.values.assetType}</span>
                 </p>
             </section>
             <form className="w-full" onSubmit={formik.handleSubmit}>
                 <section className="w-full space-y-5">
-                    <div className="w-full space-y-[5px]">
-                        <label htmlFor="" className="text-body-tiny font-bold text-light-100">Amount to Withdraw</label>
-                        <div className={`w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
-                            flex items-center ${formik.submitCount > 0 && formik.errors.amount && "border-indicator-500"}`
-                        }>
-                            <SiStellar className="text-2xl text-dark-100 mr-3" />
-                            <span>XLM</span>
+                    <div className="w-full flex gap-5">
+                        <div className="w-full space-y-[5px]">
+                            <label htmlFor="" className="text-body-tiny font-bold text-light-100">Select Asset</label>
+                            <RegularDropdown
+                                defaultName="Lumen (XLM)"
+                                options={[
+                                    { label: "Lumen (XLM)", value: "XLM" },
+                                    { label: "Stablecoin (USDC)", value: "USDC" }
+                                ]}
+                                fieldName="label"
+                                fieldValue="value"
+                                extendedButtonClassName="w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 
+                                    text-body-medium text-light-100 font-bold flex justify-between items-center"
+                                buttonAttributes={{
+                                    style: { height: "40px", fontSize: "14px", lineHeight: "20px" },
+                                    id: "assetType",
+                                    name: "assetType",
+                                    disabled: formik.isSubmitting
+                                }}
+                                onChange={(value) => formik.setFieldValue("assetType", value)}
+                            />
+                        </div>
+                        <div className="w-full space-y-[5px]">
+                            <label htmlFor="amount" className="text-body-tiny font-bold text-light-100">Amount to Withdraw</label>
                             <MoneyInput
                                 attributes={{
                                     id: "amount",
                                     name: "amount",
                                     placeholder: "0.00",
-                                    className: "h-5 w-full ml-2.5",
+                                    className: `w-full p-2.5 mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 font-bold 
+                                        flex items-center ${formik.submitCount > 0 && formik.errors.amount && "border-indicator-500"}`,
                                     value: formik.values.amount,
                                     onBlur: formik.handleBlur,
                                     disabled: formik.isSubmitting
                                 }}
                                 setValue={(value) => formik.setFieldValue("amount", value)}
                             />
-                            <LiaExchangeAltSolid className="text-2xl text-dark-100 mx-3" />
-                            <span className="text-primary-400 whitespace-nowrap">
-                                ${(priceLoading || !formik.values.amount) ? "--" : amountInUsdc}
-                            </span>
                         </div>
                     </div>
                     <div className="w-full space-y-[5px]">
-                        <label htmlFor="" className="text-body-tiny font-bold text-light-100">Stellar Wallet Address</label>
+                        <label htmlFor="walletAddress" className="text-body-tiny font-bold text-light-100">Stellar Wallet Address</label>
                         <input
                             type="text"
                             id="walletAddress"
@@ -139,11 +147,11 @@ const WithdrawAssetModal = ({ xlmBalance, toggleModal, reloadTransactions }: Wit
                     </div>
                     <div className="flex items-center justify-between text-body-tiny leading-5">
                         <p className="font-medium text-primary-400">Asset:</p>
-                        <p className="text-light-200">XLM</p>
+                        <p className="text-light-200">{formik.values.assetType}</p>
                     </div>
                     <div className="flex items-center justify-between text-body-tiny leading-5">
                         <p className="font-medium text-primary-400">Minimum Withdrawal:</p>
-                        <p className="text-light-200">10 XLM</p>
+                        <p className="text-light-200">1 {formik.values.assetType}</p>
                     </div>
                     <div className="flex items-center justify-between text-body-tiny leading-5">
                         <p className="font-medium text-primary-400">Arrival Time:</p>

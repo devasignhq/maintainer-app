@@ -227,6 +227,7 @@ const Wallet = () => {
             {openWithdrawAssetModal && (
                 <WithdrawAssetModal
                     xlmBalance={xlmBalance}
+                    usdcBalance={usdcBalance}
                     toggleModal={toggleWithdrawAssetModal}
                     reloadTransactions={reloadTransactions}
                 />
