@@ -110,7 +110,7 @@ export function useStreamAccountBalance(
 
         setState(prev => ({
             ...prev,
-            xlmBalance: newXlmBalance.toFixed(2),
+            xlmBalance: (newXlmBalance - 1).toFixed(2),
             usdcBalance: newUsdcBalance.toFixed(2),
             lastUpdated: new Date(),
             error: null
@@ -276,7 +276,7 @@ export function useAccountBalancePolling(
             ).toFixed(2);
 
             setState({
-                xlmBalance,
+                xlmBalance: (parseFloat(xlmBalance) - 1).toFixed(2),
                 usdcBalance,
                 error: null,
                 lastUpdated: new Date()
