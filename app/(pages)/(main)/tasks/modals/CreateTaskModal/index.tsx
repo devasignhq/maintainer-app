@@ -27,6 +27,10 @@ import { InstallationAPI } from "@/app/services/installation.service";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { LuRocket } from "react-icons/lu";
 import { ApiResponse } from "@/app/models/_global";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { firestoreDB } from "@/lib/firebase";
+
+export const activityCollection = collection(firestoreDB, "activity");
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -169,9 +173,9 @@ const CreateTaskModal = ({
         }
     );
 
-    const { 
-        loading: loadingResources, 
-        data: repoResources 
+    const {
+        loading: loadingResources,
+        data: repoResources
     } = useRequest<ApiResponse<GetRepositoryResourcesResponse>, [string, string]>(
         () => {
             if (!activeRepo || !activeInstallation) {
@@ -217,7 +221,7 @@ const CreateTaskModal = ({
 
     const createTasks = async () => {
         if (selectedTasks.size === 0) {
-            toast.error("Please select at least one issue to import.");
+            toast.error("Please select at least one issue.");
             return;
         }
         if (!showSelectedTasks) {
@@ -225,14 +229,12 @@ const CreateTaskModal = ({
             return;
         }
 
-        // TODO: Check if user USDC balance is enough (open fund wallet modal if it ain't enough)
-
         setUploadingTasks(true);
         taskBoxRef!.current!.scrollTop = 0;
 
         await new Promise((resolve) => {
             toast.warn(
-                "Please do not leave this page or close this modal while your tasks are still processing.",
+                "Please do not leave this page or close this modal while your bounties are still processing.",
                 { autoClose: 3000 }
             );
             setTimeout(() => resolve(null), 500);
@@ -242,28 +244,57 @@ const CreateTaskModal = ({
         let hasErrors = false;
 
         for (const task of Array.from(selectedTasks.values())) {
-            // ? Use toast.promise here
-            toast.info(`Creating task for issue #${task.payload.issue.number}...`, { autoClose: 2000 });
+            const urlParts = task.payload.issue.url.split("/");
+            const taskIdentifier = `${urlParts[3]}/${urlParts[4]} #${task.payload.issue.number}`;
+            const toastId = toast.loading(`Creating bounty for ${taskIdentifier}...`);
             setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "PENDING"));
 
+            let unsubscribe = () => { };
+
             try {
+                unsubscribe = onSnapshot(
+                    query(
+                        activityCollection,
+                        where("installationId", "==", task.payload.installationId),
+                        where("issueUrl", "==", task.payload.issue.url),
+                        where("type", "==", "installation")
+                    ),
+                    (snapshot) => {
+                        if (snapshot.docs.length > 0 && snapshot.docs[0].data().message) {
+                            toast.update(toastId, { render: snapshot.docs[0].data().message });
+                        }
+                    }
+                );
+
                 delete task.payload.repoId;
-                
-                task.payload.timeline = task.payload.timelineType === TIMELINE_TYPE.WEEK 
-                    ? task.payload.timeline * 7 
+
+                task.payload.timeline = task.payload.timelineType === TIMELINE_TYPE.WEEK
+                    ? task.payload.timeline * 7
                     : task.payload.timeline;
                 delete task.payload.timelineType;
 
                 const response = await TaskAPI.createTask({ payload: task.payload });
 
-                toast.success(`Task for issue #${task.payload.issue.number} created successfully!`);
+                unsubscribe();
+                toast.update(toastId, {
+                    render: `Bounty for ${taskIdentifier} created successfully!`,
+                    autoClose: 2000,
+                    type: "success",
+                    isLoading: false
+                });
                 setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "CREATED"));
 
                 if (response.warning) {
                     toast.warn(response.warning);
                 }
             } catch {
-                toast.error(`Task for issue #${task.payload.issue.number} failed to create.`);
+                unsubscribe();
+                toast.update(toastId, {
+                    render: `Bounty for ${taskIdentifier} failed to create.`,
+                    autoClose: 2000,
+                    type: "error",
+                    isLoading: false
+                });
                 setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "FAILED"));
                 hasErrors = true;
                 draftTasks.push(task.payload);
@@ -271,7 +302,7 @@ const CreateTaskModal = ({
         }
 
         if (!hasErrors) {
-            toast.success("All tasks created successfully!");
+            toast.success("All bounties created successfully!");
             setUploadingTasks(false);
             setDraftTasks([]);
             toggleModal();
@@ -573,9 +604,9 @@ const CreateTaskModal = ({
                                 sideItem={showSelectedTasks ? <LuRocket /> : <FiArrowRight />}
                                 attributes={{
                                     onClick: createTasks,
-                                    disabled: selectedTasks.size === 0 
-                                        || uploadingTasks 
-                                        || (!validPayload && showSelectedTasks) 
+                                    disabled: selectedTasks.size === 0
+                                        || uploadingTasks
+                                        || (!validPayload && showSelectedTasks)
                                         || !totalBounty.valid
                                 }}
                             />
@@ -584,8 +615,8 @@ const CreateTaskModal = ({
                                 text="Save Draft"
                                 attributes={{
                                     onClick: saveDraft,
-                                    disabled: uploadingTasks 
-                                        || !validPayload 
+                                    disabled: uploadingTasks
+                                        || !validPayload
                                         || !totalBounty.valid
                                 }}
                             />
@@ -622,10 +653,10 @@ export default CreateTaskModal;
 const delayedEmptyResources = (): Promise<ApiResponse<GetRepositoryResourcesResponse>> => {
     return new Promise((resolve) => {
         setTimeout(() => {
-            resolve({ 
-                data: { labels: [], milestones: [] }, 
-                message: "", 
-                pagination: { hasMore: false } 
+            resolve({
+                data: { labels: [], milestones: [] },
+                message: "",
+                pagination: { hasMore: false }
             });
         }, 1000);
     });
