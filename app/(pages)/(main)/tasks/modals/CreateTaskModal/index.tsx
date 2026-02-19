@@ -46,7 +46,7 @@ type CreateTaskModalProps = {
     loadingInstallationRepos: boolean;
     usdcBalance: string;
     toggleModal: () => void;
-    reloadTasks: () => void;
+    onSuccess: () => void;
 };
 
 // TODO: Transfer logic to custom hook
@@ -55,7 +55,7 @@ const CreateTaskModal = ({
     loadingInstallationRepos,
     usdcBalance,
     toggleModal,
-    reloadTasks
+    onSuccess
 }: CreateTaskModalProps) => {
     const { activeInstallation } = useInstallationStore();
     const { draftTasks, setDraftTasks } = useTaskStore();
@@ -308,7 +308,7 @@ const CreateTaskModal = ({
             setUploadingTasks(false);
             setDraftTasks([]);
             toggleModal();
-            reloadTasks();
+            onSuccess();
             return;
         }
 
@@ -322,7 +322,7 @@ const CreateTaskModal = ({
 
         if ([...succeededIssueIds].length > 0) {
             reloadIssues();
-            reloadTasks();
+            onSuccess();
         }
     };
 
