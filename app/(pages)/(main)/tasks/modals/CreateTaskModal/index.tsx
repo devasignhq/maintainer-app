@@ -46,7 +46,7 @@ type CreateTaskModalProps = {
     loadingInstallationRepos: boolean;
     usdcBalance: string;
     toggleModal: () => void;
-    onSuccess: () => void;
+    reloadTasks: () => void;
 };
 
 // TODO: Transfer logic to custom hook
@@ -55,7 +55,7 @@ const CreateTaskModal = ({
     loadingInstallationRepos,
     usdcBalance,
     toggleModal,
-    onSuccess
+    reloadTasks
 }: CreateTaskModalProps) => {
     const { activeInstallation } = useInstallationStore();
     const { draftTasks, setDraftTasks } = useTaskStore();
@@ -241,6 +241,7 @@ const CreateTaskModal = ({
         });
 
         const draftTasks: CreateTaskDto[] = [];
+        const succeededIssueIds = new Set<string>();
         let hasErrors = false;
 
         for (const task of Array.from(selectedTasks.values())) {
@@ -283,6 +284,7 @@ const CreateTaskModal = ({
                     isLoading: false
                 });
                 setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "CREATED"));
+                succeededIssueIds.add(task.payload.issue.id);
 
                 if (response.warning) {
                     toast.warn(response.warning);
@@ -306,13 +308,22 @@ const CreateTaskModal = ({
             setUploadingTasks(false);
             setDraftTasks([]);
             toggleModal();
-            onSuccess();
+            reloadTasks();
             return;
         }
 
-        reloadIssues();
+        setSelectedTasks(prev => {
+            const newMap = new Map(prev);
+            succeededIssueIds.forEach(issueId => newMap.delete(issueId));
+            return newMap;
+        });
         setDraftTasks(draftTasks.length > 0 ? draftTasks : []);
         setUploadingTasks(false);
+
+        if ([...succeededIssueIds].length > 0) {
+            reloadIssues();
+            reloadTasks();
+        }
     };
 
     const saveDraft = () => {
@@ -323,6 +334,7 @@ const CreateTaskModal = ({
 
     const clearSelection = () => {
         setSelectedTasks(new Map());
+        setUploadedTasks(new Map());
         setDraftTasks([]);
         setShowSelectedTasks(false);
     };
@@ -489,6 +501,7 @@ const CreateTaskModal = ({
                                     onClick={() => {
                                         if (selectedIssues.length > 0) {
                                             setShowSelectedTasks(prev => !prev);
+                                            setUploadedTasks(new Map());
                                         }
                                     }}
                                     className={`px-[5px] text-body-medium font-bold text-dark-500 flex items-center gap-1 

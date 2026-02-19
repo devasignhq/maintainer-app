@@ -292,7 +292,7 @@ const TaskListSection = () => {
                     loadingInstallationRepos={loadingInstallationRepos}
                     usdcBalance={usdcBalance}
                     toggleModal={toggleCreateTaskModal}
-                    onSuccess={reloadTasks}
+                    reloadTasks={reloadTasks}
                 />
             )}
         </>
