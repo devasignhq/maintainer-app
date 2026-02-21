@@ -101,17 +101,7 @@ export default function MainLayout({
                                                         key={installation.id}
                                                         className="pb-2.5 flex items-center justify-between gap-2.5 border-b border-dark-200"
                                                     >
-                                                        <div className="flex items-center gap-2.5">
-                                                            <p className="text-body-medium text-light-100">{installation.account.login}</p>
-                                                            {installation.status !== "ACTIVE" && (
-                                                                <div className={`px-2.5 py-[7px] text-body-small ${installation.subscriptionPackage?.price === 0 
-                                                                    ? "text-light-100 bg-dark-300" 
-                                                                    : "text-dark-500 bg-primary-100"}` 
-                                                                }>
-                                                                    Inactive
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        <p className="text-body-medium text-light-100">{installation.account.login}</p>
                                                         <FaCheck className="text-xl text-light-100" />
                                                     </button>
                                                 ) : (
@@ -127,12 +117,11 @@ export default function MainLayout({
                                                         <p className="text-body-medium text-dark-100 group-hover:text-light-100">
                                                             {installation.account.login}
                                                         </p>
-                                                        <div className={`px-2.5 py-[7px] text-body-small 
-                                                            ${installation.subscriptionPackage?.price === 0 
-                                                        ? "text-light-100 bg-dark-300" 
-                                                        : "text-dark-500 bg-primary-100"}` 
+                                                        <div className={`px-2.5 py-[7px] text-body-small ${installation.status === "ACTIVE" 
+                                                            ? "text-dark-500 bg-primary-100" 
+                                                            : "text-light-100 bg-dark-300"}` 
                                                         }>
-                                                            {installation.subscriptionPackage?.name}
+                                                            {installation.status === "ACTIVE" ? "Active" : "Inactive"}
                                                         </div>
                                                     </button>
                                                 );
