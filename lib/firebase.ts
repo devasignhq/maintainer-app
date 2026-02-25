@@ -4,7 +4,7 @@ import { useLockFn, useAsyncEffect, clearCache } from "ahooks";
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, GithubAuthProvider, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { getFirestore } from "firebase/firestore";
+import { collection, getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -21,6 +21,7 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
 export const firestoreDB = getFirestore(app);
+export const activityCollection = collection(firestoreDB, "activity");
 export const storage = getStorage(app);
 export const githubProvider = new GithubAuthProvider();
 

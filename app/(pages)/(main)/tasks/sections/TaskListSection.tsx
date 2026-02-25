@@ -18,11 +18,13 @@ import { enumToStringConverter } from "@/app/utils/helper";
 import { InstallationAPI } from "@/app/services/installation.service";
 import { useStreamAccountBalance } from "@/app/services/horizon.service";
 import Tooltip from "@/app/components/Tooltip";
+import { activityCollection } from "@/lib/firebase";
+import { onSnapshot, query, where } from "firebase/firestore";
 
 // ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
     const { activeInstallation } = useInstallationStore();
-    const { activeTask } = useContext(ActiveTaskContext);
+    const { activeTask, refreshActiveTask } = useContext(ActiveTaskContext);
     const [openCreateTaskModal, { toggle: toggleCreateTaskModal }] = useToggle(false);
     const [taskFilters, setTaskFilters] = useState(defaultTaskFilters);
     const [searchValue, setSearchValue] = useState("");
@@ -138,12 +140,33 @@ const TaskListSection = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [taskFilters.repoUrl]);
 
+    useEffect(() => {
+        if (!activeInstallation) return;
+
+        const unsubscribe = onSnapshot(
+            query(
+                activityCollection,
+                where("installationId", "==", activeInstallation.id),
+                where("type", "==", "installation"),
+                where("operation", "==", "task_creation")
+            ),
+            (snapshot) => {
+                if (snapshot.docs.length > 0) {
+                    refreshActiveTask();
+                    reloadTasks();
+                }
+            }
+        );
+
+        return () => unsubscribe();
+    }, [activeInstallation, refreshActiveTask, reloadTasks]);
+
     return (
         <>
             <section className="min-w-[366px] w-[12%] h-full pt-[30px] flex flex-col">
                 <div className="pr-5 flex items-center justify-between">
                     <h6 className="text-headline-small text-light-100">Project Tasks</h6>
-                    <Tooltip 
+                    <Tooltip
                         message="Reinstall or unsuspend DevAsign app on GitHub to create new tasks"
                         disabled={activeInstallation?.status === "ACTIVE"}
                     >
@@ -223,7 +246,7 @@ const TaskListSection = () => {
                             extendedButtonClassName="w-full py-[5px]"
                             buttonAttributes={{
                                 style: { fontSize: "12px", lineHeight: "16px", fontWeight: "700" },
-                                disabled: loadingTasks || 
+                                disabled: loadingTasks ||
                                     loadingInstallationRepos ||
                                     activeInstallation?.status !== "ACTIVE"
                             }}

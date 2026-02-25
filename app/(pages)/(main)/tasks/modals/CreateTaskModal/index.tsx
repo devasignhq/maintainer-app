@@ -27,10 +27,8 @@ import { InstallationAPI } from "@/app/services/installation.service";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { LuRocket } from "react-icons/lu";
 import { ApiResponse } from "@/app/models/_global";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { firestoreDB } from "@/lib/firebase";
-
-export const activityCollection = collection(firestoreDB, "activity");
+import { onSnapshot, query, where } from "firebase/firestore";
+import { activityCollection } from "@/lib/firebase";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -258,7 +256,8 @@ const CreateTaskModal = ({
                         activityCollection,
                         where("installationId", "==", task.payload.installationId),
                         where("issueUrl", "==", task.payload.issue.url),
-                        where("type", "==", "installation")
+                        where("type", "==", "installation"),
+                        where("operation", "==", "task_creation")
                     ),
                     (snapshot) => {
                         if (snapshot.docs.length > 0 && snapshot.docs[0].data().message) {

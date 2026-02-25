@@ -1,6 +1,6 @@
 "use client";
-import { firestoreDB } from "@/lib/firebase";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { activityCollection } from "@/lib/firebase";
+import { onSnapshot, query, where } from "firebase/firestore";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { FiArrowUpRight, FiEdit3 } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
@@ -20,10 +20,8 @@ import { TaskAPI } from "@/app/services/task.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 
-export const activityCollection = collection(firestoreDB, "activity");
-
 const TaskOverviewSection = () => {
-    const { activeTask, refreshActiveTask } = useContext(ActiveTaskContext);
+    const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
     const activeTaskId = activeTask?.id;
     const { currentUser } = useUserStore();
     const { activeInstallation } = useInstallationStore();
@@ -75,7 +73,9 @@ const TaskOverviewSection = () => {
             (snapshot) => {
                 if (snapshot.docs.length > 0) {
                     reloadActivities();
-                    refreshActiveTask();
+                    if (snapshot.docs[0].data().metadata) {
+                        setActiveTask({ ...activeTask, ...snapshot.docs[0].data().metadata });
+                    }
                 }
             }
         );
@@ -174,10 +174,7 @@ const TaskOverviewSection = () => {
                     <h6 className="text-headline-small text-light-100">Task Activities</h6>
                     {activeInstallation?.status === "ACTIVE" && (
                         <button
-                            onClick={() => {
-                                reloadActivities();
-                                refreshActiveTask();
-                            }}
+                            onClick={reloadActivities}
                             disabled={loadingActivities || loadingMoreActivities}
                             className={(loadingActivities || loadingMoreActivities) ? "rotate-loading" : ""}
                         >
