@@ -83,15 +83,15 @@ export default AllTable;
 
 const formatCategory = (category: TransactionCategory) => {
     switch (category) {
-    case "BOUNTY":
-        return "Bounty";
-    case "SWAP_USDC":
-        return "Swap (USDC to XLM)";
-    case "SWAP_XLM":
-        return "Swap (XLM to USDC)";
-    case "WITHDRAWAL":
-        return "Withdrawal";
-    case "TOP_UP":
-        return "Top Up";
+        case "BOUNTY":
+            return "Bounty";
+        case "SWAP_USDC":
+            return "Swap (USDC to XLM)";
+        case "SWAP_XLM":
+            return "Swap (XLM to USDC)";
+        case "WITHDRAWAL":
+            return "Withdrawal";
+        case "TOP_UP":
+            return "Top Up";
     }
 };

@@ -155,7 +155,7 @@ const WithdrawAssetModal = ({
                     </div>
                     <div className="flex items-center justify-between text-body-tiny leading-5">
                         <p className="font-medium text-primary-400">Arrival Time:</p>
-                        <p className="text-light-200">10 seconds</p>
+                        <p className="text-light-200">30 seconds</p>
                     </div>
                 </section>
                 <ButtonPrimary

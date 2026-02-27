@@ -128,18 +128,18 @@ export function convertGitHubApiUrlToWebUrlRegex(apiUrl: string): string {
 
 export function taskStatusFormatter(status: TaskStatus) {
     switch (status) {
-    case "OPEN":
-        return ["Open", "bg-indicator-200 text-dark-500"];
-    case "IN_PROGRESS":
-        return ["In Progress", "bg-indicator-400 text-dark-500"];
-    case "MARKED_AS_COMPLETED":
-        return ["Review", "bg-light-100 text-dark-500"];
-    case "COMPLETED":
-        return ["Bounty Paid", "bg-indicator-100 text-dark-500"];
-    case "ARCHIVED":
-        return ["Archived", "bg-dark-200 text-dark-500"];
-    default:
-        return status;
+        case "OPEN":
+            return ["Open", "bg-indicator-200 text-dark-500"];
+        case "IN_PROGRESS":
+            return ["In Progress", "bg-indicator-400 text-dark-500"];
+        case "MARKED_AS_COMPLETED":
+            return ["Review", "bg-light-100 text-dark-500"];
+        case "COMPLETED":
+            return ["Bounty Paid", "bg-indicator-100 text-dark-500"];
+        case "ARCHIVED":
+            return ["Archived", "bg-dark-200 text-dark-500"];
+        default:
+            return status;
     }
 };
 

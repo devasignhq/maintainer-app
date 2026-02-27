@@ -66,47 +66,47 @@ const Tooltip = ({
     const getPositionStyles = () => {
         const offset = 10;
         switch (position) {
-        case "top":
-            return {
-                top: `${coords.top - offset}px`,
-                left: `${coords.left + coords.width / 2}px`,
-                transform: "translate(-50%, -100%)"
-            };
-        case "bottom":
-            return {
-                top: `${coords.top + coords.height + offset}px`,
-                left: `${coords.left + coords.width / 2}px`,
-                transform: "translateX(-50%)"
-            };
-        case "left":
-            return {
-                top: `${coords.top + coords.height / 2}px`,
-                left: `${coords.left - offset}px`,
-                transform: "translate(-100%, -50%)"
-            };
-        case "right":
-            return {
-                top: `${coords.top + coords.height / 2}px`,
-                left: `${coords.left + coords.width + offset}px`,
-                transform: "translateY(-50%)"
-            };
-        default:
-            return {};
+            case "top":
+                return {
+                    top: `${coords.top - offset}px`,
+                    left: `${coords.left + coords.width / 2}px`,
+                    transform: "translate(-50%, -100%)"
+                };
+            case "bottom":
+                return {
+                    top: `${coords.top + coords.height + offset}px`,
+                    left: `${coords.left + coords.width / 2}px`,
+                    transform: "translateX(-50%)"
+                };
+            case "left":
+                return {
+                    top: `${coords.top + coords.height / 2}px`,
+                    left: `${coords.left - offset}px`,
+                    transform: "translate(-100%, -50%)"
+                };
+            case "right":
+                return {
+                    top: `${coords.top + coords.height / 2}px`,
+                    left: `${coords.left + coords.width + offset}px`,
+                    transform: "translateY(-50%)"
+                };
+            default:
+                return {};
         }
     };
 
     const getArrowClasses = () => {
         switch (position) {
-        case "top":
-            return "top-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-dark-300";
-        case "bottom":
-            return "bottom-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-dark-300";
-        case "left":
-            return "left-full top-1/2 transform -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-dark-300";
-        case "right":
-            return "right-full top-1/2 transform -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-dark-300";
-        default:
-            return "top-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-dark-300";
+            case "top":
+                return "top-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-dark-300";
+            case "bottom":
+                return "bottom-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-dark-300";
+            case "left":
+                return "left-full top-1/2 transform -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-dark-300";
+            case "right":
+                return "right-full top-1/2 transform -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-dark-300";
+            default:
+                return "top-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-dark-300";
         }
     };
 
