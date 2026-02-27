@@ -13,8 +13,7 @@ import { ApiResponse, PaginatedApiResponse } from "../models/_global";
 export class WalletAPI {
     static async getWalletInfo(installationId: string) {
         return HttpClient.get<ApiResponse<AccountRecord>>(
-            ENDPOINTS.WALLET.GET_WALLET,
-            { params: { installationId } }
+            ENDPOINTS.WALLET.GET_WALLET.replace("{installationId}", installationId)
         );
     }
 

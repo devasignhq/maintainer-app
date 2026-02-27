@@ -1,18 +1,11 @@
 import { HttpClient } from "@/lib/axiosInstance";
 import { ENDPOINTS } from "./_endpoints";
-import {
-    AddressBook,
-    QueryUserDto,
-    UserDto,
-    CreateUserPayloadDto
-} from "../models/user.model";
+import { AddressBook, UserDto, CreateUserPayloadDto } from "../models/user.model";
 import { ApiResponse } from "../models/_global";
 
 export class UserAPI {
-    static async getUser(query?: QueryUserDto) {
-        return HttpClient.get<ApiResponse<UserDto>>(ENDPOINTS.USER.GET, {
-            params: query
-        });
+    static async getUser() {
+        return HttpClient.get<ApiResponse<UserDto>>(ENDPOINTS.USER.GET);
     }
 
     static async createUser(data: CreateUserPayloadDto) {

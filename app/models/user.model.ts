@@ -46,7 +46,3 @@ export type ContributionSummary = {
 export type CreateUserPayloadDto = {
     githubUsername: string;
 }
-
-export type QueryUserDto = {
-    view: "basic" | "full";
-}
