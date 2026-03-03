@@ -13,7 +13,8 @@ import { ApiResponse, PaginatedApiResponse } from "../models/_global";
 export class WalletAPI {
     static async getWalletInfo(installationId: string) {
         return HttpClient.get<ApiResponse<AccountRecord>>(
-            ENDPOINTS.WALLET.GET_WALLET.replace("{installationId}", installationId)
+            ENDPOINTS.WALLET.GET_WALLET,
+            { params: { installationId } }
         );
     }
 
@@ -31,9 +32,9 @@ export class WalletAPI {
         );
     }
 
-    static async getTransactions(query?: QueryTransactionDto) {
+    static async getTransactions(installationId: string, query?: QueryTransactionDto) {
         return HttpClient.get<PaginatedApiResponse<TransactionDto>>(
-            ENDPOINTS.WALLET.TRANSACTIONS,
+            ENDPOINTS.WALLET.TRANSACTIONS.replace("{installationId}", installationId),
             { params: query }
         );
     }

@@ -71,13 +71,15 @@ const Wallet = () => {
                     ? "SWAP_XLM,SWAP_USDC"
                     : activeTab.enum;
 
-            const response = await WalletAPI.getTransactions({
-                installationId: activeInstallation!.id,
-                page: pageToLoad,
-                limit: 20,
-                sort: "desc",
-                ...(category && { categories: category })
-            });
+            const response = await WalletAPI.getTransactions(
+                activeInstallation!.id,
+                {
+                    page: pageToLoad,
+                    limit: 20,
+                    sort: "desc",
+                    ...(category && { categories: category })
+                }
+            );
 
             return {
                 list: response.data,
