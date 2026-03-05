@@ -10,7 +10,6 @@ import { moneyFormat, formatDateTime } from "@/app/utils/helper";
 import { useAsyncEffect, useLockFn, useToggle } from "ahooks";
 import ApproveTaskDelegationModal from "./ApproveTaskDelegationModal";
 import { TaskAPI } from "@/app/services/task.service";
-import { MdCancel, MdVerified } from "react-icons/md";
 import Tooltip from "@/app/components/Tooltip";
 
 type ReviewTaskApplicationModalProps = {
@@ -34,7 +33,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
             // extendedModalClassName="w-[900px]"
             toggleModal={toggleModal}
         >
-            <div className="w-full grid grid-cols-4 gap-2.5 text-light-100 mt-5 whitespace-nowrap">
+            <div className="w-full grid grid-cols-3 gap-2.5 text-light-100 mt-5 whitespace-nowrap">
                 <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
                     <p className="text-body-micro">Developer</p>
                     <p className="text-body-medium flex items-center gap-1 text-light-200">
@@ -44,7 +43,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                         </Link>
                     </p>
                 </div>
-                <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
+                {/* <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
                     <p className="text-body-micro">KYC Status</p>
                     <p className="text-body-medium flex items-center justify-between text-light-200">
                         <span>{taskActivity.user?.verified ? "Verified" : "Not Verified"}</span>
@@ -54,7 +53,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                             <MdCancel className="text-xl text-indicator-500 hover:text-light-100" />
                         )}
                     </p>
-                </div>
+                </div> */}
                 <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
                     <p className="text-body-micro">Completed Bounties</p>
                     <p className="text-body-medium text-light-200">
