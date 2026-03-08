@@ -3,6 +3,7 @@ import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ToastProvider from "./components/ToastProvider";
 import { Suspense } from "react";
+import Statsig from "./statsig";
 
 const geistMono = Geist_Mono({
     subsets: ["latin"],
@@ -21,11 +22,13 @@ export default function RootLayout({
                 <meta name="description" content="The Open Source Project Management Tool" />
             </head>
             <body className={`${geistMono.className} antialiased`}>
-                <ToastProvider>
-                    <Suspense fallback={<h1 className="text-display-small text-light-100">Loading App...</h1>}>
-                        {children}
-                    </Suspense>
-                </ToastProvider>
+                <Statsig>
+                    <ToastProvider>
+                        <Suspense fallback={<h1 className="text-display-small text-light-100">Loading App...</h1>}>
+                            {children}
+                        </Suspense>
+                    </ToastProvider>
+                </Statsig>
             </body>
         </html>
     );
