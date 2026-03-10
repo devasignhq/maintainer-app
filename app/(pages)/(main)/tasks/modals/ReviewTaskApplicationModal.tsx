@@ -1,5 +1,6 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
+import { FEATURE_GATES } from "@/app/utils/data";
 import PopupModalLayout from "@/app/components/PopupModalLayout";
 import { TaskActivity } from "@/app/models/task.model";
 import Link from "next/link";
@@ -22,7 +23,7 @@ type ReviewTaskApplicationModalProps = {
 const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApplicationModalProps) => {
     const { activeTask } = useContext(ActiveTaskContext);
     const [openApproveTaskDelegationModal, { toggle: toggleApproveTaskDelegationModal }] = useToggle(false);
-    const { value: requireKycGate } = useFeatureGate("require_kyc");
+    const { value: isKycCheckEnabled } = useFeatureGate(FEATURE_GATES.REQUIRE_KYC);
 
     useAsyncEffect(useLockFn(async () => {
         if (!taskActivity.viewed) {
@@ -46,7 +47,7 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                         </Link>
                     </p>
                 </div>
-                {requireKycGate && (
+                {isKycCheckEnabled && (
                     <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
                         <p className="text-body-micro">KYC Status</p>
                         <p className="text-body-medium flex items-center justify-between text-light-200">
