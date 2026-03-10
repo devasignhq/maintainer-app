@@ -8,6 +8,7 @@ export type UserDto = {
     userId: string;
     username: string;
     verified: boolean;
+    email?: string | null;
     wallet: { address: string };
     techStack: string[];
     addressBook: AddressBook[];

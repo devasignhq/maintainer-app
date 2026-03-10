@@ -7,7 +7,7 @@ import { useLockFn, useRequest } from "ahooks";
 import { toast } from "react-toastify";
 import { ErrorResponse } from "@/app/models/_global";
 import useUserStore from "@/app/state-management/useUserStore";
-import { auth, githubProvider, useAuthenticatedUserCheck } from "@/lib/firebase";
+import { auth, getCurrentUser, githubProvider, useAuthenticatedUserCheck } from "@/lib/firebase";
 import { signInWithPopup, getAdditionalUserInfo } from "@firebase/auth";
 import { handleApiErrorResponse, handleApiSuccessResponse } from "@/app/utils/helper";
 import { useCustomSearchParams } from "@/app/utils/hooks";
@@ -28,14 +28,15 @@ const Account = () => {
         useLockFn((githubUsername: string) => UserAPI.createUser({ githubUsername })),
         {
             manual: true,
-            onSuccess: (response, params) => {
+            onSuccess: async (response, params) => {
                 if (!response) {
                     toast.error("Failed to create user. Please try again.");
                     return;
                 }
 
                 handleApiSuccessResponse(response);
-                setCurrentUser({ ...response.data, username: params[0] });
+                const user = await getCurrentUser();
+                setCurrentUser({ ...response.data, username: params[0], email: user?.email });
                 getInstallation();
 
                 router.push(ROUTES.ONBOARDING);
@@ -51,13 +52,14 @@ const Account = () => {
         useLockFn((githubUsername: string) => UserAPI.getUser()),
         {
             manual: true,
-            onSuccess: (response, params) => {
+            onSuccess: async (response, params) => {
                 if (!response) {
                     toast.error("Failed to fetch user. Please try again.");
                     return;
                 }
 
-                setCurrentUser({ ...response.data, username: params[0] });
+                const user = await getCurrentUser();
+                setCurrentUser({ ...response.data, username: params[0], email: user?.email });
                 getInstallation();
 
                 if (response.data._count && response.data._count.installations > 0) {
