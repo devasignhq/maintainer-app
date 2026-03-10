@@ -5,6 +5,8 @@ import { TaskActivity } from "@/app/models/task.model";
 import Link from "next/link";
 import { useContext } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
+import { MdVerified, MdCancel } from "react-icons/md";
+import { useFeatureGate } from "@statsig/react-bindings";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { moneyFormat, formatDateTime } from "@/app/utils/helper";
 import { useAsyncEffect, useLockFn, useToggle } from "ahooks";
@@ -20,6 +22,7 @@ type ReviewTaskApplicationModalProps = {
 const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApplicationModalProps) => {
     const { activeTask } = useContext(ActiveTaskContext);
     const [openApproveTaskDelegationModal, { toggle: toggleApproveTaskDelegationModal }] = useToggle(false);
+    const { value: requireKycGate } = useFeatureGate("require_kyc");
 
     useAsyncEffect(useLockFn(async () => {
         if (!taskActivity.viewed) {
@@ -43,17 +46,19 @@ const ReviewTaskApplicationModal = ({ taskActivity, toggleModal }: ReviewTaskApp
                         </Link>
                     </p>
                 </div>
-                {/* <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
-                    <p className="text-body-micro">KYC Status</p>
-                    <p className="text-body-medium flex items-center justify-between text-light-200">
-                        <span>{taskActivity.user?.verified ? "Verified" : "Not Verified"}</span>
-                        {taskActivity.user?.verified ? (
-                            <MdVerified className="text-xl text-indicator-100 hover:text-light-100" />
-                        ) : (
-                            <MdCancel className="text-xl text-indicator-500 hover:text-light-100" />
-                        )}
-                    </p>
-                </div> */}
+                {requireKycGate && (
+                    <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
+                        <p className="text-body-micro">KYC Status</p>
+                        <p className="text-body-medium flex items-center justify-between text-light-200">
+                            <span>{taskActivity.user?.verified ? "Verified" : "Not Verified"}</span>
+                            {taskActivity.user?.verified ? (
+                                <MdVerified className="text-xl text-indicator-100 hover:text-light-100" />
+                            ) : (
+                                <MdCancel className="text-xl text-indicator-500 hover:text-light-100" />
+                            )}
+                        </p>
+                    </div>
+                )}
                 <div className="h-[60px] px-[15px] py-2.5 flex flex-col justify-between border border-dark-200 space-y-[0.5px]">
                     <p className="text-body-micro">Completed Bounties</p>
                     <p className="text-body-medium text-light-200">
