@@ -11,9 +11,9 @@ export default function Statsig({ children }: { children: React.ReactNode }) {
     const user = {
         // Only set userID if the user is authentically logged in
         ...(currentUser?.userId ? { userID: currentUser.userId } : {}),
+        email: currentUser?.email || undefined,
         custom: {
             username: currentUser?.username,
-            email: currentUser?.email || undefined,
             hasWallet: !!currentUser?.wallet,
             verified: currentUser?.verified
         }
