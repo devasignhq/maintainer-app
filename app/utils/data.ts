@@ -15,3 +15,7 @@ export const ROUTES = {
         CREATE: "/installation"
     }
 };
+
+export const FEATURE_GATES = {
+    REQUIRE_KYC: "require_kyc"
+};
