@@ -10,7 +10,6 @@ export type WithdrawAssetDto = {
 }
 
 export type SwapAssetDto = {
-    installationId: string;
     amount: string;
     toAssetType: "XLM" | "USDC";
 }

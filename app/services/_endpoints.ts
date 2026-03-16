@@ -45,7 +45,7 @@ export const ENDPOINTS = {
     WALLET: {
         GET_WALLET: `${preset.WALLET}/account`,
         WITHDRAW: `${preset.WALLET}/withdraw`,
-        SWAP: `${preset.WALLET}/swap`,
+        SWAP: `${preset.WALLET}/swap/{installationId}`,
         TRANSACTIONS: `${preset.WALLET}/transactions/installation/{installationId}`,
         RECORD_WALLET_TOPUPS: `${preset.WALLET}/transactions/record-topups`
     }
