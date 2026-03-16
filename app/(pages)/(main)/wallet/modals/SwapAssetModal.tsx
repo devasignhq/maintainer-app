@@ -58,11 +58,13 @@ const SwapAssetModal = ({
             }
 
             try {
-                const response = await WalletAPI.swapAsset({
-                    installationId: activeInstallation!.id,
-                    toAssetType: from === "XLM" ? "USDC" : "XLM",
-                    amount: values.fromAmount.replace(/,/g, "")
-                });
+                const response = await WalletAPI.swapAsset(
+                    activeInstallation!.id,
+                    {
+                        toAssetType: from === "XLM" ? "USDC" : "XLM",
+                        amount: values.fromAmount.replace(/,/g, "")
+                    }
+                );
 
                 handleApiSuccessResponse(response);
                 reloadTransactions();

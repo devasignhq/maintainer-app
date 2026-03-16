@@ -25,9 +25,9 @@ export class WalletAPI {
         );
     }
 
-    static async swapAsset(data: SwapAssetDto) {
+    static async swapAsset(installationId: string, data: SwapAssetDto) {
         return HttpClient.post<ApiResponse<TransactionDto>>(
-            ENDPOINTS.WALLET.SWAP,
+            ENDPOINTS.WALLET.SWAP.replace("{installationId}", installationId),
             data
         );
     }
