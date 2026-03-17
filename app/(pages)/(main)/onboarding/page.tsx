@@ -172,7 +172,6 @@ const Onboarding = () => {
                 <CreateTaskModal
                     installationRepos={installationRepos}
                     loadingInstallationRepos={loadingInstallationRepos}
-                    usdcBalance={usdcBalance}
                     toggleModal={toggleCreateTaskModal}
                     onSuccess={() => router.push(ROUTES.TASKS)}
                 />
