@@ -228,10 +228,24 @@ export function useStreamAccountBalance(
         setState(prev => ({ ...prev, error: null }));
     };
 
+    const stopStream = useCallback(() => {
+        if (eventSourceRef.current) {
+            eventSourceRef.current.close();
+            eventSourceRef.current = null;
+        }
+        if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+            reconnectTimeoutRef.current = null;
+        }
+        reconnectAttempts.current = 0;
+        setState(prev => ({ ...prev, isConnected: false }));
+    }, []);
+
     return {
         ...state,
         manualBalanceCheck,
-        reconnect
+        reconnect,
+        stopStream
     };
 }
 

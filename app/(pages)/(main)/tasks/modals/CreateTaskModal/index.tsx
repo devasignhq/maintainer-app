@@ -29,6 +29,7 @@ import { LuRocket } from "react-icons/lu";
 import { ApiResponse } from "@/app/models/_global";
 import { onSnapshot, query, where } from "firebase/firestore";
 import { activityCollection } from "@/lib/firebase";
+import { useStreamAccountBalance } from "@/app/services/horizon.service";
 
 type TaskPayload = {
     payload: CreateTaskDto;
@@ -42,7 +43,6 @@ type UploadStatus = "PENDING" | "CREATED" | "FAILED";
 type CreateTaskModalProps = {
     installationRepos: RepositoryDto[];
     loadingInstallationRepos: boolean;
-    usdcBalance: string;
     toggleModal: () => void;
     onSuccess: () => void;
 };
@@ -51,13 +51,17 @@ type CreateTaskModalProps = {
 const CreateTaskModal = ({
     installationRepos,
     loadingInstallationRepos,
-    usdcBalance,
     toggleModal,
     onSuccess
 }: CreateTaskModalProps) => {
     const { activeInstallation } = useInstallationStore();
+    const { usdcBalance, stopStream, manualBalanceCheck } = useStreamAccountBalance(
+        activeInstallation?.wallet?.address,
+        activeInstallation?.id
+    );
     const { draftTasks, setDraftTasks } = useTaskStore();
     const taskBoxRef = useRef<HTMLDivElement>(null);
+    const taskCardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
     const [activeRepo, setActiveRepo] = useState<RepositoryDto | undefined>(installationRepos[0]);
     const [issueFilters, setIssueFilters] = useState<IssueFilters>(defaultIssueFilters);
     const [searchValue, setSearchValue] = useState("");
@@ -228,6 +232,7 @@ const CreateTaskModal = ({
         }
 
         setUploadingTasks(true);
+        stopStream();
         taskBoxRef!.current!.scrollTop = 0;
 
         await new Promise((resolve) => {
@@ -247,6 +252,12 @@ const CreateTaskModal = ({
             const taskIdentifier = `${urlParts[3]}/${urlParts[4]} #${task.payload.issue.number}`;
             const toastId = toast.loading(`Creating bounty for ${taskIdentifier}...`);
             setUploadedTasks(prev => new Map(prev).set(task.payload.issue.id, "PENDING"));
+
+            const taskElement = taskCardRefs.current.get(task.payload.issue.id);
+            if (taskElement && taskBoxRef.current) {
+                // Scroll the element into view with smooth behavior
+                taskElement.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
 
             let unsubscribe = () => { };
 
@@ -320,6 +331,7 @@ const CreateTaskModal = ({
         setUploadingTasks(false);
 
         if ([...succeededIssueIds].length > 0) {
+            manualBalanceCheck();
             reloadIssues();
             onSuccess();
         }
@@ -541,7 +553,17 @@ const CreateTaskModal = ({
                                     installationRepos.find(repo => repo.url === issue.repository.url)?.id || "";
 
                                 return (
-                                    <div key={issue.id} className="w-full">
+                                    <div
+                                        key={issue.id}
+                                        className="w-full"
+                                        ref={(el) => {
+                                            if (el) {
+                                                taskCardRefs.current.set(issue.id, el);
+                                            } else {
+                                                taskCardRefs.current.delete(issue.id);
+                                            }
+                                        }}
+                                    >
                                         <CreateTaskCard
                                             issue={issue}
                                             bountyLabelId={validBountyLabel.get(repoId) || ""}

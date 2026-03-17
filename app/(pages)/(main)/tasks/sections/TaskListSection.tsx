@@ -16,7 +16,6 @@ import SearchBox from "../components/SearchBox";
 import { ApiResponse } from "@/app/models/_global";
 import { enumToStringConverter } from "@/app/utils/helper";
 import { InstallationAPI } from "@/app/services/installation.service";
-import { useStreamAccountBalance } from "@/app/services/horizon.service";
 import Tooltip from "@/app/components/Tooltip";
 import { activityCollection } from "@/lib/firebase";
 import { onSnapshot, query, where } from "firebase/firestore";
@@ -29,10 +28,6 @@ const TaskListSection = () => {
     const [taskFilters, setTaskFilters] = useState(defaultTaskFilters);
     const [searchValue, setSearchValue] = useState("");
     const [displaySearchIcon, setDisplaySearchIcon] = useState(true);
-    const { usdcBalance, manualBalanceCheck } = useStreamAccountBalance(
-        activeInstallation?.wallet?.address,
-        activeInstallation?.id
-    );
     const {
         searchParams,
         updateSearchParams,
@@ -79,7 +74,7 @@ const TaskListSection = () => {
                 }
             );
 
-            if (!searchParams.get("taskId") && !activeTask && response.data.length > 0) {
+            if (!searchParams.get("taskId") && response.data.length > 0) {
                 updateSearchParams({ taskId: response.data[0].id }, true);
             } else {
                 if (refresh === "true") {
@@ -143,23 +138,33 @@ const TaskListSection = () => {
     useEffect(() => {
         if (!activeInstallation) return;
 
+        let isInitial = true;
+
         const unsubscribe = onSnapshot(
             query(
                 activityCollection,
                 where("installationId", "==", activeInstallation.id),
                 where("type", "==", "installation"),
-                where("operation", "==", "task_creation")
+                where("operation", "==", "task_completed")
             ),
             (snapshot) => {
+                if (isInitial) {
+                    isInitial = false;
+                    return;
+                }
+
                 if (snapshot.docs.length > 0) {
-                    refreshActiveTask();
                     reloadTasks();
+                    if (snapshot.docs[0].data().metadata?.taskId === activeTask?.id) {
+                        refreshActiveTask();
+                    }
                 }
             }
         );
 
         return () => unsubscribe();
-    }, [activeInstallation, refreshActiveTask, reloadTasks]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeInstallation?.id]);
 
     return (
         <>
@@ -172,10 +177,7 @@ const TaskListSection = () => {
                     >
                         <button
                             className="flex items-center gap-[5px] text-primary-100 text-button-large font-extrabold hover:text-light-100"
-                            onClick={() => {
-                                toggleCreateTaskModal();
-                                manualBalanceCheck();
-                            }}
+                            onClick={toggleCreateTaskModal}
                             disabled={activeInstallation?.status !== "ACTIVE"}
                         >
                             <span>Create Bounty</span>
@@ -313,7 +315,6 @@ const TaskListSection = () => {
                 <CreateTaskModal
                     installationRepos={installationRepos}
                     loadingInstallationRepos={loadingInstallationRepos}
-                    usdcBalance={usdcBalance}
                     toggleModal={toggleCreateTaskModal}
                     onSuccess={reloadTasks}
                 />
