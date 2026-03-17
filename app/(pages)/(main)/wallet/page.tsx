@@ -1,6 +1,8 @@
 "use client";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
 import { useState } from "react";
+import Image from "next/image";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiArrowDownRight } from "react-icons/fi";
 import { HiPlus } from "react-icons/hi";
 import { LiaExchangeAltSolid } from "react-icons/lia";
@@ -51,7 +53,7 @@ const Wallet = () => {
     };
 
     const {
-        data: projectTransactions,
+        data: installationTransactions,
         loading: loadingTransactions,
         loadingMore: loadingMoreTransactions,
         noMore: noMoreTransactions,
@@ -104,6 +106,29 @@ const Wallet = () => {
             }
         } catch { }
     }), [activeInstallation]);
+
+    const tableFooter = (
+        <>
+            {loadingMoreTransactions && (
+                <div className="flex justify-center pt-5 pb-2.5">
+                    <span className="text-body-medium text-light-100 flex items-center gap-2">
+                        <AiOutlineLoading3Quarters className="animate-spin" />
+                        Fetching more transactions
+                    </span>
+                </div>
+            )}
+            {(!loadingMoreTransactions && !noMoreTransactions) && (
+                <div className="flex justify-center">
+                    <button
+                        className="w-fit mx-auto text-body-medium text-light-200 font-bold hover:text-light-100 pt-5 pb-2.5"
+                        onClick={loadMoreTransactions}
+                    >
+                        Load More
+                    </button>
+                </div>
+            )}
+        </>
+    );
 
     return (
         <>
@@ -178,50 +203,63 @@ const Wallet = () => {
                         ))}
                     </div>
                 </section>
-                {activeTab.enum === "ALL" && (
-                    <AllTable
-                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                        loading={loadingTransactions}
-                        loadingMore={loadingMoreTransactions}
-                        noMore={noMoreTransactions}
-                        loadMore={loadMoreTransactions}
-                    />
-                )}
-                {activeTab.enum === "BOUNTY" && (
-                    <BountyTable
-                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                        loading={loadingTransactions}
-                        loadingMore={loadingMoreTransactions}
-                        noMore={noMoreTransactions}
-                        loadMore={loadMoreTransactions}
-                    />
-                )}
-                {activeTab.enum === "TOP_UP" && (
-                    <TopUpTable
-                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                        loading={loadingTransactions}
-                        loadingMore={loadingMoreTransactions}
-                        noMore={noMoreTransactions}
-                        loadMore={loadMoreTransactions}
-                    />
-                )}
-                {activeTab.enum === "SWAP" && (
-                    <SwapTable
-                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                        loading={loadingTransactions}
-                        loadingMore={loadingMoreTransactions}
-                        noMore={noMoreTransactions}
-                        loadMore={loadMoreTransactions}
-                    />
-                )}
-                {activeTab.enum === "WITHDRAWAL" && (
-                    <WithdrawalTable
-                        data={loadingTransactions ? [] : (projectTransactions?.list || [])}
-                        loading={loadingTransactions}
-                        loadingMore={loadingMoreTransactions}
-                        noMore={noMoreTransactions}
-                        loadMore={loadMoreTransactions}
-                    />
+                {loadingTransactions ? (
+                    <div className="flex flex-col mt-[10%] items-center gap-[50px]">
+                        <p className="text-body-medium text-light-100 font-mono">Loading transactions...</p>
+                        <Image
+                            src="/task-empty-state.svg"
+                            alt=""
+                            width={0}
+                            height={170.5}
+                            className="w-auto"
+                            priority={true}
+                        />
+                    </div>
+                ) : (installationTransactions?.list || []).length < 1 ? (
+                    <div className="flex flex-col mt-[10%] items-center gap-[50px]">
+                        <p className="text-body-medium text-light-100 font-mono">No transactions to show</p>
+                        <Image
+                            src="/task-empty-state.svg"
+                            alt=""
+                            width={0}
+                            height={170.5}
+                            className="w-auto"
+                            priority={true}
+                        />
+                    </div>
+                ) : (
+                    <>
+                        {activeTab.enum === "ALL" && (
+                            <AllTable
+                                data={installationTransactions?.list || []}
+                                tableFooter={tableFooter}
+                            />
+                        )}
+                        {activeTab.enum === "BOUNTY" && (
+                            <BountyTable
+                                data={installationTransactions?.list || []}
+                                tableFooter={tableFooter}
+                            />
+                        )}
+                        {activeTab.enum === "TOP_UP" && (
+                            <TopUpTable
+                                data={installationTransactions?.list || []}
+                                tableFooter={tableFooter}
+                            />
+                        )}
+                        {activeTab.enum === "SWAP" && (
+                            <SwapTable
+                                data={installationTransactions?.list || []}
+                                tableFooter={tableFooter}
+                            />
+                        )}
+                        {activeTab.enum === "WITHDRAWAL" && (
+                            <WithdrawalTable
+                                data={installationTransactions?.list || []}
+                                tableFooter={tableFooter}
+                            />
+                        )}
+                    </>
                 )}
             </div>
 

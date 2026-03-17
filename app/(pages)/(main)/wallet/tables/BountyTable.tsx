@@ -6,18 +6,12 @@ import { ROUTES } from "@/app/utils/data";
 
 type BountyTableProps = {
     data: TransactionDto[];
-    loading: boolean;
-    loadingMore: boolean;
-    noMore: boolean;
-    loadMore: () => void;
+    tableFooter?: React.ReactNode;
 }
 
 const BountyTable = ({
     data,
-    loading,
-    loadingMore,
-    noMore,
-    loadMore
+    tableFooter
 }: BountyTableProps) => {
     const isMainnet = process.env.NEXT_PUBLIC_STELLAR_NETWORK === "public";
 
@@ -64,30 +58,7 @@ const BountyTable = ({
                         <td className="w-[18%]">{formatDateTime(transaction.doneAt)}</td>
                     </tr>
                 ))}
-                {(data.length < 1 && !loading) && (
-                    <div className="flex justify-center pt-[18%]">
-                        <span className="text-body-medium text-light-100">No transaction to show</span>
-                    </div>
-                )}
-                {(loading && data.length < 1) && (
-                    <div className="flex justify-center pt-[18%]">
-                        <span className="text-body-medium text-light-100">Loading transactions...</span>
-                    </div>
-                )}
-                {loadingMore && (
-                    <div className="flex justify-center pt-5 pb-2.5">
-                        <span className="text-body-medium text-light-100">Loading more transactions...</span>
-                    </div>
-                )}
-                {(!loading && !loadingMore && !noMore) && (
-                    <div className="flex justify-center">
-                        <button
-                            className="w-fit mx-auto text-body-medium text-light-200 font-bold hover:text-light-100 pt-5 pb-2.5"
-                            onClick={loadMore}
-                        >
-                            Load More
-                        </button></div>
-                )}
+                {tableFooter}
             </tbody>
         </>
     );

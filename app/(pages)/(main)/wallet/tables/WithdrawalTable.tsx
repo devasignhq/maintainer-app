@@ -4,18 +4,12 @@ import { formatDateTime, moneyFormat } from "@/app/utils/helper";
 
 type WithdrawalTableProps = {
     data: TransactionDto[];
-    loading: boolean;
-    loadingMore: boolean;
-    noMore: boolean;
-    loadMore: () => void;
+    tableFooter?: React.ReactNode;
 }
 
 const WithdrawalTable = ({
     data,
-    loading,
-    loadingMore,
-    noMore,
-    loadMore
+    tableFooter
 }: WithdrawalTableProps) => {
     return (
         <>
@@ -39,30 +33,7 @@ const WithdrawalTable = ({
                         <td className="w-[22.5%]">{formatDateTime(transaction.doneAt)}</td>
                     </tr>
                 ))}
-                {(data.length < 1 && !loading) && (
-                    <div className="flex justify-center pt-[18%]">
-                        <span className="text-body-medium text-light-100">No transaction to show</span>
-                    </div>
-                )}
-                {(loading && data.length < 1) && (
-                    <div className="flex justify-center pt-[18%]">
-                        <span className="text-body-medium text-light-100">Loading transactions...</span>
-                    </div>
-                )}
-                {loadingMore && (
-                    <div className="flex justify-center pt-5 pb-2.5">
-                        <span className="text-body-medium text-light-100">Loading more transactions...</span>
-                    </div>
-                )}
-                {(!loading && !loadingMore && !noMore) && (
-                    <div className="flex justify-center">
-                        <button 
-                            className="w-fit mx-auto text-body-medium text-light-200 font-bold hover:text-light-100 pt-5 pb-2.5"
-                            onClick={loadMore}
-                        >
-                        Load More
-                        </button></div>
-                )}
+                {tableFooter}
             </tbody>
         </>
     );
