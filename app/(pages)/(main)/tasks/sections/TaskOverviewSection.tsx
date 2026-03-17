@@ -22,7 +22,6 @@ import useInstallationStore from "@/app/state-management/useInstallationStore";
 
 const TaskOverviewSection = () => {
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
-    const activeTaskId = activeTask?.id;
     const { currentUser } = useUserStore();
     const { activeInstallation } = useInstallationStore();
     const [openSetTaskBountyModal, { toggle: toggleSetTaskBountyModal }] = useToggle(false);
@@ -56,12 +55,14 @@ const TaskOverviewSection = () => {
         },
         {
             isNoMore: (data) => !data?.pagination?.hasMore,
-            reloadDeps: [activeTask]
+            reloadDeps: [activeTask?.id]
         }
     );
 
     useEffect(() => {
-        if (!activeTaskId || !currentUser) return;
+        if (!activeTask?.id || !currentUser) return;
+
+        let isInitial = true;
 
         const unsubscribe = onSnapshot(
             query(
@@ -71,10 +72,15 @@ const TaskOverviewSection = () => {
                 where("type", "==", "task")
             ),
             (snapshot) => {
+                if (isInitial) {
+                    isInitial = false;
+                    return;
+                }
+
                 if (snapshot.docs.length > 0) {
                     reloadActivities();
                     if (snapshot.docs[0].data().metadata) {
-                        setActiveTask({ ...activeTask, ...snapshot.docs[0].data().metadata });
+                        setActiveTask(prev => prev ? { ...prev, ...snapshot.docs[0].data().metadata } : prev);
                     }
                 }
             }
@@ -82,7 +88,7 @@ const TaskOverviewSection = () => {
 
         return () => unsubscribe();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTaskId, currentUser]);
+    }, [activeTask?.id, currentUser?.userId]);
 
     return (
         <>

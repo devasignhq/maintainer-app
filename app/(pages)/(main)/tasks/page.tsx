@@ -3,8 +3,8 @@ import TaskListSection from "./sections/TaskListSection";
 import TaskDetailSection from "./sections/TaskDetailSection";
 import TaskOverviewSection from "./sections/TaskOverviewSection";
 import { TaskDto } from "@/app/models/task.model";
-import { useState } from "react";
 import { useAsyncEffect } from "ahooks";
+import { useCallback, useMemo, useState } from "react";
 import { TaskAPI } from "@/app/services/task.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
 import { ActiveTaskContext } from "./contexts/ActiveTaskContext";
@@ -20,7 +20,7 @@ const Tasks = () => {
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
     const [loadingTask, setLoadingTask] = useState(true);
 
-    const refreshActiveTask = async () => {
+    const refreshActiveTask = useCallback(async () => {
         if (!taskId || !activeInstallation) {
             return;
         }
@@ -30,7 +30,11 @@ const Tasks = () => {
             taskId
         );
         setActiveTask(response.data);
-    };
+    }, [taskId, activeInstallation]);
+
+    const activeTaskContextValue = useMemo(() => (
+        { activeTask, setActiveTask, refreshActiveTask }
+    ), [activeTask, refreshActiveTask]);
 
     // TODO: Implement caching
     useAsyncEffect((async () => {
@@ -57,7 +61,7 @@ const Tasks = () => {
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">
-            <ActiveTaskContext.Provider value={{ activeTask, setActiveTask, refreshActiveTask }}>
+            <ActiveTaskContext.Provider value={activeTaskContextValue}>
                 <TaskListSection />
                 {!activeTask ? (
                     <>
