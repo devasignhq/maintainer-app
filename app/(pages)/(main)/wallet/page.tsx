@@ -88,7 +88,7 @@ const Wallet = () => {
             };
         },
         {
-            isNoMore: (data) => !data?.hasMore,
+            isNoMore: (data) => !data?.pagination?.hasMore,
             reloadDeps: [activeInstallation, activeTab]
         }
     );

@@ -59,7 +59,7 @@ const BountyTable = ({
                         </td>
                         <td className="w-[15%]">{transaction.task?.contributor?.username}</td>
                         <td className="w-[10%] text-primary-100">
-                            {moneyFormat(transaction.task?.bounty || "")} USDC
+                            {moneyFormat(transaction.amount || "")} USDC
                         </td>
                         <td className="w-[18%]">{formatDateTime(transaction.doneAt)}</td>
                     </tr>
