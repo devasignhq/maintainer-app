@@ -270,6 +270,7 @@ const Wallet = () => {
                     usdcBalance={usdcBalance}
                     toggleModal={toggleWithdrawAssetModal}
                     reloadTransactions={reloadTransactions}
+                    manualBalanceCheck={manualBalanceCheck}
                 />
             )}
             {openSwapAssetModal && (

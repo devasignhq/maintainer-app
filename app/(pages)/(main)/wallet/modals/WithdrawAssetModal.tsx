@@ -1,5 +1,5 @@
 "use client";
-import { FiArrowDownRight } from "react-icons/fi";
+import { FiArrowDownRight, FiHelpCircle } from "react-icons/fi";
 import ButtonPrimary from "../../../../components/ButtonPrimary";
 import PopupModalLayout from "../../../../components/PopupModalLayout";
 import { handleApiErrorResponse, handleApiSuccessResponse, moneyFormat } from "@/app/utils/helper";
@@ -10,10 +10,12 @@ import MoneyInput from "@/app/components/Input/MoneyInput";
 import { WalletAPI } from "@/app/services/wallet.service";
 import { toast } from "react-toastify";
 import RegularDropdown from "@/app/components/Dropdown/Regular";
+import Tooltip from "@/app/components/Tooltip";
 
 const withdrawAssetSchema = object({
     assetType: string().oneOf(["XLM", "USDC"]).required("Required"),
     amount: string().required("Required"),
+    memo: string().optional(),
     walletAddress: string().required("Required")
 });
 
@@ -22,13 +24,15 @@ type WithdrawAssetModalProps = {
     usdcBalance: string;
     toggleModal: () => void;
     reloadTransactions: () => void;
+    manualBalanceCheck: () => Promise<void>;
 };
 
 const WithdrawAssetModal = ({
     xlmBalance,
     usdcBalance,
     toggleModal,
-    reloadTransactions
+    reloadTransactions,
+    manualBalanceCheck
 }: WithdrawAssetModalProps) => {
     const { activeInstallation } = useInstallationStore();
 
@@ -36,6 +40,7 @@ const WithdrawAssetModal = ({
         initialValues: {
             assetType: "XLM",
             amount: "",
+            memo: "",
             walletAddress: ""
         },
         validationSchema: withdrawAssetSchema,
@@ -58,6 +63,7 @@ const WithdrawAssetModal = ({
 
                 handleApiSuccessResponse(response);
                 reloadTransactions();
+                manualBalanceCheck();
                 toggleModal();
             } catch (error) {
                 handleApiErrorResponse(
@@ -119,6 +125,34 @@ const WithdrawAssetModal = ({
                                 setValue={(value) => formik.setFieldValue("amount", value)}
                             />
                         </div>
+                    </div>
+                    <div className="w-full space-y-[5px]">
+                        <div className="flex items-center gap-1">
+                            <label htmlFor="memo" className="text-body-tiny font-bold text-light-100 flex items-center gap-1">
+                                Memo <span className="text-body-micro font-normal">(Optional)</span>
+                            </label>
+                            <Tooltip message={
+                                <span>
+                                    Please make sure that if MEMO/Tag is required by the recipient, <br />
+                                    you provide it here. Otherwise, you may lose your assets.
+                                </span>
+                            }>
+                                <FiHelpCircle className="text-dark-100 text-sm" />
+                            </Tooltip>
+                        </div>
+                        <input
+                            type="text"
+                            id="memo"
+                            name="memo"
+                            placeholder="Enter memo"
+                            className={`w-full p-2.5 pl-[15px] mt-[5px] bg-dark-400 border border-dark-200 text-body-medium text-light-100 
+                                ${formik.submitCount > 0 && formik.errors.memo && "border-indicator-500"}`
+                            }
+                            value={formik.values.memo}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            disabled={formik.isSubmitting}
+                        />
                     </div>
                     <div className="w-full space-y-[5px]">
                         <label htmlFor="walletAddress" className="text-body-tiny font-bold text-light-100">Stellar Wallet Address</label>

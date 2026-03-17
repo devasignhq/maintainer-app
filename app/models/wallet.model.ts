@@ -7,6 +7,7 @@ export type WithdrawAssetDto = {
     walletAddress: string;
     amount: string;
     assetType: "XLM" | "USDC";
+    memo?: string;
 }
 
 export type SwapAssetDto = {
