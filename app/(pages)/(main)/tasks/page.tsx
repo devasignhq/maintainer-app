@@ -3,7 +3,7 @@ import TaskListSection from "./sections/TaskListSection";
 import TaskDetailSection from "./sections/TaskDetailSection";
 import TaskOverviewSection from "./sections/TaskOverviewSection";
 import { TaskDto } from "@/app/models/task.model";
-import { useAsyncEffect } from "ahooks";
+import { useLockFn, useRequest } from "ahooks";
 import { useCallback, useMemo, useState } from "react";
 import { TaskAPI } from "@/app/services/task.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
@@ -18,7 +18,6 @@ const Tasks = () => {
     const taskId = searchParams.get("taskId");
     const { activeInstallation } = useInstallationStore();
     const [activeTask, setActiveTask] = useState<TaskDto | null>(null);
-    const [loadingTask, setLoadingTask] = useState(true);
 
     const refreshActiveTask = useCallback(async () => {
         if (!taskId || !activeInstallation) {
@@ -37,27 +36,24 @@ const Tasks = () => {
     ), [activeTask, refreshActiveTask]);
 
     // TODO: Implement caching
-    useAsyncEffect((async () => {
-        if (!taskId || !activeInstallation) {
-            setActiveTask(null);
-            setLoadingTask(false);
-            return;
-        }
+    const { loading: loadingTask } = useRequest(
+        useLockFn(async () => {
+            if (!activeInstallation || !taskId) {
+                return null;
+            }
 
-        setLoadingTask(true);
-
-        try {
             const response = await TaskAPI.getInstallationTaskById(
                 activeInstallation.id,
                 taskId
             );
-            setActiveTask(response.data);
-        } catch {
-            setActiveTask(null);
-        } finally {
-            setLoadingTask(false);
+            return response.data;
+        }),
+        {
+            refreshDeps: [taskId, activeInstallation],
+            onSuccess: (data) => setActiveTask(data || null),
+            onError: () => setActiveTask(null)
         }
-    }), [taskId, activeInstallation]);
+    );
 
     return (
         <div className="h-[calc(100dvh-123px)] flex">

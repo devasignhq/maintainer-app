@@ -10,7 +10,7 @@ import { useInfiniteScroll, useToggle } from "ahooks";
 import SetTaskBountyModal from "../modals/SetTaskBountyModal";
 import SetTaskTimelineModal from "../modals/SetTaskTimelineModal";
 import DeleteTaskModal from "../modals/DeleteTaskModal";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { formatTimeline, moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
 import { TaskDto } from "@/app/models/task.model";
@@ -19,6 +19,7 @@ import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
+import { useEffectOnce } from "@/app/utils/hooks";
 
 const TaskOverviewSection = () => {
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
@@ -59,10 +60,8 @@ const TaskOverviewSection = () => {
         }
     );
 
-    useEffect(() => {
+    useEffectOnce(() => {
         if (!activeTask?.id || !currentUser) return;
-
-        let isInitial = true;
 
         const unsubscribe = onSnapshot(
             query(
@@ -72,22 +71,16 @@ const TaskOverviewSection = () => {
                 where("type", "==", "task")
             ),
             (snapshot) => {
-                if (isInitial) {
-                    isInitial = false;
-                    return;
-                }
-
                 if (snapshot.docs.length > 0) {
                     reloadActivities();
                     if (snapshot.docs[0].data().metadata) {
-                        setActiveTask(prev => prev ? { ...prev, ...snapshot.docs[0].data().metadata } : prev);
+                        setActiveTask(prev => ({ ...prev, ...snapshot.docs[0].data().metadata }));
                     }
                 }
             }
         );
 
         return () => unsubscribe();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTask?.id, currentUser?.userId]);
 
     return (

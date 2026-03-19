@@ -1,11 +1,13 @@
 "use client";
 import { TaskDto } from "@/app/models/task.model";
 import { moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { MessageAPI } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
-import { useCustomSearchParams } from "@/app/utils/hooks";
+import { useCustomSearchParams, useEffectOnce } from "@/app/utils/hooks";
+import { activityCollection } from "@/lib/firebase";
+import { onSnapshot, query, where } from "firebase/firestore";
 
 type TaskCardProps = {
     task: TaskDto;
@@ -15,52 +17,75 @@ type TaskCardProps = {
 const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
     const { currentUser } = useUserStore();
     const { activeTask } = useContext(ActiveTaskContext);
-    const { 
-        searchParams, 
-        updateSearchParams, 
-        removeSearchParams 
-    } = useCustomSearchParams();
+    const { searchParams, updateSearchParams, removeSearchParams } = useCustomSearchParams();
     const viewedTaskActivity = searchParams.get("viewedTaskActivity");
     const [task, setTask] = useState(defaultTask);
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
-
-    useEffect(() => {
-        if (activeTask?.id !== task.id) return;
-
-        setTask(prev => ({ ...prev, ...activeTask! }));
-    }, [activeTask, task.id]);
-
     const [unseenTaskActivities, setUnseenTaskActivities] = useState(
         task._count?.taskActivities || 0
     );
-    const totalNotifications = unseenTaskActivities + unreadMessagesCount;
+    const totalNotifications = useMemo(
+        () => unseenTaskActivities + unreadMessagesCount,
+        [unseenTaskActivities, unreadMessagesCount]
+    );
 
-    // Listen to unread messages count
+    // Update task when active task changes
     useEffect(() => {
-        if (!currentUser?.userId || !task.id || !task.contributorId) return;
+        if (!active) return;
 
-        const unsubscribe = MessageAPI.listenToUnreadMessagesCount(
-            task.id,
-            currentUser.userId,
-            (count) => setUnreadMessagesCount(count)
+        setTask(prev => ({ ...prev, ...activeTask! }));
+    }, [active, activeTask]);
+
+    // Listen to task activities and messages count
+    useEffectOnce(() => {
+        if (!currentUser || active) return;
+
+        const unsubscribeFromActivities = onSnapshot(
+            query(
+                activityCollection,
+                where("userId", "==", currentUser.userId),
+                where("taskId", "==", task.id),
+                where("type", "==", "task")
+            ),
+            (snapshot) => {
+                if (snapshot.docs.length > 0) {
+                    setUnseenTaskActivities(prev => prev + 1);
+                    if (snapshot.docs[0].data().metadata) {
+                        setTask(prev => ({ ...prev, ...snapshot.docs[0].data().metadata }));
+                    }
+                }
+            }
         );
 
-        return () => unsubscribe();
-    }, [task, currentUser?.userId]);
+        let unsubscribeFromMessages = () => {};
+        if (task.contributorId) {
+            unsubscribeFromMessages = MessageAPI.listenToUnreadMessagesCount(
+                task.id,
+                currentUser.userId,
+                (count) => setUnreadMessagesCount(count)
+            );
+        }
 
+        return () => {
+            unsubscribeFromActivities();
+            unsubscribeFromMessages();
+        };
+    }, [currentUser, active]);
+
+    // Remove viewed task activity when task is active
     useEffect(() => {
-        if (!viewedTaskActivity) return;
+        if (!viewedTaskActivity || !active) return;
 
         setUnseenTaskActivities(prev => prev - 1);
         removeSearchParams("viewedTaskActivity");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [viewedTaskActivity]);
+    }, [active, removeSearchParams, viewedTaskActivity]);
 
+    // Handle task click
     const handleClick = async () => {
         if (unreadMessagesCount > 0) {
-            updateSearchParams({ 
-                taskId: task.id, 
-                unread: unreadMessagesCount 
+            updateSearchParams({
+                taskId: task.id,
+                unread: unreadMessagesCount
             });
         } else {
             updateSearchParams({ taskId: task.id }, true);
@@ -71,12 +96,11 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
         <div
             onClick={handleClick}
             role="button"
-            className={`w-full p-[15px] border space-y-2.5 cursor-pointer 
-                ${active
-            ? "bg-dark-400 border-light-100"
-            : totalNotifications > 0
-                ? "border-primary-100 hover:border-dark-200 hover:bg-dark-400"
-                : "border-primary-200 hover:border-dark-200 hover:bg-dark-400"}
+            className={`w-full p-[15px] border space-y-2.5 cursor-pointer ${active
+                ? "bg-dark-400 border-light-100"
+                : totalNotifications > 0
+                    ? "border-primary-100 hover:border-dark-200 hover:bg-dark-400"
+                    : "border-primary-200 hover:border-dark-200 hover:bg-dark-400"}
             `}
         >
             <div className="flex items-center gap-1.5">
@@ -97,7 +121,7 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
                         <span className="px-[5px] text-body-tiny text-dark-500 bg-primary-100">
                             {totalNotifications}
                         </span>
-                    ): null}
+                    ) : null}
                 </div>
             </div>
             <p

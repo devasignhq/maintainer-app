@@ -3,7 +3,7 @@ import DetailsView from "./views/DetailsView";
 import ConversationView from "./views/ConversationView";
 import { useContext, useEffect, useState } from "react";
 import { ActiveTaskContext } from "../../contexts/ActiveTaskContext";
-import { useCustomSearchParams } from "@/app/utils/hooks";
+import { useCustomSearchParams, useEffectOnce } from "@/app/utils/hooks";
 import { MessageAPI } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
 
@@ -18,8 +18,8 @@ const TaskDetailSection = () => {
     useEffect(() => setActiveView(viewOptions[0]), [activeTask?.id]);
     
     // Listen to unread messages count
-    useEffect(() => {
-        if (!currentUser?.userId || !activeTask || !activeTask.contributor?.userId) return;
+    useEffectOnce(() => {
+        if (!currentUser || !activeTask || !activeTask.contributor?.userId) return;
 
         const unsubscribe = MessageAPI.listenToUnreadMessagesCount(
             activeTask.id,
@@ -33,8 +33,7 @@ const TaskDetailSection = () => {
         );
 
         return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTask, currentUser?.userId]);
+    }, [activeTask, currentUser]);
     
     return (
         <section className="grow pt-5 border-x border-dark-200 flex flex-col">

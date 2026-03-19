@@ -43,7 +43,7 @@ const TaskListSection = () => {
 
     // TODO: Implement caching
     const {
-        data: installationTasks,
+        data: tasksData,
         loading: loadingTasks,
         loadingMore: loadingMoreTasks,
         noMore: noMoreTasks,
@@ -138,8 +138,6 @@ const TaskListSection = () => {
     useEffect(() => {
         if (!activeInstallation) return;
 
-        let isInitial = true;
-
         const unsubscribe = onSnapshot(
             query(
                 activityCollection,
@@ -148,11 +146,6 @@ const TaskListSection = () => {
                 where("operation", "==", "task_completed")
             ),
             (snapshot) => {
-                if (isInitial) {
-                    isInitial = false;
-                    return;
-                }
-
                 if (snapshot.docs.length > 0) {
                     reloadTasks();
                     if (snapshot.docs[0].data().metadata?.taskId === activeTask?.id) {
@@ -278,19 +271,19 @@ const TaskListSection = () => {
                     </div>
                 </div>
                 <div className="grow pr-5 pb-5 overflow-y-auto space-y-[15px]">
-                    {installationTasks?.list?.map((task) => (
+                    {tasksData?.list?.map((task) => (
                         <TaskCard
                             key={task.id}
                             task={task}
                             active={(activeTask?.id || searchParams.get("taskId")) === task.id}
                         />
                     ))}
-                    {(loadingTasks && installationTasks?.list && installationTasks.list.length < 1) && (
+                    {(loadingTasks && tasksData?.list && tasksData.list.length < 1) && (
                         <div className="flex justify-center py-4">
                             <span className="text-body-medium text-light-100">Loading tasks...</span>
                         </div>
                     )}
-                    {(installationTasks?.list && installationTasks.list.length < 1 && !loadingTasks) && (
+                    {(tasksData?.list && tasksData.list.length < 1 && !loadingTasks) && (
                         <div className="flex justify-center py-4">
                             <span className="text-body-medium text-light-100">No tasks found</span>
                         </div>
