@@ -11,7 +11,13 @@ import BountyTable from "./tables/BountyTable";
 import TopUpTable from "./tables/TopUpTable";
 import WithdrawalTable from "./tables/WithdrawalTable";
 import SwapTable from "./tables/SwapTable";
-import { useAsyncEffect, useInfiniteScroll, useLockFn, useToggle } from "ahooks";
+import {
+    useAsyncEffect,
+    useInfiniteScroll,
+    useLockFn,
+    useToggle,
+    useUpdateEffect
+} from "ahooks";
 import SwapAssetModal from "./modals/SwapAssetModal";
 import WithdrawAssetModal from "./modals/WithdrawAssetModal";
 import FundWalletModal from "./modals/FundWalletModal";
@@ -95,6 +101,7 @@ const Wallet = () => {
         }
     );
 
+    // Record wallet topups on mount
     useAsyncEffect(useLockFn(async () => {
         if (!activeInstallation) return;
 
@@ -107,6 +114,12 @@ const Wallet = () => {
         } catch { }
     }), [activeInstallation]);
 
+    // Reload transactions when XLM or USDC balance changes
+    useUpdateEffect(() => {
+        reloadTransactions();
+    }, [xlmBalance, usdcBalance]);
+
+    // Table footer for infinite scroll
     const tableFooter = (
         <>
             {loadingMoreTransactions && (
