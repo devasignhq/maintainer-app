@@ -17,8 +17,7 @@ import { ApiResponse } from "@/app/models/_global";
 import { enumToStringConverter } from "@/app/utils/helper";
 import { InstallationAPI } from "@/app/services/installation.service";
 import Tooltip from "@/app/components/Tooltip";
-import { activityCollection } from "@/lib/firebase";
-import { onSnapshot, query, where } from "firebase/firestore";
+import { socket, joinSocketRoom, leaveSocketRoom } from "@/lib/socket";
 
 // ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
@@ -138,24 +137,28 @@ const TaskListSection = () => {
     useEffect(() => {
         if (!activeInstallation) return;
 
-        const unsubscribe = onSnapshot(
-            query(
-                activityCollection,
-                where("installationId", "==", activeInstallation.id),
-                where("type", "==", "installation"),
-                where("operation", "==", "task_completed")
-            ),
-            (snapshot) => {
-                if (snapshot.docs.length > 0) {
-                    reloadTasks();
-                    if (snapshot.docs[0].data().metadata?.taskId === activeTask?.id) {
-                        refreshActiveTask();
-                    }
+        const room = `installation_${activeInstallation.id}`;
+        joinSocketRoom(room);
+
+        const handleActivity = (activity: { type: string; installationId?: string; operation?: string; metadata?: { taskId?: string } }) => {
+            if (
+                activity.type === "installation" &&
+                activity.installationId === activeInstallation.id &&
+                activity.operation === "task_completed"
+            ) {
+                reloadTasks();
+                if (activity.metadata?.taskId === activeTask?.id) {
+                    refreshActiveTask();
                 }
             }
-        );
+        };
 
-        return () => unsubscribe();
+        socket.on("activity_update", handleActivity);
+
+        return () => {
+            socket.off("activity_update", handleActivity);
+            leaveSocketRoom(room);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeInstallation?.id]);
 

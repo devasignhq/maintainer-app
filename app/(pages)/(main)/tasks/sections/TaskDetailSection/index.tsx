@@ -3,37 +3,32 @@ import DetailsView from "./views/DetailsView";
 import ConversationView from "./views/ConversationView";
 import { useContext, useEffect, useState } from "react";
 import { ActiveTaskContext } from "../../contexts/ActiveTaskContext";
-import { useCustomSearchParams, useEffectOnce } from "@/app/utils/hooks";
 import { MessageAPI } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
 
 const TaskDetailSection = () => {
     const { currentUser } = useUserStore();
     const { activeTask } = useContext(ActiveTaskContext);
-    const { searchParams, removeSearchParams } = useCustomSearchParams();
-    const unread = searchParams.get("unread");
     const [activeView, setActiveView] = useState(viewOptions[0]);
-    const [unreadMessagesCount, setUnreadMessagesCount] = useState(Number(unread));
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
     useEffect(() => setActiveView(viewOptions[0]), [activeTask?.id]);
     
     // Listen to unread messages count
-    useEffectOnce(() => {
+    useEffect(() => {
         if (!currentUser || !activeTask || !activeTask.contributor?.userId) return;
+
+        setUnreadMessagesCount(0);
 
         const unsubscribe = MessageAPI.listenToUnreadMessagesCount(
             activeTask.id,
             currentUser.userId,
-            (count) => {
-                setUnreadMessagesCount(count);
-                if (unread) {
-                    removeSearchParams("unread");
-                }
-            }
+            (count) => setUnreadMessagesCount(count)
         );
 
         return () => unsubscribe();
-    }, [activeTask, currentUser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTask?.id, currentUser]);
     
     return (
         <section className="grow pt-5 border-x border-dark-200 flex flex-col">

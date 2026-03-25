@@ -115,14 +115,22 @@ export function useGetInstallationRepositories() {
     return { repositories, loading };
 }
 
-export function useEffectOnce(effect: EffectCallback, deps?: DependencyList) {
-    const hasRun = useRef(false);
+export function useEffectOnce(effect: EffectCallback, deps: DependencyList = []) {
+    const effectCalled = useRef(false);
+    const prevDeps = useRef<DependencyList>(deps);
 
     useEffect(() => {
-        if (hasRun.current) return;
-        hasRun.current = true;
-        effect();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const depsChanged = !deps.every((dep, i) => dep === prevDeps.current[i]);
+        if (depsChanged) {
+            effectCalled.current = false;
+            prevDeps.current = deps;
+        }
+
+        if (effectCalled.current) return;
+        effectCalled.current = true;
+
+        return effect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, deps);
 }
 

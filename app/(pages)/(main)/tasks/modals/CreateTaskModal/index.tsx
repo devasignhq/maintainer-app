@@ -27,8 +27,7 @@ import { InstallationAPI } from "@/app/services/installation.service";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { LuRocket } from "react-icons/lu";
 import { ApiResponse } from "@/app/models/_global";
-import { onSnapshot, query, where } from "firebase/firestore";
-import { activityCollection } from "@/lib/firebase";
+import { socket, joinSocketRoom, leaveSocketRoom } from "@/lib/socket";
 import { useStreamAccountBalance } from "@/app/services/horizon.service";
 
 type TaskPayload = {
@@ -262,20 +261,27 @@ const CreateTaskModal = ({
             let unsubscribe = () => { };
 
             try {
-                unsubscribe = onSnapshot(
-                    query(
-                        activityCollection,
-                        where("installationId", "==", task.payload.installationId),
-                        where("issueUrl", "==", task.payload.issue.url),
-                        where("type", "==", "installation"),
-                        where("operation", "==", "task_creation")
-                    ),
-                    (snapshot) => {
-                        if (snapshot.docs.length > 0 && snapshot.docs[0].data().message) {
-                            toast.update(toastId, { render: snapshot.docs[0].data().message });
-                        }
+                const room = `installation_${task.payload.installationId}`;
+                joinSocketRoom(room);
+
+                const handleActivity = (activity: { type: string; installationId?: string; issueUrl?: string; operation?: string; message?: string }) => {
+                    if (
+                        activity.type === "installation" &&
+                        activity.installationId === task.payload.installationId &&
+                        activity.issueUrl === task.payload.issue.url &&
+                        activity.operation === "task_creation" &&
+                        activity.message
+                    ) {
+                        toast.update(toastId, { render: activity.message });
                     }
-                );
+                };
+
+                socket.on("activity_update", handleActivity);
+                
+                unsubscribe = () => {
+                    socket.off("activity_update", handleActivity);
+                    leaveSocketRoom(room);
+                };
 
                 delete task.payload.repoId;
 
