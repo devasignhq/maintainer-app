@@ -1,7 +1,5 @@
-"use client";
-import { activityCollection } from "@/lib/firebase";
-import { onSnapshot, query, where } from "firebase/firestore";
 import ButtonPrimary from "@/app/components/ButtonPrimary";
+import { socket } from "@/lib/socket";
 import { FiArrowUpRight, FiEdit3 } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "../components/TaskActivityCard";
@@ -10,7 +8,7 @@ import { useInfiniteScroll, useToggle } from "ahooks";
 import SetTaskBountyModal from "../modals/SetTaskBountyModal";
 import SetTaskTimelineModal from "../modals/SetTaskTimelineModal";
 import DeleteTaskModal from "../modals/DeleteTaskModal";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { formatTimeline, moneyFormat, taskStatusFormatter } from "@/app/utils/helper";
 import { TaskDto } from "@/app/models/task.model";
@@ -19,7 +17,6 @@ import { Data } from "ahooks/lib/useInfiniteScroll/types";
 import { TaskAPI } from "@/app/services/task.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
-import { useEffectOnce } from "@/app/utils/hooks";
 
 const TaskOverviewSection = () => {
     const { activeTask, setActiveTask } = useContext(ActiveTaskContext);
@@ -60,27 +57,31 @@ const TaskOverviewSection = () => {
         }
     );
 
-    useEffectOnce(() => {
+    useEffect(() => {
         if (!activeTask?.id || !currentUser) return;
 
-        const unsubscribe = onSnapshot(
-            query(
-                activityCollection,
-                where("userId", "==", currentUser.userId),
-                where("taskId", "==", activeTask.id),
-                where("type", "==", "task")
-            ),
-            (snapshot) => {
-                if (snapshot.docs.length > 0) {
-                    reloadActivities();
-                    if (snapshot.docs[0].data().metadata) {
-                        setActiveTask(prev => ({ ...prev, ...snapshot.docs[0].data().metadata }));
-                    }
+        const room = `task_${activeTask.id}`;
+        socket.emit("join", room);
+
+        const handleActivity = (activity: { type: string; taskId?: string; metadata?: Partial<TaskDto> }) => {
+            if (
+                activity.type === "task" &&
+                activity.taskId === activeTask.id
+            ) {
+                reloadActivities();
+                if (activity.metadata) {
+                    setActiveTask(prev => prev ? ({ ...prev, ...activity.metadata } as TaskDto) : null);
                 }
             }
-        );
+        };
 
-        return () => unsubscribe();
+        socket.on("activity_update", handleActivity);
+
+        return () => {
+            socket.off("activity_update", handleActivity);
+            socket.emit("leave", room);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTask?.id, currentUser?.userId]);
 
     return (
@@ -185,7 +186,6 @@ const TaskOverviewSection = () => {
                     {activities?.list?.map((activity) => (
                         <TaskActivityCard
                             key={activity.id}
-                            issueNumber={activeTask!.issue.number}
                             activity={activity}
                         />
                     ))}

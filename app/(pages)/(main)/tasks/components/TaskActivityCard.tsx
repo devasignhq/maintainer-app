@@ -8,13 +8,9 @@ import { useCustomSearchParams } from "@/app/utils/hooks";
 
 type TaskActivityCardProps = {
     activity: TaskActivity;
-    issueNumber: number;
 };
 
-const TaskActivityCard = ({ 
-    activity,
-    issueNumber
-}: TaskActivityCardProps) => {
+const TaskActivityCard = ({ activity }: TaskActivityCardProps) => {
     const [viewed, setViewed] = useState(activity.viewed);
     const { updateSearchParams } = useCustomSearchParams();
     const [openReviewSubmissionModal, { toggle: toggleReviewSubmissionModal }] = useToggle(false);
@@ -39,11 +35,11 @@ const TaskActivityCard = ({
                 items-center gap-[15px] hover:border-light-100 ${viewed && "opacity-70"}`
             }
         >
-            <div className="py-2.5 px-[7px] text-body-tiny text-light-100 
+            {/* <div className="py-2.5 px-[7px] text-body-tiny text-light-100 
                 bg-[linear-gradient(130.86deg,_rgba(254,_137,_31,_0.175)_15.53%,_rgba(254,_137,_31,_0.075)_79.38%)]"
             >
                 #{issueNumber}
-            </div>
+            </div> */}
             <div className="grow space-y-[5px] overflow-hidden">
                 <p className="text-body-medium text-light-100 truncate">
                     {activity.taskSubmissionId ? "Review Submission" : "New task application"}

@@ -115,14 +115,25 @@ export function useGetInstallationRepositories() {
     return { repositories, loading };
 }
 
-export function useEffectOnce(effect: EffectCallback, deps?: DependencyList) {
-    const hasRun = useRef(false);
+export function useEffectOnce(effect: EffectCallback, deps: DependencyList = []) {
+    const lastSeenDeps = useRef<DependencyList | undefined>(undefined);
+    const hasRunForThisDeps = useRef(false);
+
+    // Deep compare or simple shallow check to see if deps actually changed
+    const depsChanged = !lastSeenDeps.current || 
+        !deps.every((dep, i) => dep === lastSeenDeps.current![i]);
+
+    if (depsChanged) {
+        hasRunForThisDeps.current = false;
+        lastSeenDeps.current = deps;
+    }
 
     useEffect(() => {
-        if (hasRun.current) return;
-        hasRun.current = true;
-        effect();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (hasRunForThisDeps.current) return;
+        
+        hasRunForThisDeps.current = true;
+        return effect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, deps);
 }
 

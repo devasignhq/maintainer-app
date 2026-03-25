@@ -2,7 +2,6 @@ import { MessageDto } from "@/app/models/message.model";
 import { MessageAPI } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useEffectOnce } from "@/app/utils/hooks";
 import { useLockFn } from "ahooks";
 
 export interface GroupedMessages {
@@ -31,7 +30,7 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
         await update;
     });
 
-    useEffectOnce(() => {
+    useEffect(() => {
         if (!taskId || !contributorId || !currentUser) return;
 
         let unsubscribeFromTaskMessages: (() => void) | null = null;
@@ -75,6 +74,7 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
             if (unsubscribeFromTaskMessages) unsubscribeFromTaskMessages();
             if (unsubscribeFromExtensionReplies) unsubscribeFromExtensionReplies();
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contributorId, currentUser, taskId]);
 
     useEffect(() => {
@@ -95,7 +95,9 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
 
     useEffect(() => {
         if (messageBoxRef.current) {
-            messageBoxRef.current.scrollTop = messageBoxRef.current.scrollHeight;
+            setTimeout(() => {
+                messageBoxRef.current!.scrollTop = messageBoxRef.current!.scrollHeight;
+            }, 200);
         }
     }, [groupedMessages.length, messages.length]);
 
