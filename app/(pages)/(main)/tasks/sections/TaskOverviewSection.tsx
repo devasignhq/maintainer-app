@@ -1,5 +1,5 @@
 import ButtonPrimary from "@/app/components/ButtonPrimary";
-import { socket } from "@/lib/socket";
+import { socket, joinSocketRoom, leaveSocketRoom } from "@/lib/socket";
 import { FiArrowUpRight, FiEdit3 } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import TaskActivityCard from "../components/TaskActivityCard";
@@ -61,7 +61,7 @@ const TaskOverviewSection = () => {
         if (!activeTask?.id || !currentUser) return;
 
         const room = `task_${activeTask.id}`;
-        socket.emit("join", room);
+        joinSocketRoom(room);
 
         const handleActivity = (activity: { type: string; taskId?: string; metadata?: Partial<TaskDto> }) => {
             if (
@@ -79,7 +79,7 @@ const TaskOverviewSection = () => {
 
         return () => {
             socket.off("activity_update", handleActivity);
-            socket.emit("leave", room);
+            leaveSocketRoom(room);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTask?.id, currentUser?.userId]);

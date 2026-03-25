@@ -116,22 +116,19 @@ export function useGetInstallationRepositories() {
 }
 
 export function useEffectOnce(effect: EffectCallback, deps: DependencyList = []) {
-    const lastSeenDeps = useRef<DependencyList | undefined>(undefined);
-    const hasRunForThisDeps = useRef(false);
-
-    // Deep compare or simple shallow check to see if deps actually changed
-    const depsChanged = !lastSeenDeps.current || 
-        !deps.every((dep, i) => dep === lastSeenDeps.current![i]);
-
-    if (depsChanged) {
-        hasRunForThisDeps.current = false;
-        lastSeenDeps.current = deps;
-    }
+    const effectCalled = useRef(false);
+    const prevDeps = useRef<DependencyList>(deps);
 
     useEffect(() => {
-        if (hasRunForThisDeps.current) return;
-        
-        hasRunForThisDeps.current = true;
+        const depsChanged = !deps.every((dep, i) => dep === prevDeps.current[i]);
+        if (depsChanged) {
+            effectCalled.current = false;
+            prevDeps.current = deps;
+        }
+
+        if (effectCalled.current) return;
+        effectCalled.current = true;
+
         return effect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, deps);

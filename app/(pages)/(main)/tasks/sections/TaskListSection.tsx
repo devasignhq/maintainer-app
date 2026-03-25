@@ -17,7 +17,7 @@ import { ApiResponse } from "@/app/models/_global";
 import { enumToStringConverter } from "@/app/utils/helper";
 import { InstallationAPI } from "@/app/services/installation.service";
 import Tooltip from "@/app/components/Tooltip";
-import { socket } from "@/lib/socket";
+import { socket, joinSocketRoom, leaveSocketRoom } from "@/lib/socket";
 
 // ? Restrict filtering when task list is <= 10
 const TaskListSection = () => {
@@ -138,7 +138,7 @@ const TaskListSection = () => {
         if (!activeInstallation) return;
 
         const room = `installation_${activeInstallation.id}`;
-        socket.emit("join", room);
+        joinSocketRoom(room);
 
         const handleActivity = (activity: { type: string; installationId?: string; operation?: string; metadata?: { taskId?: string } }) => {
             if (
@@ -157,7 +157,7 @@ const TaskListSection = () => {
 
         return () => {
             socket.off("activity_update", handleActivity);
-            socket.emit("leave", room);
+            leaveSocketRoom(room);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeInstallation?.id]);

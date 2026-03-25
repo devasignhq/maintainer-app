@@ -94,11 +94,13 @@ export const useManageMessages = (taskId: string, contributorId: string) => {
     }, []);
 
     useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
         if (messageBoxRef.current) {
-            setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 messageBoxRef.current!.scrollTop = messageBoxRef.current!.scrollHeight;
             }, 200);
         }
+        return () => clearTimeout(timeoutId);
     }, [groupedMessages.length, messages.length]);
 
     return {

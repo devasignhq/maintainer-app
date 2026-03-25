@@ -27,7 +27,7 @@ import { InstallationAPI } from "@/app/services/installation.service";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { LuRocket } from "react-icons/lu";
 import { ApiResponse } from "@/app/models/_global";
-import { socket } from "@/lib/socket";
+import { socket, joinSocketRoom, leaveSocketRoom } from "@/lib/socket";
 import { useStreamAccountBalance } from "@/app/services/horizon.service";
 
 type TaskPayload = {
@@ -262,7 +262,7 @@ const CreateTaskModal = ({
 
             try {
                 const room = `installation_${task.payload.installationId}`;
-                socket.emit("join", room);
+                joinSocketRoom(room);
 
                 const handleActivity = (activity: { type: string; installationId?: string; issueUrl?: string; operation?: string; message?: string }) => {
                     if (
@@ -280,7 +280,7 @@ const CreateTaskModal = ({
                 
                 unsubscribe = () => {
                     socket.off("activity_update", handleActivity);
-                    socket.emit("leave", room);
+                    leaveSocketRoom(room);
                 };
 
                 delete task.payload.repoId;

@@ -6,7 +6,7 @@ import { ActiveTaskContext } from "../contexts/ActiveTaskContext";
 import { MessageAPI } from "@/app/services/message.service";
 import useUserStore from "@/app/state-management/useUserStore";
 import { useCustomSearchParams } from "@/app/utils/hooks";
-import { socket } from "@/lib/socket";
+import { socket, joinSocketRoom, leaveSocketRoom } from "@/lib/socket";
 
 type TaskCardProps = {
     task: TaskDto;
@@ -45,7 +45,7 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
         if (!currentUser || active) return;
 
         const room = `task_${task.id}`;
-        socket.emit("join", room);
+        joinSocketRoom(room);
 
         const handleActivity = (activity: { type: string; taskId?: string; metadata?: Partial<TaskDto> }) => {
             if (activity.type === "task" && activity.taskId === task.id) {
@@ -60,7 +60,7 @@ const TaskCard = ({ task: defaultTask, active }: TaskCardProps) => {
 
         const unsubscribeFromActivities = () => {
             socket.off("activity_update", handleActivity);
-            socket.emit("leave", room);
+            leaveSocketRoom(room);
         };
 
         let unsubscribeFromMessages = () => {};
