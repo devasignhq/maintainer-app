@@ -83,30 +83,32 @@ const ApproveTaskDelegationModal = ({ taskActivity, toggleModal, onSuccess }: Ap
                 Once you click “<span className="font-bold">Yes, Delegate Task,</span>” the task/issue will be
                 delegated to this developer and you can’t assign it to another developer till the timeline elapses.
             </p>
-            <div className="flex gap-2.5">
-                <ButtonPrimary
-                    format="OUTLINE"
-                    text="Go Back"
-                    attributes={{
-                        onClick: toggleModal,
-                        disabled: delegating
-                    }}
-                />
-                <Tooltip
-                    message="Reinstall or unsuspend DevAsign app on GitHub to delegate a task"
-                    disabled={activeInstallation?.status === "ACTIVE"}
-                >
+            {activeTask?.status === "OPEN" && (
+                <div className="flex gap-2.5">
                     <ButtonPrimary
-                        format="SOLID"
-                        text={delegating ? "Approving..." : "Yes, Proceed"}
-                        sideItem={<FiArrowUpRight />}
+                        format="OUTLINE"
+                        text="Go Back"
                         attributes={{
-                            onClick: delegateTask,
-                            disabled: delegating || activeInstallation?.status !== "ACTIVE"
+                            onClick: toggleModal,
+                            disabled: delegating
                         }}
                     />
-                </Tooltip>
-            </div>
+                    <Tooltip
+                        message="Reinstall or unsuspend DevAsign app on GitHub to delegate a task"
+                        disabled={activeInstallation?.status === "ACTIVE"}
+                    >
+                        <ButtonPrimary
+                            format="SOLID"
+                            text={delegating ? "Approving..." : "Yes, Proceed"}
+                            sideItem={<FiArrowUpRight />}
+                            attributes={{
+                                onClick: delegateTask,
+                                disabled: delegating || activeInstallation?.status !== "ACTIVE"
+                            }}
+                        />
+                    </Tooltip>
+                </div>
+            )}
         </PopupModalLayout>
     );
 };

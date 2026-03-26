@@ -3,7 +3,7 @@ import TaskListSection from "./sections/TaskListSection";
 import TaskDetailSection from "./sections/TaskDetailSection";
 import TaskOverviewSection from "./sections/TaskOverviewSection";
 import { TaskDto } from "@/app/models/task.model";
-import { useLockFn, useRequest } from "ahooks";
+import { useRequest } from "ahooks";
 import { useCallback, useMemo, useState } from "react";
 import { TaskAPI } from "@/app/services/task.service";
 import useInstallationStore from "@/app/state-management/useInstallationStore";
@@ -37,7 +37,7 @@ const Tasks = () => {
 
     // TODO: Implement caching
     const { loading: loadingTask } = useRequest(
-        useLockFn(async () => {
+        async () => {
             if (!activeInstallation || !taskId) {
                 return null;
             }
@@ -47,7 +47,7 @@ const Tasks = () => {
                 taskId
             );
             return response.data;
-        }),
+        },
         {
             refreshDeps: [taskId, activeInstallation],
             onSuccess: (data) => setActiveTask(data || null),

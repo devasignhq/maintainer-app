@@ -91,25 +91,27 @@ const ApproveSubmissionModal = ({ taskActivity, toggleModal, onSuccess }: Approv
                 Once you click “<span className="font-bold">Pay Contributor</span>” or merge the code
                 successfully in GitHub, the bounty will be paid out to the contributor automatically.
             </p>
-            <div className="flex gap-2.5">
-                <ButtonPrimary
-                    format="OUTLINE"
-                    text="Go Back"
-                    attributes={{
-                        onClick: toggleModal,
-                        disabled: approving
-                    }}
-                />
-                <ButtonPrimary
-                    format="SOLID"
-                    text={approving ? "Approving..." : "Pay Contributor"}
-                    sideItem={<FiArrowUpRight />}
-                    attributes={{
-                        onClick: approveSubmission,
-                        disabled: approving
-                    }}
-                />
-            </div>
+            {activeTask?.status === "MARKED_AS_COMPLETED" && (
+                <div className="flex gap-2.5">
+                    <ButtonPrimary
+                        format="OUTLINE"
+                        text="Go Back"
+                        attributes={{
+                            onClick: toggleModal,
+                            disabled: approving
+                        }}
+                    />
+                    <ButtonPrimary
+                        format="SOLID"
+                        text={approving ? "Approving..." : "Pay Contributor"}
+                        sideItem={<FiArrowUpRight />}
+                        attributes={{
+                            onClick: approveSubmission,
+                            disabled: approving
+                        }}
+                    />
+                </div>
+            )}
         </PopupModalLayout>
     );
 };
