@@ -147,9 +147,7 @@ const TaskListSection = () => {
                 activity.operation === "task_completed"
             ) {
                 reloadTasks();
-                if (activity.metadata?.taskId === activeTask?.id) {
-                    refreshActiveTask();
-                }
+                refreshActiveTask();
             }
         };
 
